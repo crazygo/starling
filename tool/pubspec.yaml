@@ -1,0 +1,17 @@
+name: starling_tool
+description: Data pipeline for the Starling star catalog — parses raw astronomy
+  sources and serialises them to FlatBuffers .bin files consumed by the Flutter app.
+
+# This package is completely independent of the main Flutter project.
+# Its dependencies (csv, args, path) never enter the Flutter build.
+
+publish_to: 'none'
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flat_buffers: ^23.5.26  # FlatBuffers Dart runtime
+  csv: ^6.0.0             # CSV parsing
+  args: ^2.4.2            # CLI argument parsing
+  path: ^1.8.3

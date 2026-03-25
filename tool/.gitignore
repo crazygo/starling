@@ -1,0 +1,14 @@
+# Dart tool package
+.dart_tool/
+pubspec.lock
+
+# Raw data sources — download separately (see README.md)
+# Keep directory structure but ignore actual data files.
+sources/hipparcos/*.csv
+sources/hipparcos/*.dat
+sources/iau/*.csv
+sources/iau/*.dat
+sources/stellarium/**/*.fab
+sources/stellarium/**/*.json
+# Re-allow index files that document the expected structure
+!sources/**/.gitkeep

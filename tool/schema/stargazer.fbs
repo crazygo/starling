@@ -1,0 +1,139 @@
+// FlatBuffers schema for the Starling star-catalog data files.
+//
+// Compile to Dart with:
+//   flatc --dart -o generated/ schema/stargazer.fbs
+//
+// Three root types produce three separate .bin files:
+//   catalog_base.bin    – physical star catalog (StarCatalog)
+//   culture_western.bin – IAU 88-constellation dataset (WesternCulture)
+//   culture_chinese.bin – Stellarium Chinese sky culture (ChineseCulture)
+
+namespace stargazer;
+
+// ─────────────────────────── Shared structs ──────────────────────────────
+
+/// A directed edge connecting two stars, referenced by Hipparcos catalogue ID.
+struct Edge {
+  from_hip : uint16;
+  to_hip   : uint16;
+}
+
+/// A quantised sky-coordinate point used for constellation boundaries.
+/// ra_q  encodes Right Ascension  0°–360°  as 0–65535.
+/// dec_q encodes Declination    −90°–+90°  as 0–65535.
+struct BoundaryPoint {
+  ra_q  : uint16;
+  dec_q : uint16;
+}
+
+// ───────────────────────── catalog_base.bin ──────────────────────────────
+
+/// One physical star from the Hipparcos catalogue.
+table Star {
+  hip       : uint32;   // Hipparcos catalogue number
+  ra        : float32;  // Right Ascension, degrees (0–360)
+  dec       : float32;  // Declination, degrees (−90–+90)
+  mag       : float32;  // Visual magnitude (Vmag)
+  color_idx : float32;  // B−V colour index
+}
+
+/// The complete physical star catalog, sorted by `hip` ascending.
+table StarCatalog {
+  stars : [Star];
+}
+
+root_type StarCatalog;
+
+// ──────────────────────── culture_western.bin ────────────────────────────
+
+/// IAU constellation family groupings.
+enum ConstellationFamily : byte {
+  Zodiac    = 0,
+  Ursa      = 1,
+  Perseus   = 2,
+  Hercules  = 3,
+  Orion     = 4,
+  Heavenly  = 5,
+  Bayer     = 6,
+  LaCaille  = 7,
+  Other     = 8,
+}
+
+/// One IAU constellation with its stick-figure edges and sky boundary.
+table WesternConstellation {
+  abbr     : string;                 // IAU 3-letter abbreviation, e.g. "ORI"
+  name_en  : string;                 // English name, e.g. "Orion"
+  name_zh  : string;                 // Chinese name, e.g. "猎户座"
+  family   : ConstellationFamily;
+  edges    : [Edge];                 // Stick-figure line segments
+  boundary : [BoundaryPoint];        // Boundary polygon vertices
+}
+
+table WesternCulture {
+  constellations : [WesternConstellation];
+}
+
+root_type WesternCulture;
+
+// ──────────────────────── culture_chinese.bin ────────────────────────────
+
+/// The four cardinal palaces plus the Three Enclosures.
+enum Quadrant : byte {
+  EastAzure    = 0,   // 东方青龙
+  NorthBlack   = 1,   // 北方玄武
+  WestWhite    = 2,   // 西方白虎
+  SouthScarlet = 3,   // 南方朱雀
+  Central      = 4,   // 三垣
+}
+
+/// The 28 lunar mansions (宿); value 0 means "not applicable" (Three Enclosures).
+enum Mansion : byte {
+  None         = 0,
+  // East Azure (东方青龙)
+  Horn         = 1,   // 角
+  Neck         = 2,   // 亢
+  Root         = 3,   // 氐
+  Room         = 4,   // 房
+  Heart        = 5,   // 心
+  Tail         = 6,   // 尾
+  Winnowing    = 7,   // 箕
+  // North Black (北方玄武)
+  Dipper       = 8,   // 斗
+  Ox           = 9,   // 牛
+  Girl         = 10,  // 女
+  Emptiness    = 11,  // 虚
+  Rooftop      = 12,  // 危
+  Encampment   = 13,  // 室
+  Wall         = 14,  // 壁
+  // West White (西方白虎)
+  Stride       = 15,  // 奎
+  Bond         = 16,  // 娄
+  Stomach      = 17,  // 胃
+  Hairy        = 18,  // 昴
+  Net          = 19,  // 毕
+  Turtle       = 20,  // 觜
+  Three        = 21,  // 参
+  // South Scarlet (南方朱雀)
+  Well         = 22,  // 井
+  Ghost        = 23,  // 鬼
+  Willow       = 24,  // 柳
+  Star         = 25,  // 星
+  Extended     = 26,  // 张
+  Wings        = 27,  // 翼
+  Chariot      = 28,  // 轸
+}
+
+/// One Chinese asterism (星官).
+table ChineseAsterism {
+  name     : string;   // Chinese name, e.g. "天狼"
+  name_en  : string;   // English transliteration, e.g. "Celestial Wolf"
+  quadrant : Quadrant;
+  mansion  : Mansion;
+  edges    : [Edge];
+}
+
+table ChineseCulture {
+  asterisms : [ChineseAsterism];
+}
+
+root_type ChineseCulture;
