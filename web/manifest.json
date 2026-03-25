@@ -1,0 +1,11 @@
+{
+    "name": "星仔 Starling",
+    "short_name": "Starling",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#05091A",
+    "theme_color": "#05091A",
+    "description": "星仔 (Starling) - Your Personal Stargazing Guide",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false
+}
