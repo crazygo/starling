@@ -64,12 +64,10 @@ class StarChart extends StatefulWidget {
 
 class _StarChartState extends State<StarChart> {
   Offset? _panStart;
-  double? _scaleStart;
   StarChartViewport? _viewportAtGestureStart;
 
   void _onScaleStart(ScaleStartDetails d) {
     _panStart = d.localFocalPoint;
-    _scaleStart = 1.0;
     _viewportAtGestureStart = widget.viewport;
   }
 
@@ -174,6 +172,18 @@ class _StarPainter extends CustomPainter {
   final Offset? gyroOffset;
   final Size size;
 
+  // Normalized [0, 1) background star positions precomputed once.
+  // Using a fixed seed means the pattern is deterministic and stable.
+  static final List<Offset> _bgStarPositions = _precomputeBgStars();
+
+  static List<Offset> _precomputeBgStars() {
+    final rng = Random(42);
+    return List.generate(
+      300,
+      (_) => Offset(rng.nextDouble(), rng.nextDouble()),
+    );
+  }
+
   const _StarPainter({
     required this.stars,
     required this.constellations,
@@ -186,7 +196,9 @@ class _StarPainter extends CustomPainter {
   bool shouldRepaint(_StarPainter old) =>
       old.viewport != viewport ||
       old.gyroOffset != gyroOffset ||
-      old.stars != stars;
+      old.stars != stars ||
+      old.constellations != constellations ||
+      old.size != size;
 
   Offset? _project(double raDeg, double decDeg) {
     final vp = viewport;
@@ -224,12 +236,13 @@ class _StarPainter extends CustomPainter {
   }
 
   void _drawBackgroundStars(Canvas canvas, Size size) {
-    final rng = Random(42);
     final paint = Paint()..color = Colors.white.withAlpha(77);
-    for (int i = 0; i < 300; i++) {
-      final x = rng.nextDouble() * size.width;
-      final y = rng.nextDouble() * size.height;
-      canvas.drawCircle(Offset(x, y), 0.5, paint);
+    for (final pos in _bgStarPositions) {
+      canvas.drawCircle(
+        Offset(pos.dx * size.width, pos.dy * size.height),
+        0.5,
+        paint,
+      );
     }
   }
 

@@ -21,7 +21,12 @@ class LocationService {
   LocationData? get lastKnown => _lastKnown;
 
   /// Request permissions, enable the service, then start streaming updates.
+  ///
+  /// If already subscribed, returns immediately without creating a duplicate
+  /// subscription.
   Future<void> start() async {
+    if (_subscription != null) return;
+
     bool serviceEnabled = await _location.serviceEnabled();
     if (!serviceEnabled) {
       serviceEnabled = await _location.requestService();

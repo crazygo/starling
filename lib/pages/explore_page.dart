@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../models/star.dart';
@@ -22,6 +23,7 @@ class _ExplorePageState extends State<ExplorePage> {
   // Data
   List<Star> _stars = [];
   List<Constellation> _constellations = [];
+  StarDataService? _dataService;
   bool _loading = true;
 
   // Chart state
@@ -35,6 +37,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
   bool _gyroEnabled = false;
   Offset _gyroOffset = Offset.zero;
+  DateTime? _lastGyroTime; // used to compute accurate Δt between events
 
   // Search
   final TextEditingController _searchController = TextEditingController();
@@ -52,6 +55,7 @@ class _ExplorePageState extends State<ExplorePage> {
     final service = await StarDataService.instance();
     if (mounted) {
       setState(() {
+        _dataService = service;
         _stars = service.stars;
         _constellations = service.constellations;
         _loading = false;
@@ -64,40 +68,43 @@ class _ExplorePageState extends State<ExplorePage> {
       _gyroEnabled = !_gyroEnabled;
       if (_gyroEnabled) {
         _gyroOffset = Offset.zero;
+        _lastGyroTime = null;
         _gyroService.start();
         _gyroSub = _gyroService.gyroStream.listen(_onGyroEvent);
       } else {
         _gyroService.stop();
         _gyroSub?.cancel();
         _gyroSub = null;
+        _lastGyroTime = null;
       }
     });
   }
 
   void _onGyroEvent(GyroscopeEvent event) {
-    // Integrate angular velocity (rad/s) to degrees
-    const dt = 0.05; // approximate 20 Hz polling
-    const scale = 30.0; // sensitivity tuning
+    final now = DateTime.now();
+    // Compute measured Δt between events; fall back to 50 ms on first event.
+    final dt = _lastGyroTime != null
+        ? now.difference(_lastGyroTime!).inMicroseconds / 1e6
+        : 0.05;
+    _lastGyroTime = now;
+
+    // Convert angular velocity (rad/s) × Δt (s) = radians, then to degrees.
+    const radToDeg = 180.0 / pi;
+    const sensitivity = 0.5; // tunable panning sensitivity
     setState(() {
       _gyroOffset = Offset(
-        _gyroOffset.dx + event.y * dt * scale,
-        _gyroOffset.dy + event.x * dt * scale,
+        _gyroOffset.dx + event.y * dt * radToDeg * sensitivity,
+        _gyroOffset.dy + event.x * dt * radToDeg * sensitivity,
       );
     });
   }
 
   void _onSearch(String query) {
-    final service = _stars.isEmpty ? null : _stars;
-    if (service == null) return;
+    if (_dataService == null) return;
     setState(() {
       _searchResults = query.isEmpty
           ? []
-          : _stars
-              .where((s) =>
-                  s.name.toLowerCase().contains(query.toLowerCase()) ||
-                  (s.chineseName?.contains(query) ?? false))
-              .take(6)
-              .toList();
+          : _dataService!.searchStars(query).take(6).toList();
     });
   }
 

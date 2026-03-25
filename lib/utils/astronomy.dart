@@ -12,8 +12,8 @@ class AstronomyUtils {
   /// Convert radians to degrees.
   static double toDeg(double rad) => rad * 180.0 / pi;
 
-  /// Compute Greenwich Mean Sidereal Time (GMST) in hours for a given UTC
-  /// [DateTime].
+  /// Compute Greenwich Mean Sidereal Time (GMST) in degrees for a given UTC
+  /// [DateTime], normalised to [0, 360).
   ///
   /// Formula based on the J2000.0 epoch.
   static double gmst(DateTime utc) {

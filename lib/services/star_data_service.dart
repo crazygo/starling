@@ -8,15 +8,30 @@ import '../models/daily_card.dart';
 /// assets.
 class StarDataService {
   static StarDataService? _instance;
+  // Shared Future so concurrent callers all await the same initialization work.
+  static Future<StarDataService>? _initFuture;
+
   StarDataService._();
 
   /// Returns the shared singleton, creating and initialising it if needed.
-  static Future<StarDataService> instance() async {
-    if (_instance == null) {
-      _instance = StarDataService._();
-      await _instance!._load();
-    }
-    return _instance!;
+  ///
+  /// Concurrent callers all await the same initialization [Future], so the
+  /// asset loading runs only once even when multiple pages call this at
+  /// startup simultaneously.
+  static Future<StarDataService> instance() {
+    // Fast path: already fully initialized.
+    if (_instance != null) return Future.value(_instance);
+    // Lazily create (or reuse) the shared initialization future.
+    _initFuture ??= _createAndLoad();
+    return _initFuture!;
+  }
+
+  /// Constructs the service, loads all data, and stores the singleton.
+  static Future<StarDataService> _createAndLoad() async {
+    final service = StarDataService._();
+    await service._load();
+    _instance = service;
+    return service;
   }
 
   List<Star> _stars = [];
