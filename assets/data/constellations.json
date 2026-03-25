@@ -1,0 +1,86 @@
+[
+  {
+    "id": "orion",
+    "name": "Orion",
+    "chineseName": "猎户座",
+    "starIds": ["rigel", "betelgeuse"],
+    "lines": [
+      { "starId1": "rigel", "starId2": "betelgeuse" }
+    ],
+    "description": "One of the most recognisable constellations, representing a hunter in Greek mythology."
+  },
+  {
+    "id": "lyra",
+    "name": "Lyra",
+    "chineseName": "天琴座",
+    "starIds": ["vega"],
+    "lines": [],
+    "description": "A small constellation containing Vega, one of the vertices of the Summer Triangle."
+  },
+  {
+    "id": "aquila",
+    "name": "Aquila",
+    "chineseName": "天鹰座",
+    "starIds": ["altair"],
+    "lines": [],
+    "description": "The eagle constellation, home to Altair, another vertex of the Summer Triangle."
+  },
+  {
+    "id": "cygnus",
+    "name": "Cygnus",
+    "chineseName": "天鹅座",
+    "starIds": ["deneb"],
+    "lines": [],
+    "description": "The swan constellation; Deneb forms the tail of the swan and the Summer Triangle's third vertex."
+  },
+  {
+    "id": "canis_major",
+    "name": "Canis Major",
+    "chineseName": "大犬座",
+    "starIds": ["sirius"],
+    "lines": [],
+    "description": "The 'greater dog' constellation containing Sirius, the brightest star in the night sky."
+  },
+  {
+    "id": "taurus",
+    "name": "Taurus",
+    "chineseName": "金牛座",
+    "starIds": ["aldebaran"],
+    "lines": [],
+    "description": "The bull constellation, one of the oldest recognised constellations."
+  },
+  {
+    "id": "leo",
+    "name": "Leo",
+    "chineseName": "狮子座",
+    "starIds": ["regulus"],
+    "lines": [],
+    "description": "The lion constellation, one of the zodiacal constellations."
+  },
+  {
+    "id": "scorpius",
+    "name": "Scorpius",
+    "chineseName": "天蝎座",
+    "starIds": ["antares"],
+    "lines": [],
+    "description": "The scorpion constellation; Antares marks the scorpion's heart."
+  },
+  {
+    "id": "crux",
+    "name": "Crux",
+    "chineseName": "南十字座",
+    "starIds": ["acrux", "mimosa"],
+    "lines": [
+      { "starId1": "acrux", "starId2": "mimosa" }
+    ],
+    "description": "The smallest of the 88 modern constellations but one of the most distinctive in the southern sky."
+  },
+  {
+    "id": "gemini",
+    "name": "Gemini",
+    "chineseName": "双子座",
+    "starIds": ["pollux"],
+    "lines": [],
+    "description": "The twins constellation; Pollux and Castor mark the heads of the twins."
+  }
+]

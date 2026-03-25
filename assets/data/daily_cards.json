@@ -1,0 +1,72 @@
+[
+  {
+    "id": "card_sirius_2024",
+    "date": "2024-01-15",
+    "title": "Sirius: The Dog Star",
+    "chineseTitle": "天狼星：夜空之王",
+    "body": "Sirius, gleaming in Canis Major, is the brightest star visible from Earth. Its blue-white radiance has guided sailors and farmers for millennia. Ancient Egyptians timed the Nile floods by its heliacal rising.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Sirius_A_and_B_Hubble_photo.editted.PNG/320px-Sirius_A_and_B_Hubble_photo.editted.PNG",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Sirius",
+    "relatedStarId": "sirius"
+  },
+  {
+    "id": "card_orion_2024",
+    "date": "2024-01-16",
+    "title": "Orion: The Hunter",
+    "chineseTitle": "猎户座：冬夜的猎人",
+    "body": "One of the most recognisable patterns in the sky, Orion strides across the celestial equator. Its two brightest stars — reddish Betelgeuse at the shoulder and blue-white Rigel at the foot — are among the most luminous known.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Orion_constellation_map.svg/320px-Orion_constellation_map.svg.png",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Orion_(constellation)",
+    "relatedStarId": "betelgeuse"
+  },
+  {
+    "id": "card_vega_2024",
+    "date": "2024-01-17",
+    "title": "Vega: The Harp Star",
+    "chineseTitle": "织女星：夏夜三角的顶点",
+    "body": "Brilliant Vega was the first star ever recorded in a photograph and the first to have its spectrum catalogued. It forms one vertex of the Summer Triangle and will become the northern pole star around 13,727 CE.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Vega_2mass.jpg/320px-Vega_2mass.jpg",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Vega",
+    "relatedStarId": "vega"
+  },
+  {
+    "id": "card_summer_triangle_2024",
+    "date": "2024-01-18",
+    "title": "The Summer Triangle",
+    "chineseTitle": "夏季大三角",
+    "body": "Vega, Altair and Deneb form an unmistakable asterism known as the Summer Triangle. In East Asian lore, Vega and Altair represent the Weaving Girl and the Cowherd, separated by the Milky Way.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Summertriangle.jpg/320px-Summertriangle.jpg",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Summer_Triangle",
+    "relatedStarId": "vega"
+  },
+  {
+    "id": "card_milky_way_2024",
+    "date": "2024-01-19",
+    "title": "Our Milky Way Galaxy",
+    "chineseTitle": "银河系：我们的宇宙家园",
+    "body": "The Milky Way is a barred spiral galaxy roughly 100,000 light-years across. Our Solar System sits about 26,000 light-years from the galactic centre. On a clear, dark night the galaxy's disc appears as a hazy band arching across the sky.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/ESO-VLT-Laser-phot-0a-99.jpg/320px-ESO-VLT-Laser-phot-0a-99.jpg",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Milky_Way",
+    "relatedStarId": null
+  },
+  {
+    "id": "card_betelgeuse_2024",
+    "date": "2024-01-20",
+    "title": "Betelgeuse: On the Brink?",
+    "chineseTitle": "参宿四：超新星候选者",
+    "body": "Betelgeuse is a red supergiant that will eventually explode as a supernova. Its famous 'Great Dimming' in 2019–2020 sparked widespread speculation that the explosion was imminent — though astronomers now attribute it to a surface mass ejection.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Betelgeuse_captured_by_ALMA.jpg/320px-Betelgeuse_captured_by_ALMA.jpg",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Betelgeuse",
+    "relatedStarId": "betelgeuse"
+  },
+  {
+    "id": "card_southern_cross_2024",
+    "date": "2024-01-21",
+    "title": "The Southern Cross",
+    "chineseTitle": "南十字座：南半球的灯塔",
+    "body": "Crux, the smallest of the 88 modern constellations, has guided southern-hemisphere navigators for centuries. Its two brightest stars, Acrux and Mimosa, point almost exactly to the south celestial pole.",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Southern_cross_from_Hobart.jpg/320px-Southern_cross_from_Hobart.jpg",
+    "wikipediaUrl": "https://en.wikipedia.org/wiki/Crux",
+    "relatedStarId": "acrux"
+  }
+]
