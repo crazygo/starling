@@ -1,37 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'pages/explore_page.dart';
 import 'pages/daily_cards_page.dart';
+import 'pages/settings_page.dart';
+import 'services/settings_service.dart';
 
 /// Root application widget.  Configures global theme and the main tab
-/// navigation between [ExplorePage] and [DailyCardsPage].
-class StarlingApp extends StatelessWidget {
+/// navigation between [ExplorePage], [DailyCardsPage], and [SettingsPage].
+class StarlingApp extends StatefulWidget {
   const StarlingApp({super.key});
 
   @override
+  State<StarlingApp> createState() => _StarlingAppState();
+}
+
+class _StarlingAppState extends State<StarlingApp> {
+  final SettingsService _settings = SettingsService();
+
+  @override
+  void initState() {
+    super.initState();
+    _settings.load();
+  }
+
+  @override
+  void dispose() {
+    _settings.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '星仔 Starling',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1E6EFF),
+    return ChangeNotifierProvider<SettingsService>.value(
+      value: _settings,
+      child: MaterialApp(
+        title: '星仔 Starling',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
           brightness: Brightness.dark,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF1E6EFF),
+            brightness: Brightness.dark,
+          ),
+          scaffoldBackgroundColor: const Color(0xFF05091A),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFF05091A),
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+            backgroundColor: Color(0xFF0A1020),
+            selectedItemColor: Colors.blueAccent,
+            unselectedItemColor: Colors.white38,
+          ),
+          useMaterial3: true,
         ),
-        scaffoldBackgroundColor: const Color(0xFF05091A),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF05091A),
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color(0xFF0A1020),
-          selectedItemColor: Colors.blueAccent,
-          unselectedItemColor: Colors.white38,
-        ),
-        useMaterial3: true,
+        home: const _MainScreen(),
       ),
-      home: const _MainScreen(),
     );
   }
 }
@@ -49,6 +74,7 @@ class _MainScreenState extends State<_MainScreen> {
   static const _pages = <Widget>[
     DailyCardsPage(),
     ExplorePage(),
+    SettingsPage(),
   ];
 
   @override
@@ -69,6 +95,10 @@ class _MainScreenState extends State<_MainScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.explore),
             label: '探索',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: '设置',
           ),
         ],
       ),
