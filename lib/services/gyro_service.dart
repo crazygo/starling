@@ -20,10 +20,15 @@ class GyroService {
   void start() {
     if (_active) return;
     _active = true;
-    _subscription = gyroscopeEventStream().listen(
-      (event) => _controller.add(event),
-      cancelOnError: false,
-    );
+    try {
+      _subscription = gyroscopeEventStream().listen(
+        (event) => _controller.add(event),
+        onError: (_) {},
+        cancelOnError: false,
+      );
+    } catch (_) {
+      _active = false;
+    }
   }
 
   /// Pause listening without closing the broadcast stream.

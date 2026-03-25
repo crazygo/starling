@@ -48,7 +48,7 @@ class _ExplorePageState extends State<ExplorePage> {
   void initState() {
     super.initState();
     _loadData();
-    _locationService.start();
+    _locationService.start().catchError((_) {});
   }
 
   Future<void> _loadData() async {
