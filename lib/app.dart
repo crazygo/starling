@@ -47,8 +47,8 @@ class _MainScreenState extends State<_MainScreen> {
   int _currentIndex = 0;
 
   static const _pages = <Widget>[
-    ExplorePage(),
     DailyCardsPage(),
+    ExplorePage(),
   ];
 
   @override
@@ -63,12 +63,12 @@ class _MainScreenState extends State<_MainScreen> {
         onTap: (i) => setState(() => _currentIndex = i),
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: '探索',
-          ),
-          BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: '每日卡片',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.explore),
+            label: '探索',
           ),
         ],
       ),
