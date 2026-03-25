@@ -1,0 +1,222 @@
+[
+  {
+    "id": "sirius",
+    "name": "Sirius",
+    "chineseName": "天狼星",
+    "rightAscension": 101.287,
+    "declination": -16.716,
+    "magnitude": -1.46,
+    "spectralType": "A1V",
+    "description": "The brightest star in the night sky, located in Canis Major.",
+    "constellation": "canis_major"
+  },
+  {
+    "id": "canopus",
+    "name": "Canopus",
+    "chineseName": "老人星",
+    "rightAscension": 95.988,
+    "declination": -52.696,
+    "magnitude": -0.74,
+    "spectralType": "A9II",
+    "description": "Second-brightest star, found in the constellation Carina.",
+    "constellation": "carina"
+  },
+  {
+    "id": "arcturus",
+    "name": "Arcturus",
+    "chineseName": "大角星",
+    "rightAscension": 213.915,
+    "declination": 19.182,
+    "magnitude": -0.05,
+    "spectralType": "K1.5IIIpe",
+    "description": "Brightest star in Boötes and fourth-brightest in the night sky.",
+    "constellation": "bootes"
+  },
+  {
+    "id": "vega",
+    "name": "Vega",
+    "chineseName": "织女星",
+    "rightAscension": 279.235,
+    "declination": 38.784,
+    "magnitude": 0.03,
+    "spectralType": "A0Va",
+    "description": "Part of the Summer Triangle, in the constellation Lyra.",
+    "constellation": "lyra"
+  },
+  {
+    "id": "capella",
+    "name": "Capella",
+    "chineseName": "五车二",
+    "rightAscension": 79.172,
+    "declination": 45.998,
+    "magnitude": 0.08,
+    "spectralType": "G8III+G0III",
+    "description": "Brightest star in Auriga, sixth-brightest in the night sky.",
+    "constellation": "auriga"
+  },
+  {
+    "id": "rigel",
+    "name": "Rigel",
+    "chineseName": "参宿七",
+    "rightAscension": 78.634,
+    "declination": -8.202,
+    "magnitude": 0.13,
+    "spectralType": "B8Ia",
+    "description": "Blue supergiant in Orion, representing the hunter's left foot.",
+    "constellation": "orion"
+  },
+  {
+    "id": "procyon",
+    "name": "Procyon",
+    "chineseName": "南河三",
+    "rightAscension": 114.825,
+    "declination": 5.225,
+    "magnitude": 0.34,
+    "spectralType": "F5IV-V",
+    "description": "Brightest star in Canis Minor and eighth-brightest overall.",
+    "constellation": "canis_minor"
+  },
+  {
+    "id": "achernar",
+    "name": "Achernar",
+    "chineseName": "水委一",
+    "rightAscension": 24.429,
+    "declination": -57.237,
+    "magnitude": 0.46,
+    "spectralType": "B6Vep",
+    "description": "Brightest star in Eridanus, known for its extremely rapid rotation.",
+    "constellation": "eridanus"
+  },
+  {
+    "id": "betelgeuse",
+    "name": "Betelgeuse",
+    "chineseName": "参宿四",
+    "rightAscension": 88.793,
+    "declination": 7.407,
+    "magnitude": 0.50,
+    "spectralType": "M2Iab",
+    "description": "Red supergiant in Orion marking the hunter's right shoulder.",
+    "constellation": "orion"
+  },
+  {
+    "id": "hadar",
+    "name": "Hadar",
+    "chineseName": "马腹一",
+    "rightAscension": 210.956,
+    "declination": -60.373,
+    "magnitude": 0.61,
+    "spectralType": "B1III",
+    "description": "Second-brightest star in Centaurus.",
+    "constellation": "centaurus"
+  },
+  {
+    "id": "altair",
+    "name": "Altair",
+    "chineseName": "牛郎星",
+    "rightAscension": 297.696,
+    "declination": 8.868,
+    "magnitude": 0.77,
+    "spectralType": "A7V",
+    "description": "Brightest star in Aquila and part of the Summer Triangle.",
+    "constellation": "aquila"
+  },
+  {
+    "id": "acrux",
+    "name": "Acrux",
+    "chineseName": "十字架二",
+    "rightAscension": 186.650,
+    "declination": -63.099,
+    "magnitude": 0.77,
+    "spectralType": "B0.5IV+B1V",
+    "description": "Brightest star in the Southern Cross (Crux).",
+    "constellation": "crux"
+  },
+  {
+    "id": "aldebaran",
+    "name": "Aldebaran",
+    "chineseName": "毕宿五",
+    "rightAscension": 68.980,
+    "declination": 16.509,
+    "magnitude": 0.85,
+    "spectralType": "K5+III",
+    "description": "Brightest star in Taurus, the 'eye of the bull'.",
+    "constellation": "taurus"
+  },
+  {
+    "id": "spica",
+    "name": "Spica",
+    "chineseName": "角宿一",
+    "rightAscension": 201.298,
+    "declination": -11.161,
+    "magnitude": 0.97,
+    "spectralType": "B1V+B4V",
+    "description": "Brightest star in Virgo; also known as Alpha Virginis.",
+    "constellation": "virgo"
+  },
+  {
+    "id": "antares",
+    "name": "Antares",
+    "chineseName": "心宿二",
+    "rightAscension": 247.352,
+    "declination": -26.432,
+    "magnitude": 1.09,
+    "spectralType": "M1.5Iab",
+    "description": "Red supergiant in Scorpius, rival of Mars in colour.",
+    "constellation": "scorpius"
+  },
+  {
+    "id": "pollux",
+    "name": "Pollux",
+    "chineseName": "北河三",
+    "rightAscension": 116.329,
+    "declination": 28.026,
+    "magnitude": 1.14,
+    "spectralType": "K0IIIb",
+    "description": "Brightest star in Gemini and the nearest giant star to the Sun.",
+    "constellation": "gemini"
+  },
+  {
+    "id": "fomalhaut",
+    "name": "Fomalhaut",
+    "chineseName": "北落师门",
+    "rightAscension": 344.413,
+    "declination": -29.622,
+    "magnitude": 1.16,
+    "spectralType": "A3V",
+    "description": "Brightest star in Piscis Austrinus, surrounded by a dusty disc.",
+    "constellation": "piscis_austrinus"
+  },
+  {
+    "id": "deneb",
+    "name": "Deneb",
+    "chineseName": "天津四",
+    "rightAscension": 310.358,
+    "declination": 45.280,
+    "magnitude": 1.25,
+    "spectralType": "A2Ia",
+    "description": "Brightest star in Cygnus and part of the Summer Triangle.",
+    "constellation": "cygnus"
+  },
+  {
+    "id": "mimosa",
+    "name": "Mimosa",
+    "chineseName": "十字架三",
+    "rightAscension": 191.930,
+    "declination": -59.689,
+    "magnitude": 1.25,
+    "spectralType": "B0.5III",
+    "description": "Second-brightest star in the Southern Cross (Crux).",
+    "constellation": "crux"
+  },
+  {
+    "id": "regulus",
+    "name": "Regulus",
+    "chineseName": "轩辕十四",
+    "rightAscension": 152.093,
+    "declination": 11.967,
+    "magnitude": 1.36,
+    "spectralType": "B8IVn",
+    "description": "Brightest star in Leo, also called the 'little king'.",
+    "constellation": "leo"
+  }
+]
