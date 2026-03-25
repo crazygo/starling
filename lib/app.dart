@@ -24,6 +24,12 @@ class _StarlingAppState extends State<StarlingApp> {
   }
 
   @override
+  void dispose() {
+    _settings.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<SettingsService>.value(
       value: _settings,
