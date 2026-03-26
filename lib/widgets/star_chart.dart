@@ -498,6 +498,10 @@ class _StarPainter extends CustomPainter {
     final group2Constellations =
         showChineseName ? chineseConstellations : constellations;
 
+    // Same threshold used in _drawStars: at low zoom only bright star names
+    // are shown, preventing label explosion when many constellations are visible.
+    final magThreshold = (2.5 + viewport.zoom * 2.0).clamp(3.0, 6.5);
+
     final placedRects = <Rect>[];
     final specs = <_LabelSpec>[];
 
@@ -559,6 +563,10 @@ class _StarPainter extends CustomPainter {
         if (labeledMemberIds.contains(id)) continue;
         final star = starMap[id];
         if (star == null) continue;
+        // Cull faint member-star labels at low zoom; constellation names
+        // above still render, but individual star names thin out to prevent
+        // the label explosion caused by many constellations being on-screen.
+        if (star.magnitude > magThreshold) continue;
         final label = _starLabel(star);
         if (label == null) continue;
         final pos = _project(star.rightAscension, star.declination);
