@@ -20,5 +20,8 @@ flutter config --enable-web
 # Install project dependencies
 flutter pub get
 
+# Generate localization files (from lib/l10n/*.arb → lib/l10n/generated/)
+flutter gen-l10n
+
 # Build web release
 flutter build web --release
