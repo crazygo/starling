@@ -1,0 +1,79 @@
+name: PR Auto Review
+
+# 此 workflow 用于自动化 PR 审查流程
+# 仅当 review 提交完成（submitted）且包含 inline review comments 时，
+# 才通知 Copilot 处理审查意见，避免在审查完成前提前发出通知
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  copilot-review:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Check and comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pullNumber = context.payload.pull_request.number;
+            const reviewer = context.payload.review.user.login;
+            const prAuthor = context.payload.pull_request.user.login;
+            const reviewState = context.payload.review.state;
+
+            // 跳过 PR 作者的自我审查
+            if (reviewer === prAuthor) {
+              console.log(`Skipping: reviewer (${reviewer}) is the PR author`);
+              return;
+            }
+
+            // 跳过纯 approve/dismiss（无 inline comments 的审批）
+            // 仅处理 commented 或 changes_requested 状态的 review
+            if (reviewState === 'approved' || reviewState === 'dismissed') {
+              console.log(`Skipping: review state is ${reviewState}`);
+              return;
+            }
+
+            // 检查此次 review 是否包含 inline review comments
+            const { data: reviewComments } = await github.rest.pulls.listReviewComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullNumber
+            });
+
+            if (reviewComments.length === 0) {
+              console.log('No inline review comments found, skipping');
+              return;
+            }
+
+            const commentBody = `@copilot Please go through the PR review comments and address them. Use your own judgment—don't just blindly follow the suggestions. Commit code for the necessary fixes, but for comments you think should be ignored, just leave a reply explaining your reasoning. Make sure to mark all comments as resolved once you're done.`;
+
+            // 检查最近 10 分钟内是否已有相同的 bot comment（避免重复通知）
+            const { data: existingComments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullNumber
+            });
+
+            const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+            const recentDuplicate = existingComments.find(c =>
+              c.user.login === 'github-actions[bot]' &&
+              c.body === commentBody &&
+              new Date(c.created_at) > tenMinutesAgo
+            );
+
+            if (recentDuplicate) {
+              console.log('Recent duplicate comment found, skipping');
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pullNumber,
+              body: commentBody
+            });
+            console.log(`Copilot review comment posted after review by ${reviewer}`);
