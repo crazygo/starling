@@ -205,6 +205,12 @@ async function upsertPrComment(body) {
     page += 1;
   }
 
+  if (!existing && page > MAX_COMMENT_PAGES) {
+    console.warn(
+      `Reached the PR comment search limit (${MAX_COMMENT_PAGES} pages) without finding the screenshot bot comment.`,
+    );
+  }
+
   if (existing) {
     await githubRequest(`/repos/${owner}/${repo}/issues/comments/${existing.id}`, {
       method: 'PATCH',
@@ -255,7 +261,10 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error);
+  console.error('Error:', error.message);
+  if (error.stack) {
+    console.error(error.stack);
+  }
   if (error.response) {
     console.error(JSON.stringify(error.response, null, 2));
   }
