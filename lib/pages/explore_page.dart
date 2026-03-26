@@ -253,6 +253,8 @@ class _ExplorePageState extends State<ExplorePage> {
         StarChart(
           stars: _stars,
           constellations: constellations,
+          chineseConstellations: _chineseConstellations,
+          showChineseName: isChinese,
           viewport: _viewport,
           onViewportChanged: (vp) => setState(() => _viewport = vp),
           onStarTapped: (star) => setState(() => _selectedStar = star),
