@@ -84,7 +84,10 @@ async function githubRequest(apiPath, options = {}) {
   const data = text ? JSON.parse(text) : null;
 
   if (!response.ok) {
-    const error = new Error(`GitHub API ${options.method || 'GET'} ${apiPath} failed: ${response.status}`);
+    const apiMessage = data?.message ? ` - ${data.message}` : '';
+    const error = new Error(
+      `GitHub API ${options.method || 'GET'} ${apiPath} failed: ${response.status}${apiMessage}`,
+    );
     error.response = data;
     throw error;
   }
@@ -185,8 +188,9 @@ async function syncPreviewFiles(files) {
 async function upsertPrComment(body) {
   let existing = null;
   let page = 1;
+  const maxPages = 10;
 
-  while (!existing) {
+  while (!existing && page <= maxPages) {
     const comments = await githubRequest(
       `/repos/${owner}/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
     );
