@@ -29,4 +29,4 @@ mkdir -p assets/bin
 flutter gen-l10n
 
 # Build web release
-flutter build web --release --no-wasm
+flutter build web --release --no-wasm-dry-run
