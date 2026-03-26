@@ -20,6 +20,7 @@ dependencies:
   url_launcher: ^6.3.0
   provider: ^6.1.2
   shared_preferences: ^2.3.0
+  flat_buffers: ^23.5.26
 
 dev_dependencies:
   flutter_test:
@@ -30,8 +31,6 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
-    - assets/data/stars.json
-    - assets/data/constellations.json
     - assets/data/daily_cards.json
     # FlatBuffers binary catalogs produced by the data pipeline (tool/).
     # Run `cd tool && ./build.sh` to generate these files.
