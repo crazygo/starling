@@ -90,7 +90,7 @@ jobs:
                 !['success', 'neutral', 'skipped'].includes(checkRun.conclusion ?? '')
               ));
               const pendingStatuses = relevantStatuses.filter((status) => ['pending'].includes(status.state));
-              const failingStatuses = relevantStatuses.filter((status) => !['success'].includes(status.state));
+              const failingStatuses = relevantStatuses.filter((status) => ['error', 'failure'].includes(status.state));
 
               if (!hasSignals && Date.now() - startedAt >= discoveryWindowMs) {
                 core.info('No other status checks were discovered for this pull request. Continuing with the Copilot review.');
