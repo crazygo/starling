@@ -1,0 +1,219 @@
+name: Copilot PR review after checks
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  checks: read
+  contents: read
+  pull-requests: write
+  statuses: read
+
+concurrency:
+  group: copilot-pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: ${{ !github.event.pull_request.draft }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Wait for other checks to finish
+        uses: actions/github-script@v7
+        env:
+          CURRENT_WORKFLOW: ${{ github.workflow }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const headSha = process.env.HEAD_SHA;
+            const prNumber = Number(process.env.PR_NUMBER);
+            const startedAt = Date.now();
+            const discoveryWindowMs = 2 * 60 * 1000;
+            const pollDelayMs = 30 * 1000;
+            const timeoutMs = 30 * 60 * 1000;
+
+            function sleep(ms) {
+              return new Promise((resolve) => setTimeout(resolve, ms));
+            }
+
+            function formatChecks(checkRuns, statuses) {
+              const lines = [];
+              for (const checkRun of checkRuns) {
+                lines.push(`check:${checkRun.name} => ${checkRun.status}/${checkRun.conclusion ?? 'pending'}`);
+              }
+              for (const status of statuses) {
+                lines.push(`status:${status.context} => ${status.state}`);
+              }
+              return lines.join('\n');
+            }
+
+            while (true) {
+              const { data: pullRequest } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: prNumber,
+              });
+
+              if (pullRequest.head.sha !== headSha) {
+                core.setFailed('The pull request head SHA changed while this review workflow was waiting. Let the latest run continue instead.');
+                return;
+              }
+
+              const checkRuns = await github.paginate(github.rest.checks.listForRef, {
+                owner,
+                repo,
+                ref: headSha,
+                per_page: 100,
+              });
+
+              const { data: combinedStatus } = await github.rest.repos.getCombinedStatusForRef({
+                owner,
+                repo,
+                ref: headSha,
+              });
+
+              const relevantCheckRuns = checkRuns.filter((checkRun) => checkRun.name !== process.env.CURRENT_WORKFLOW);
+              const relevantStatuses = combinedStatus.statuses.filter((status) => status.context !== process.env.CURRENT_WORKFLOW);
+              const hasSignals = relevantCheckRuns.length > 0 || relevantStatuses.length > 0;
+              const pendingCheckRuns = relevantCheckRuns.filter((checkRun) => checkRun.status !== 'completed');
+              const failingCheckRuns = relevantCheckRuns.filter((checkRun) => (
+                checkRun.status === 'completed' &&
+                !['success', 'neutral', 'skipped'].includes(checkRun.conclusion ?? '')
+              ));
+              const pendingStatuses = relevantStatuses.filter((status) => ['pending'].includes(status.state));
+              const failingStatuses = relevantStatuses.filter((status) => !['success'].includes(status.state));
+
+              if (!hasSignals && Date.now() - startedAt >= discoveryWindowMs) {
+                core.info('No other status checks were discovered for this pull request. Continuing with the Copilot review.');
+                break;
+              }
+
+              if (hasSignals && pendingCheckRuns.length === 0 && pendingStatuses.length === 0) {
+                if (failingCheckRuns.length > 0 || failingStatuses.length > 0) {
+                  const failures = [
+                    ...failingCheckRuns.map((checkRun) => `${checkRun.name}=${checkRun.conclusion}`),
+                    ...failingStatuses.map((status) => `${status.context}=${status.state}`),
+                  ];
+                  core.setFailed(`Copilot review is gated on successful checks. Failing checks: ${failures.join(', ')}`);
+                  return;
+                }
+
+                core.info('All other checks finished successfully. Continuing with the Copilot review.');
+                break;
+              }
+
+              if (Date.now() - startedAt >= timeoutMs) {
+                core.setFailed('Timed out while waiting for the other pull request checks to complete.');
+                return;
+              }
+
+              const summary = formatChecks(relevantCheckRuns, relevantStatuses);
+              if (summary) {
+                core.info(`Still waiting for checks:\n${summary}`);
+              } else {
+                core.info('Waiting for other checks to be created.');
+              }
+
+              await sleep(pollDelayMs);
+            }
+
+      - name: Ensure Copilot token is configured
+        env:
+          COPILOT_REVIEW_TOKEN: ${{ secrets.COPILOT_REVIEW_TOKEN }}
+        run: |
+          if [ -z "${COPILOT_REVIEW_TOKEN}" ]; then
+            echo "COPILOT_REVIEW_TOKEN is required. Create a fine-grained PAT with the Copilot Requests permission and add it as a repository secret."
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install GitHub Copilot CLI
+        run: npm install --global @github/copilot
+
+      - name: Download pull request diff
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = Number(process.env.PR_NUMBER);
+            const { data: diff } = await github.rest.pulls.get({
+              owner,
+              repo,
+              pull_number,
+              mediaType: {
+                format: 'diff',
+              },
+            });
+            fs.writeFileSync('/tmp/pr.diff', diff);
+
+      - name: Generate Copilot review
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_REVIEW_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          copilot -p "You are reviewing pull request #${PR_NUMBER} titled '${PR_TITLE}' in the ${GITHUB_REPOSITORY} repository. Read the diff from /tmp/pr.diff using shell cat, then write a concise English markdown review to /tmp/copilot-review.md. The review must contain the sections 'Summary', 'Potential risks', and 'Recommended follow-ups'. Focus on correctness, regressions, security, and maintainability. If no problems are found, say so clearly." --allow-tool='shell(cat:*)' --allow-tool=write --no-ask-user
+
+      - name: Post Copilot review comment
+        uses: actions/github-script@v7
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        with:
+          script: |
+            const fs = require('fs');
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = Number(process.env.PR_NUMBER);
+            const marker = '<!-- copilot-pr-review -->';
+            const reviewBody = fs.readFileSync('/tmp/copilot-review.md', 'utf8').trim();
+
+            if (!reviewBody) {
+              core.setFailed('Copilot review output is empty.');
+              return;
+            }
+
+            const body = `${marker}\n## Copilot review\n\n${reviewBody}`;
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number,
+              per_page: 100,
+            });
+
+            const existingComment = comments.find((comment) => comment.body?.includes(marker));
+
+            if (existingComment) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: existingComment.id,
+                body,
+              });
+              core.info(`Updated existing review comment ${existingComment.id}.`);
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner,
+              repo,
+              issue_number,
+              body,
+            });
+            core.info('Created a new Copilot review comment.');
