@@ -235,6 +235,14 @@ class _StarPainter extends CustomPainter {
   // and is discarded when the widget rebuilds with changed properties.
   List<_LabelSpec>? _cachedLabelSpecs;
 
+  // Star IDs that belong to the drawn constellation lines (always western).
+  // Used by _drawStars() to exempt member stars from magnitude culling so
+  // constellation lines never break when zooming out.
+  late final Set<String> _constellationMemberStarIds = {
+    for (final c in constellations)
+      for (final id in c.starIds) id,
+  };
+
   static List<Offset> _precomputeBgStars() {
     final rng = Random(42);
     return List.generate(
@@ -331,7 +339,16 @@ class _StarPainter extends CustomPainter {
   }
 
   void _drawStars(Canvas canvas) {
+    // Dynamic magnitude threshold: at low zoom only brighter stars are shown.
+    // Member stars of active constellations are always shown so lines stay intact.
+    final magThreshold = (2.5 + viewport.zoom * 2.0).clamp(3.0, 6.5);
+
     for (final star in stars) {
+      if (star.magnitude > magThreshold &&
+          !_constellationMemberStarIds.contains(star.id)) {
+        continue;
+      }
+
       final pos = _project(star.rightAscension, star.declination);
       if (pos == null) continue;
 
@@ -473,6 +490,10 @@ class _StarPainter extends CustomPainter {
       memberStarIds.addAll(c.starIds);
     }
 
+    // Same threshold used in _drawStars: at low zoom only bright star names
+    // are shown, preventing label explosion when many constellations are visible.
+    final magThreshold = (2.5 + viewport.zoom * 2.0).clamp(3.0, 6.5);
+
     final placedRects = <Rect>[];
     final specs = <_LabelSpec>[];
 
@@ -534,6 +555,10 @@ class _StarPainter extends CustomPainter {
         if (labeledMemberIds.contains(id)) continue;
         final star = starMap[id];
         if (star == null) continue;
+        // Cull faint member-star labels at low zoom; constellation names
+        // above still render, but individual star names thin out to prevent
+        // the label explosion caused by many constellations being on-screen.
+        if (star.magnitude > magThreshold) continue;
         final label = _starLabel(star);
         if (label == null) continue;
         final pos = _project(star.rightAscension, star.declination);
