@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:starling/l10n/generated/app_localizations.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';

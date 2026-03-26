@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:starling/l10n/generated/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:location/location.dart';
 import '../services/location_service.dart';
