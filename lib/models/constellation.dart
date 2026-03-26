@@ -91,6 +91,7 @@ class Constellation {
   /// [edgePairs] is an interleaved list of [fromHip, toHip, …] uint16 values.
   factory Constellation.fromChineseBin({
     required String name,
+    String? nameEn,
     required List<int> edgePairs,
   }) {
     final lines = <ConstellationLine>[];
@@ -105,7 +106,8 @@ class Constellation {
     final starIds = hipSet.map((h) => 'hip_$h').toList();
     return Constellation(
       id: name,
-      name: name,
+      name: nameEn ?? name,
+      chineseName: name,
       starIds: starIds,
       lines: lines,
     );
