@@ -191,13 +191,29 @@ if [[ -f "sources/iau/constellation_boundaries.csv" ]]; then
   echo "   ⏭  constellation_boundaries.csv already exists, skipping"
 else
   mkdir -p sources/iau
-  echo "   ⬇  bound_20.dat"
 
-  if curl --fail --silent --show-error --location \
-      --connect-timeout 15 --max-time 120 \
-      --output "$BOUND_TMP" \
-      "https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat" 2>/dev/null; then
+  BOUND_OK=0
 
+  # Try multiple mirrors in order; break on first success.
+  for BOUND_URL in \
+    "https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat" \
+    "https://cdsarc.cds.unistra.fr/ftp/VI/49/bound_20.dat" \
+    "https://vizier.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat" \
+  ; do
+    echo "   ⬇  bound_20.dat from $BOUND_URL"
+    if curl --fail --silent --show-error --location \
+        --connect-timeout 15 --max-time 120 \
+        --output "$BOUND_TMP" \
+        "$BOUND_URL" 2>/dev/null; then
+      BOUND_OK=1
+      echo "   ✅ Downloaded from $BOUND_URL"
+      break
+    else
+      echo "   ⚠️  Failed: $BOUND_URL"
+    fi
+  done
+
+  if [[ $BOUND_OK -eq 1 ]]; then
     # Fixed-width format: cols 1-8 RA (hours), 9-17 Dec (degrees), 18-21 abbr
     awk '
       /^[[:space:]]*$/ { next }
@@ -210,14 +226,15 @@ else
       }
     ' "$BOUND_TMP" > "sources/iau/constellation_boundaries.csv"
     echo "   ✅ Saved → sources/iau/constellation_boundaries.csv"
-
   else
-    # Create an empty placeholder — the pipeline and WesternBuilder
-    # handle missing boundary data gracefully.
+    # All sources failed — create an empty placeholder so the pipeline
+    # can still run (boundaries are decorative, not required for line rendering).
     echo "# ra_hours,dec_deg,abbr" > "sources/iau/constellation_boundaries.csv"
-    echo "   ⚠️  CDS not reachable — created empty placeholder"
-    echo "       To add boundaries later, download bound_20.dat from:"
-    echo "       https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat"
+    echo "   ❌ All CDS sources failed — created empty placeholder"
+    echo "      Constellation boundary rendering will be disabled."
+    echo "      To fix manually: download bound_20.dat from"
+    echo "      https://cdsarc.cds.unistra.fr/viz-bin/cat/VI/49"
+    echo "      and re-run this script."
   fi
 fi
 rm -f "$BOUND_TMP"

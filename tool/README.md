@@ -114,7 +114,7 @@ The download script uses the following sources (with fallbacks):
 |------|---------------|---------|
 | `hip_main.csv` | ESA/CDS VizieR I/239 | HYG Database v38 (GitHub) |
 | `constellation_lines.csv` | Stellarium GitHub (master) | v23.4 tag |
-| `constellation_boundaries.csv` | CDS VI/49 | Empty placeholder |
+| `constellation_boundaries.csv` | CDS VI/49 (cdsarc ftp/cats) | cdsarc ftp mirror → vizier.cds mirror → empty placeholder |
 | `chinese/constellationship.fab` | Stellarium GitHub (v23.4) | master |
 | `chinese/star_names.fab` | Stellarium GitHub (v23.4) | master |
 | `chinese/index.json` | Stellarium GitHub (v23.4) | master |
