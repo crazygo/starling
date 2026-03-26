@@ -21,6 +21,7 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFF05091A),
         elevation: 0,
+        centerTitle: false,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -53,7 +54,6 @@ class SettingsPage extends StatelessWidget {
 // ---------------------------------------------------------------------------
 // Location Settings section
 // ---------------------------------------------------------------------------
-
 class _LocationSettingsSection extends StatefulWidget {
   const _LocationSettingsSection();
 
@@ -194,7 +194,6 @@ class _LocationSettingsSectionState extends State<_LocationSettingsSection> {
 // ---------------------------------------------------------------------------
 // Culture Settings section
 // ---------------------------------------------------------------------------
-
 class _CultureSettingsSection extends StatelessWidget {
   const _CultureSettingsSection();
 
