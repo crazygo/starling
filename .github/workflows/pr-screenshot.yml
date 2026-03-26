@@ -18,7 +18,6 @@ jobs:
       # 2. Flutter 环境
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: 'stable'
           channel: 'stable'
           cache: true
 
