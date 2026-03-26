@@ -16,7 +16,7 @@ class CatalogBuilder {
     final sorted = List<StarRecord>.from(stars)
       ..sort((a, b) => a.hip.compareTo(b.hip));
 
-    final fbBuilder = fb.Builder(deduplicateTables: false);
+    final fbBuilder = fb.Builder();
 
     // Finish all star sub-tables first (children before parent).
     final starOffsets = sorted

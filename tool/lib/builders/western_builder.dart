@@ -23,15 +23,17 @@ class WesternBuilder {
 
     // Finish all constellation sub-tables first.
     final conOffsets = lines.values.map((cons) {
-      final boundary = boundaries[cons.abbr] ?? const [];
-
       return WesternConstellationObjectBuilder(
         abbr:     cons.abbr,
         nameEn:   cons.nameEn,
         nameZh:   cons.nameZh,
         family:   cons.family,
-        edges:    cons.edges,
-        boundary: boundary,
+        edges:    cons.edges
+            .map((e) => Edge(fromHip: e.fromHip, toHip: e.toHip))
+            .toList(growable: false),
+        boundary: (boundaries[cons.abbr] ?? const [])
+            .map((bp) => BoundaryPoint(raQ: bp.raQ, decQ: bp.decQ))
+            .toList(growable: false),
       ).finish(fbBuilder);
     }).toList(growable: false);
 
