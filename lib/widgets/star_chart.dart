@@ -235,6 +235,24 @@ class _StarPainter extends CustomPainter {
   // and is discarded when the widget rebuilds with changed properties.
   List<_LabelSpec>? _cachedLabelSpecs;
 
+  // Star IDs that belong to the drawn constellation lines (always western).
+  // Used by _drawStars() to exempt member stars from magnitude culling so
+  // constellation lines never break when zooming out.
+  late final Set<String> _constellationMemberStarIds = {
+    for (final c in constellations)
+      for (final id in c.starIds) id,
+  };
+
+  // Star IDs that belong to the culture-specific (Group-2) constellation list.
+  // Used by _buildLabelSpecs() for label grouping.  Reuses the western set
+  // when showChineseName is false to avoid duplicate work.
+  late final Set<String> _labelMemberStarIds = showChineseName
+      ? {
+          for (final c in chineseConstellations)
+            for (final id in c.starIds) id,
+        }
+      : _constellationMemberStarIds;
+
   static List<Offset> _precomputeBgStars() {
     final rng = Random(42);
     return List.generate(
@@ -295,7 +313,7 @@ class _StarPainter extends CustomPainter {
 
     _drawBackgroundStars(canvas, size);
     _drawConstellationLines(canvas);
-    _drawStars(canvas);
+    _drawStars(canvas, _constellationMemberStarIds);
     _drawLabels(canvas, size);
   }
 
@@ -330,8 +348,21 @@ class _StarPainter extends CustomPainter {
     }
   }
 
-  void _drawStars(Canvas canvas) {
+  void _drawStars(Canvas canvas, Set<String> activeMemberStarIds) {
+    // Dynamic magnitude threshold: at low zoom (zoomed out) only brighter stars
+    // are shown. Formula yields ~4.5 at zoom=1.0, ~6.5 (full catalogue) at
+    // zoom>=2.0, and floors at 3.0 when very zoomed out. Member stars of the
+    // active constellations are always shown so constellation lines stay intact.
+    final magThreshold =
+        (2.5 + viewport.zoom * 2.0).clamp(3.0, 6.5);
+
     for (final star in stars) {
+      // Cull faint non-member stars when zoomed out.
+      if (star.magnitude > magThreshold &&
+          !activeMemberStarIds.contains(star.id)) {
+        continue;
+      }
+
       final pos = _project(star.rightAscension, star.declination);
       if (pos == null) continue;
 
@@ -467,12 +498,6 @@ class _StarPainter extends CustomPainter {
     final group2Constellations =
         showChineseName ? chineseConstellations : constellations;
 
-    // Build the set of star IDs that belong to any Group-2 constellation.
-    final memberStarIds = <String>{};
-    for (final c in group2Constellations) {
-      memberStarIds.addAll(c.starIds);
-    }
-
     final placedRects = <Rect>[];
     final specs = <_LabelSpec>[];
 
@@ -552,7 +577,7 @@ class _StarPainter extends CustomPainter {
 
     for (final star in stars) {
       if (competitionCount >= _maxCompetitiveLabels) break;
-      if (memberStarIds.contains(star.id)) continue;
+      if (_labelMemberStarIds.contains(star.id)) continue;
       if (importantStarIds.contains(star.id)) continue;
       final label = _starLabel(star);
       if (label == null) continue;
