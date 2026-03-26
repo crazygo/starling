@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:starling/l10n/generated/app_localizations.dart';
 import '../models/daily_card.dart';
 import '../models/star.dart';
 import '../services/star_data_service.dart';
@@ -55,9 +56,9 @@ class _DailyCardsPageState extends State<DailyCardsPage> {
         backgroundColor: const Color(0xFF05091A),
         elevation: 0,
         centerTitle: false,
-        title: const Text(
-          '每日星空',
-          style: TextStyle(
+        title: Text(
+          AppLocalizations.of(context)!.tabBallads,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.bold,

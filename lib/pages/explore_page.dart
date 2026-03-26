@@ -269,9 +269,9 @@ class _ExplorePageState extends State<ExplorePage> {
               children: [
                 Row(
                   children: [
-                    const Text(
-                      '星仔',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizations.of(context)!.exploreTitle,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
