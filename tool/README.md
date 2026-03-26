@@ -90,7 +90,36 @@ tool/
 
 ---
 
-## Quick Start
+## Automated Download
+
+A helper script downloads all required data sources automatically:
+
+```bash
+cd tool/
+chmod +x download_sources.sh
+./download_sources.sh
+```
+
+Or use the all-in-one script that downloads sources **and** runs the pipeline:
+
+```bash
+cd tool/
+chmod +x generate_bins.sh
+./generate_bins.sh
+```
+
+The download script uses the following sources (with fallbacks):
+
+| File | Primary Source | Fallback |
+|------|---------------|---------|
+| `hip_main.csv` | ESA/CDS VizieR I/239 | HYG Database v38 (GitHub) |
+| `constellation_lines.csv` | Stellarium GitHub (master) | v23.4 tag |
+| `constellation_boundaries.csv` | CDS VI/49 | Empty placeholder |
+| `chinese/constellationship.fab` | Stellarium GitHub (v23.4) | master |
+| `chinese/star_names.fab` | Stellarium GitHub (v23.4) | master |
+| `chinese/index.json` | Stellarium GitHub (v23.4) | master |
+
+---
 
 ```bash
 # 1. Download data sources (see table above) into sources/

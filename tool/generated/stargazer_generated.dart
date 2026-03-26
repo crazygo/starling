@@ -115,7 +115,7 @@ class StarObjectBuilder extends fb.ObjectBuilder {
   final double mag;
   final double colorIdx;
 
-  const StarObjectBuilder({
+  StarObjectBuilder({
     required this.hip,
     required this.ra,
     required this.dec,
@@ -146,7 +146,7 @@ class StarObjectBuilder extends fb.ObjectBuilder {
 class StarCatalogObjectBuilder extends fb.ObjectBuilder {
   final List<StarObjectBuilder> stars;
 
-  const StarCatalogObjectBuilder({required this.stars});
+  StarCatalogObjectBuilder({required this.stars});
 
   @override
   int finish(fb.Builder fbBuilder) {
@@ -179,7 +179,7 @@ class WesternConstellationObjectBuilder extends fb.ObjectBuilder {
   final List<Edge> edges;
   final List<BoundaryPoint> boundary;
 
-  const WesternConstellationObjectBuilder({
+  WesternConstellationObjectBuilder({
     required this.abbr,
     required this.nameEn,
     required this.nameZh,
@@ -231,7 +231,7 @@ class WesternConstellationObjectBuilder extends fb.ObjectBuilder {
 class WesternCultureObjectBuilder extends fb.ObjectBuilder {
   final List<WesternConstellationObjectBuilder> constellations;
 
-  const WesternCultureObjectBuilder({required this.constellations});
+  WesternCultureObjectBuilder({required this.constellations});
 
   @override
   int finish(fb.Builder fbBuilder) {
@@ -264,7 +264,7 @@ class ChineseAsterismObjectBuilder extends fb.ObjectBuilder {
   final int       mansion;   // Mansion constant
   final List<Edge> edges;
 
-  const ChineseAsterismObjectBuilder({
+  ChineseAsterismObjectBuilder({
     required this.name,
     required this.nameEn,
     required this.quadrant,
@@ -304,7 +304,7 @@ class ChineseAsterismObjectBuilder extends fb.ObjectBuilder {
 class ChineseCultureObjectBuilder extends fb.ObjectBuilder {
   final List<ChineseAsterismObjectBuilder> asterisms;
 
-  const ChineseCultureObjectBuilder({required this.asterisms});
+  ChineseCultureObjectBuilder({required this.asterisms});
 
   @override
   int finish(fb.Builder fbBuilder) {

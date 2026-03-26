@@ -18,7 +18,9 @@ class ChineseBuilder {
         nameEn:   a.nameEn,
         quadrant: a.quadrant,
         mansion:  a.mansion,
-        edges:    a.edges,
+        edges:    a.edges
+            .map((e) => Edge(fromHip: e.fromHip, toHip: e.toHip))
+            .toList(growable: false),
       ).finish(fbBuilder);
     }).toList(growable: false);
 
