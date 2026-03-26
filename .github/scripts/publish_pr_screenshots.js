@@ -5,6 +5,9 @@ const SCREENSHOT_DIR = 'screenshots';
 const COMMENT_MARKER = '<!-- pr-screenshot-bot -->';
 const PREVIEW_BRANCH = 'pr-screenshot-previews';
 const PREVIEW_ROOT = '.github/pr-screenshots';
+const PREVIEW_IMAGE_WIDTH = 240;
+const MAX_COMMENT_PAGES = 10;
+const NOT_FOUND_MESSAGE = 'Not Found';
 const LABELS = {
   home: '首页',
   explore: '巡天',
@@ -99,7 +102,7 @@ async function ensurePreviewBranch() {
   try {
     await githubRequest(`/repos/${owner}/${repo}/git/ref/heads/${PREVIEW_BRANCH}`);
   } catch (error) {
-    if (error.response?.message !== 'Not Found') {
+    if (error.response?.message !== NOT_FOUND_MESSAGE) {
       throw error;
     }
 
@@ -128,7 +131,7 @@ async function listRemotePreviewFiles() {
     );
     return Array.isArray(data) ? data.filter((entry) => entry.type === 'file') : [];
   } catch (error) {
-    if (error.response?.message === 'Not Found') {
+    if (error.response?.message === NOT_FOUND_MESSAGE) {
       return [];
     }
     throw error;
@@ -188,9 +191,8 @@ async function syncPreviewFiles(files) {
 async function upsertPrComment(body) {
   let existing = null;
   let page = 1;
-  const maxPages = 10;
 
-  while (!existing && page <= maxPages) {
+  while (!existing && page <= MAX_COMMENT_PAGES) {
     const comments = await githubRequest(
       `/repos/${owner}/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
     );
@@ -234,7 +236,7 @@ function buildCommentBody(files) {
     const label = humanizeFileName(fileName);
     lines.push(`### ${label}`);
     lines.push(
-      `<img src="${previewImageUrl(fileName)}" alt="${label}" width="240" />`,
+      `<img src="${previewImageUrl(fileName)}" alt="${label}" width="${PREVIEW_IMAGE_WIDTH}" />`,
     );
     lines.push('');
   }
