@@ -32,9 +32,9 @@ class SettingsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const Text(
-              'Settings',
-              style: TextStyle(color: Colors.blueGrey, fontSize: 12),
+            Text(
+              l10n.settingsSubtitle,
+              style: const TextStyle(color: Colors.blueGrey, fontSize: 12),
             ),
           ],
         ),
@@ -228,14 +228,14 @@ class _CultureSettingsSection extends StatelessWidget {
             children: [
               _CultureOptionTile(
                 title: l10n.chineseCulture,
-                subtitle: 'Chinese Culture',
+                subtitle: l10n.chineseCultureSubtitle,
                 selected: settings.cultureMode == CultureMode.chinese,
                 onTap: () => settings.setCultureMode(CultureMode.chinese),
                 showDivider: true,
               ),
               _CultureOptionTile(
                 title: l10n.westernCulture,
-                subtitle: 'Western Culture',
+                subtitle: l10n.westernCultureSubtitle,
                 selected: settings.cultureMode == CultureMode.western,
                 onTap: () => settings.setCultureMode(CultureMode.western),
                 showDivider: false,

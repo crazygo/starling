@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:starling/l10n/generated/app_localizations.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'pages/explore_page.dart';
 import 'pages/daily_cards_page.dart';
