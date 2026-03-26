@@ -43,7 +43,9 @@ jobs:
 
       # 5. Playwright 截图
       - name: Install Playwright
-        run: npx playwright install chromium --with-deps
+        run: |
+          npm install playwright
+          npx playwright install chromium --with-deps
 
       - name: Take screenshots
         run: node .github/scripts/screenshot.js
