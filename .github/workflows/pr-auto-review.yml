@@ -1,11 +1,16 @@
 name: PR Auto Review
 
 # 此 workflow 用于自动化 PR 审查流程
-# 当 PR 从草稿变为正式或收到审查请求时，自动触发 Copilot 处理审查评论
+# - PR 从草稿变为正式（ready_for_review）时，直接触发 Copilot 处理
+# - 有新的 review 提交或新的 inline review comment 时，检查是否存在未处理评论并触发
 
 on:
   pull_request:
     types: [ready_for_review, review_requested]
+  pull_request_review:
+    types: [submitted]
+  pull_request_review_comment:
+    types: [created]
 
 jobs:
   copilot-review:
@@ -15,22 +20,41 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            // 获取 PR 的所有审查
-            const { data: reviews } = await github.rest.pulls.listReviews({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number
-            });
-            
-            // 如果有审查评论，自动让 Copilot 处理
-            if (reviews.length > 0) {
+            const eventName = context.eventName;
+            const action = context.payload.action;
+            const pullNumber = context.payload.pull_request
+              ? context.payload.pull_request.number
+              : context.issue.number;
+
+            const commentBody = `@copilot Please go through the PR review comments and address them. Use your own judgment—don't just blindly follow the suggestions. Commit code for the necessary fixes, but for comments you think should be ignored, just leave a reply explaining your reasoning. Make sure to mark all comments as resolved once you're done.`;
+
+            // ready_for_review / review_requested：直接发起 Copilot review 请求
+            if (eventName === 'pull_request' && ['ready_for_review', 'review_requested'].includes(action)) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: `@copilot Please go through the PR review comments and address them. Use your own judgment—don't just blindly follow the suggestions. Commit code for the necessary fixes, but for comments you think should be ignored, just leave a reply explaining your reasoning. Make sure to mark all comments as resolved once you're done.`
+                issue_number: pullNumber,
+                body: commentBody
               });
-              console.log('Copilot review comment posted');
+              console.log('Copilot review comment posted (PR event)');
+              return;
+            }
+
+            // pull_request_review / pull_request_review_comment：检查是否存在 inline review comments
+            const { data: reviewComments } = await github.rest.pulls.listReviewComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pullNumber
+            });
+
+            if (reviewComments.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullNumber,
+                body: commentBody
+              });
+              console.log('Copilot review comment posted (review/review_comment event)');
             } else {
-              console.log('No reviews found, skipping comment');
+              console.log('No inline review comments found, skipping comment');
             }
