@@ -26,6 +26,8 @@ class CatalogBuilder {
               dec:      s.dec,
               mag:      s.mag,
               colorIdx: s.colorIdx,
+              nameEn:   s.nameEn,
+              nameZh:   s.nameZh,
             ).finish(fbBuilder))
         .toList(growable: false);
 

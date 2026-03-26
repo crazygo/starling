@@ -1,12 +1,10 @@
 name: PR Auto Review
 
 # 此 workflow 用于自动化 PR 审查流程
-# - PR 从草稿变为正式（ready_for_review）时，直接触发 Copilot 处理
-# - 有新的 review 提交或新的 inline review comment 时，检查是否存在未处理评论并触发
+# - 只在已存在 inline review comments 时才触发 @copilot 处理
+# - pull_request_review submitted 时等待 10s，确保 inline comments 已写入 API
 
 on:
-  pull_request:
-    types: [ready_for_review, review_requested]
   pull_request_review:
     types: [submitted]
   pull_request_review_comment:
@@ -19,45 +17,42 @@ jobs:
       pull-requests: write
       issues: write
     steps:
+      - name: Wait for review comments to be available
+        if: github.event_name == 'pull_request_review'
+        run: sleep 10
+
       - name: Check and comment
         uses: actions/github-script@v7
         with:
           script: |
-            const eventName = context.eventName;
-            const action = context.payload.action;
             const pullNumber = context.payload.pull_request
               ? context.payload.pull_request.number
-              : context.issue.number;
+              : context.payload.review
+                ? context.payload.review.pull_request_url.split('/').pop()
+                : null;
 
-            const commentBody = `@copilot Please go through the PR review comments and address them. Use your own judgment—don't just blindly follow the suggestions. Commit code for the necessary fixes, but for comments you think should be ignored, just leave a reply explaining your reasoning. Make sure to mark all comments as resolved once you're done.`;
-
-            // ready_for_review / review_requested：直接发起 Copilot review 请求
-            if (eventName === 'pull_request' && ['ready_for_review', 'review_requested'].includes(action)) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: pullNumber,
-                body: commentBody
-              });
-              console.log('Copilot review comment posted (PR event)');
+            if (!pullNumber) {
+              console.log('Could not determine pull request number, skipping');
               return;
             }
 
-            // pull_request_review / pull_request_review_comment：检查是否存在 inline review comments
+            const commentBody = `@copilot Please go through the PR review comments and address them. Use your own judgment—don't just blindly follow the suggestions. Commit code for the necessary fixes, but for comments you think should be ignored, just leave a reply explaining your reasoning. Make sure to mark all comments as resolved once you're done.`;
+
+            // 检查是否存在 inline review comments
             const { data: reviewComments } = await github.rest.pulls.listReviewComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: pullNumber
+              pull_number: Number(pullNumber)
             });
 
             if (reviewComments.length > 0) {
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: pullNumber,
+                issue_number: Number(pullNumber),
                 body: commentBody
               });
-              console.log('Copilot review comment posted (review/review_comment event)');
+              console.log(`Copilot review comment posted (${reviewComments.length} review comments found)`);
             } else {
               console.log('No inline review comments found, skipping comment');
             }

@@ -35,6 +35,8 @@ table Star {
   dec       : float32;  // Declination, degrees (−90–+90)
   mag       : float32;  // Visual magnitude (Vmag)
   color_idx : float32;  // B−V colour index
+  name_en   : string;   // Western proper name, e.g. "Sirius" (null if unnamed)
+  name_zh   : string;   // Chinese proper name (null if unnamed)
 }
 
 /// The complete physical star catalog, sorted by `hip` ascending.

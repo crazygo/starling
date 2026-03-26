@@ -8,6 +8,7 @@ sources/hipparcos/*.csv
 sources/hipparcos/*.dat
 sources/iau/*.csv
 sources/iau/*.dat
+sources/iau/*.fab
 sources/stellarium/**/*.fab
 sources/stellarium/**/*.json
 # Re-allow index files that document the expected structure
