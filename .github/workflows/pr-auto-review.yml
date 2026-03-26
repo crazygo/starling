@@ -1,0 +1,36 @@
+name: PR Auto Review
+
+# 此 workflow 用于自动化 PR 审查流程
+# 当 PR 从草稿变为正式或收到审查请求时，自动触发 Copilot 处理审查评论
+
+on:
+  pull_request:
+    types: [ready_for_review, review_requested]
+
+jobs:
+  copilot-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check and comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // 获取 PR 的所有审查
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+            
+            // 如果有审查评论，自动让 Copilot 处理
+            if (reviews.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: `@copilot Please go through the PR review comments and address them. Use your own judgment—don't just blindly follow the suggestions. Commit code for the necessary fixes, but for comments you think should be ignored, just leave a reply explaining your reasoning. Make sure to mark all comments as resolved once you're done.`
+              });
+              console.log('Copilot review comment posted');
+            } else {
+              console.log('No reviews found, skipping comment');
+            }
