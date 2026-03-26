@@ -25,7 +25,8 @@ class ExplorePage extends StatefulWidget {
 class _ExplorePageState extends State<ExplorePage> {
   // Data
   List<Star> _stars = [];
-  List<Constellation> _constellations = [];
+  List<Constellation> _westernConstellations = [];
+  List<Constellation> _chineseConstellations = [];
   StarDataService? _dataService;
   bool _loading = true;
 
@@ -78,6 +79,7 @@ class _ExplorePageState extends State<ExplorePage> {
   void _onSettingsChanged() {
     if (!mounted || _settingsService == null) return;
     _syncLocationMode(_settingsService!.locationMode);
+    setState(() {});
   }
 
   void _syncLocationMode(LocationMode mode) {
@@ -94,7 +96,8 @@ class _ExplorePageState extends State<ExplorePage> {
       setState(() {
         _dataService = service;
         _stars = service.stars;
-        _constellations = service.constellations;
+        _westernConstellations = service.constellations;
+        _chineseConstellations = service.chineseConstellations;
         _loading = false;
         _viewport = _seasonalViewport(DateTime.now());
       });
@@ -242,12 +245,14 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   Widget _buildChart(bool isChinese) {
+    final constellations =
+        isChinese ? _chineseConstellations : _westernConstellations;
     return Stack(
       children: [
         // Star chart
         StarChart(
           stars: _stars,
-          constellations: _constellations,
+          constellations: constellations,
           viewport: _viewport,
           onViewportChanged: (vp) => setState(() => _viewport = vp),
           onStarTapped: (star) => setState(() => _selectedStar = star),

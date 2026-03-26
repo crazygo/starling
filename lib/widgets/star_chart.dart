@@ -275,7 +275,7 @@ class _StarPainter extends CustomPainter {
       final radius = ((6.5 - star.magnitude) * 0.9 * viewport.zoom)
           .clamp(1.5, 8.0);
 
-      final color = _spectralColor(star.spectralType);
+      final color = _colorFromBV(star.colorIdx ?? 0.6);
 
       // Glow
       canvas.drawCircle(
@@ -291,16 +291,14 @@ class _StarPainter extends CustomPainter {
     }
   }
 
-  Color _spectralColor(String? type) {
-    if (type == null) return Colors.white;
-    final t = type.toUpperCase();
-    if (t.startsWith('O')) return const Color(0xFFADD8FF);
-    if (t.startsWith('B')) return const Color(0xFFCAE8FF);
-    if (t.startsWith('A')) return Colors.white;
-    if (t.startsWith('F')) return const Color(0xFFFFF4E8);
-    if (t.startsWith('G')) return const Color(0xFFFFE788);
-    if (t.startsWith('K')) return const Color(0xFFFFB347);
-    if (t.startsWith('M')) return const Color(0xFFFF6347);
-    return Colors.white;
+  // colorIdx (B-V): < -0.3 = O/B (blue), ~0.0 = A (white), ~0.3 = F (yellow-white),
+  // ~0.6 = G (yellow), ~1.0 = K (orange), > 1.3 = M (red)
+  Color _colorFromBV(double bv) {
+    if (bv < -0.2) return const Color(0xFFADD8FF);
+    if (bv < 0.1) return Colors.white;
+    if (bv < 0.4) return const Color(0xFFFFF4E8);
+    if (bv < 0.7) return const Color(0xFFFFE788);
+    if (bv < 1.1) return const Color(0xFFFFB347);
+    return const Color(0xFFFF6347);
   }
 }

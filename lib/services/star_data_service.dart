@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import '../data/stargazer_reader.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';
 import '../models/daily_card.dart';
 
-/// Loads and caches star, constellation, and daily-card data from bundled JSON
-/// assets.
+/// Loads and caches star, constellation, and daily-card data.
+///
+/// Stars and constellation data are read from the pre-compiled FlatBuffers
+/// binary assets in `assets/bin/`. Daily cards are still loaded from JSON.
 class StarDataService {
   static StarDataService? _instance;
   // Shared Future so concurrent callers all await the same initialization work.
@@ -35,14 +38,18 @@ class StarDataService {
   }
 
   List<Star> _stars = [];
-  List<Constellation> _constellations = [];
+  List<Constellation> _westernConstellations = [];
+  List<Constellation> _chineseConstellations = [];
   List<DailyCard> _dailyCards = [];
 
   /// All stars, sorted by ascending magnitude (brightest first).
   List<Star> get stars => _stars;
 
-  /// All constellations.
-  List<Constellation> get constellations => _constellations;
+  /// Western (IAU) constellations.
+  List<Constellation> get constellations => _westernConstellations;
+
+  /// Chinese asterisms (星官).
+  List<Constellation> get chineseConstellations => _chineseConstellations;
 
   /// All daily cards, sorted by descending date (newest first).
   List<DailyCard> get dailyCards => _dailyCards;
@@ -72,22 +79,53 @@ class StarDataService {
   // ---------------------------------------------------------------------------
 
   Future<void> _load() async {
-    final starsJson =
-        await rootBundle.loadString('assets/data/stars.json');
-    final constellationsJson =
-        await rootBundle.loadString('assets/data/constellations.json');
-    final cardsJson =
-        await rootBundle.loadString('assets/data/daily_cards.json');
+    // Load all three binary catalogs in parallel.
+    final results = await Future.wait([
+      rootBundle.load('assets/bin/catalog_base.bin'),
+      rootBundle.load('assets/bin/culture_western.bin'),
+      rootBundle.load('assets/bin/culture_chinese.bin'),
+      rootBundle.loadString('assets/data/daily_cards.json'),
+    ]);
 
-    _stars = (jsonDecode(starsJson) as List)
-        .map((j) => Star.fromJson(j as Map<String, dynamic>))
-        .toList()
+    final catalogBuf = results[0] as ByteData;
+    final westernBuf = results[1] as ByteData;
+    final chineseBuf = results[2] as ByteData;
+    final cardsJson = results[3] as String;
+
+    // Parse star catalog.
+    final catalogReader = StarCatalogReader(catalogBuf);
+    _stars = catalogReader.readAll().map((b) {
+      return Star.fromBin(
+        hip: b.hip,
+        ra: b.ra,
+        dec: b.dec,
+        mag: b.mag,
+        colorIdx: b.colorIdx,
+      );
+    }).toList()
       ..sort((a, b) => a.magnitude.compareTo(b.magnitude));
 
-    _constellations = (jsonDecode(constellationsJson) as List)
-        .map((j) => Constellation.fromJson(j as Map<String, dynamic>))
-        .toList();
+    // Parse western constellations.
+    final westernReader = WesternCultureReader(westernBuf);
+    _westernConstellations = westernReader.readAll().map((c) {
+      return Constellation.fromWesternBin(
+        abbr: c.abbr,
+        nameEn: c.nameEn,
+        nameZh: c.nameZh,
+        edgePairs: c.edges,
+      );
+    }).toList();
 
+    // Parse Chinese asterisms.
+    final chineseReader = ChineseCultureReader(chineseBuf);
+    _chineseConstellations = chineseReader.readAll().map((a) {
+      return Constellation.fromChineseBin(
+        name: a.name,
+        edgePairs: a.edges,
+      );
+    }).toList();
+
+    // Parse daily cards (still JSON).
     _dailyCards = (jsonDecode(cardsJson) as List)
         .map((j) => DailyCard.fromJson(j as Map<String, dynamic>))
         .toList()

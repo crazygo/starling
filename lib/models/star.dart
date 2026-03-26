@@ -8,6 +8,8 @@ class Star {
   final String? spectralType;
   final String? description;
   final String? constellation;
+  /// B−V colour index from the Hipparcos catalogue; null for JSON-loaded stars.
+  final double? colorIdx;
 
   const Star({
     required this.id,
@@ -19,6 +21,7 @@ class Star {
     this.spectralType,
     this.description,
     this.constellation,
+    this.colorIdx,
   });
 
   factory Star.fromJson(Map<String, dynamic> json) {
@@ -32,6 +35,24 @@ class Star {
       spectralType: json['spectralType'] as String?,
       description: json['description'] as String?,
       constellation: json['constellation'] as String?,
+      colorIdx: (json['colorIdx'] as num?)?.toDouble(),
+    );
+  }
+
+  factory Star.fromBin({
+    required int hip,
+    required double ra,
+    required double dec,
+    required double mag,
+    required double colorIdx,
+  }) {
+    return Star(
+      id: 'hip_$hip',
+      name: 'HIP $hip',
+      rightAscension: ra,
+      declination: dec,
+      magnitude: mag,
+      colorIdx: colorIdx,
     );
   }
 
@@ -45,5 +66,6 @@ class Star {
         'spectralType': spectralType,
         'description': description,
         'constellation': constellation,
+        'colorIdx': colorIdx,
       };
 }

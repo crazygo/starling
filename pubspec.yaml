@@ -30,8 +30,6 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
-    - assets/data/stars.json
-    - assets/data/constellations.json
     - assets/data/daily_cards.json
     # FlatBuffers binary catalogs produced by the data pipeline (tool/).
     # Run `cd tool && ./build.sh` to generate these files.
