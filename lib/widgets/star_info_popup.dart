@@ -5,11 +5,16 @@ import '../models/star.dart';
 class StarInfoPopup extends StatelessWidget {
   final Star star;
   final VoidCallback onClose;
+  /// When `true` (default), the primary name shown is the Chinese name (falling
+  /// back to the Latin name).  When `false`, the primary name is always the
+  /// Latin/IAU name.
+  final bool showChineseName;
 
   const StarInfoPopup({
     super.key,
     required this.star,
     required this.onClose,
+    this.showChineseName = true,
   });
 
   @override
@@ -41,16 +46,26 @@ class StarInfoPopup extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          star.chineseName ?? star.name,
+                          showChineseName
+                              ? (star.chineseName ?? star.name)
+                              : star.name,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (star.chineseName != null)
+                        if (showChineseName && star.chineseName != null)
                           Text(
                             star.name,
+                            style: const TextStyle(
+                              color: Colors.blueGrey,
+                              fontSize: 14,
+                            ),
+                          ),
+                        if (!showChineseName && star.chineseName != null)
+                          Text(
+                            star.chineseName!,
                             style: const TextStyle(
                               color: Colors.blueGrey,
                               fontSize: 14,
