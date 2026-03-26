@@ -3,84 +3,1365 @@
     "id": "orion",
     "name": "Orion",
     "chineseName": "猎户座",
-    "starIds": ["rigel", "betelgeuse"],
+    "starIds": [
+      "betelgeuse",
+      "rigel",
+      "hip_25336",
+      "hip_25930",
+      "hip_26311",
+      "hip_26727",
+      "hip_27366"
+    ],
     "lines": [
-      { "starId1": "rigel", "starId2": "betelgeuse" }
+      {
+        "starId1": "betelgeuse",
+        "starId2": "hip_25930"
+      },
+      {
+        "starId1": "hip_25336",
+        "starId2": "hip_25930"
+      },
+      {
+        "starId1": "hip_25930",
+        "starId2": "hip_26311"
+      },
+      {
+        "starId1": "hip_26311",
+        "starId2": "hip_26727"
+      },
+      {
+        "starId1": "betelgeuse",
+        "starId2": "hip_25336"
+      },
+      {
+        "starId1": "rigel",
+        "starId2": "hip_27366"
+      },
+      {
+        "starId1": "rigel",
+        "starId2": "hip_26727"
+      },
+      {
+        "starId1": "hip_27366",
+        "starId2": "hip_25930"
+      }
     ],
     "description": "One of the most recognisable constellations, representing a hunter in Greek mythology."
+  },
+  {
+    "id": "ursa_major",
+    "name": "Ursa Major",
+    "chineseName": "大熊座",
+    "starIds": [
+      "hip_54061",
+      "hip_53910",
+      "hip_58001",
+      "hip_59774",
+      "hip_62956",
+      "hip_65378",
+      "hip_67301"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_54061",
+        "starId2": "hip_53910"
+      },
+      {
+        "starId1": "hip_53910",
+        "starId2": "hip_58001"
+      },
+      {
+        "starId1": "hip_58001",
+        "starId2": "hip_59774"
+      },
+      {
+        "starId1": "hip_59774",
+        "starId2": "hip_54061"
+      },
+      {
+        "starId1": "hip_59774",
+        "starId2": "hip_62956"
+      },
+      {
+        "starId1": "hip_62956",
+        "starId2": "hip_65378"
+      },
+      {
+        "starId1": "hip_65378",
+        "starId2": "hip_67301"
+      }
+    ],
+    "description": "The great bear constellation, home to the famous Big Dipper asterism."
+  },
+  {
+    "id": "ursa_minor",
+    "name": "Ursa Minor",
+    "chineseName": "小熊座",
+    "starIds": [
+      "hip_11767",
+      "hip_85822",
+      "hip_79822",
+      "hip_77055"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_11767",
+        "starId2": "hip_85822"
+      },
+      {
+        "starId1": "hip_85822",
+        "starId2": "hip_79822"
+      }
+    ],
+    "description": "The little bear constellation, containing Polaris, the north pole star."
+  },
+  {
+    "id": "scorpius",
+    "name": "Scorpius",
+    "chineseName": "天蝎座",
+    "starIds": [
+      "antares",
+      "hip_79882",
+      "hip_82396",
+      "hip_78820",
+      "hip_80582",
+      "hip_86670",
+      "hip_87073",
+      "hip_85927"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_82396",
+        "starId2": "hip_79882"
+      },
+      {
+        "starId1": "hip_79882",
+        "starId2": "antares"
+      },
+      {
+        "starId1": "hip_78820",
+        "starId2": "antares"
+      },
+      {
+        "starId1": "antares",
+        "starId2": "hip_80582"
+      },
+      {
+        "starId1": "hip_80582",
+        "starId2": "hip_86670"
+      },
+      {
+        "starId1": "hip_86670",
+        "starId2": "hip_87073"
+      },
+      {
+        "starId1": "hip_87073",
+        "starId2": "hip_85927"
+      }
+    ],
+    "description": "The scorpion constellation; Antares marks the scorpion's heart."
+  },
+  {
+    "id": "sagittarius",
+    "name": "Sagittarius",
+    "chineseName": "人马座",
+    "starIds": [
+      "hip_90185",
+      "hip_92855",
+      "hip_89931",
+      "hip_81266",
+      "hip_92041",
+      "hip_88175",
+      "hip_88635"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_90185",
+        "starId2": "hip_89931"
+      },
+      {
+        "starId1": "hip_89931",
+        "starId2": "hip_81266"
+      },
+      {
+        "starId1": "hip_81266",
+        "starId2": "hip_92041"
+      },
+      {
+        "starId1": "hip_92041",
+        "starId2": "hip_88175"
+      },
+      {
+        "starId1": "hip_88175",
+        "starId2": "hip_90185"
+      },
+      {
+        "starId1": "hip_81266",
+        "starId2": "hip_92855"
+      }
+    ],
+    "description": "The archer constellation; contains the famous 'Teapot' asterism."
+  },
+  {
+    "id": "gemini",
+    "name": "Gemini",
+    "chineseName": "双子座",
+    "starIds": [
+      "pollux",
+      "hip_36850",
+      "hip_32246",
+      "hip_37740",
+      "hip_36188",
+      "hip_34693"
+    ],
+    "lines": [
+      {
+        "starId1": "pollux",
+        "starId2": "hip_37740"
+      },
+      {
+        "starId1": "hip_36850",
+        "starId2": "hip_32246"
+      },
+      {
+        "starId1": "hip_37740",
+        "starId2": "hip_34693"
+      },
+      {
+        "starId1": "pollux",
+        "starId2": "hip_36850"
+      }
+    ],
+    "description": "The twins constellation; Pollux and Castor mark the heads of the twins."
+  },
+  {
+    "id": "leo",
+    "name": "Leo",
+    "chineseName": "狮子座",
+    "starIds": [
+      "regulus",
+      "hip_50583",
+      "hip_54872",
+      "hip_57632",
+      "hip_50335"
+    ],
+    "lines": [
+      {
+        "starId1": "regulus",
+        "starId2": "hip_50583"
+      },
+      {
+        "starId1": "hip_50583",
+        "starId2": "hip_50335"
+      },
+      {
+        "starId1": "hip_50335",
+        "starId2": "hip_50583"
+      },
+      {
+        "starId1": "hip_50583",
+        "starId2": "hip_57632"
+      },
+      {
+        "starId1": "hip_57632",
+        "starId2": "hip_54872"
+      }
+    ],
+    "description": "The lion constellation, one of the zodiacal constellations."
+  },
+  {
+    "id": "virgo",
+    "name": "Virgo",
+    "chineseName": "室女座",
+    "starIds": [
+      "spica",
+      "hip_63608",
+      "hip_57757",
+      "hip_68520",
+      "hip_70755"
+    ],
+    "lines": [
+      {
+        "starId1": "spica",
+        "starId2": "hip_63608"
+      },
+      {
+        "starId1": "hip_63608",
+        "starId2": "hip_57757"
+      },
+      {
+        "starId1": "hip_63608",
+        "starId2": "hip_68520"
+      }
+    ],
+    "description": "The maiden constellation; Spica is its brightest star."
+  },
+  {
+    "id": "taurus",
+    "name": "Taurus",
+    "chineseName": "金牛座",
+    "starIds": [
+      "aldebaran",
+      "hip_25428",
+      "hip_17702",
+      "hip_20894",
+      "hip_23015",
+      "hip_20205"
+    ],
+    "lines": [
+      {
+        "starId1": "aldebaran",
+        "starId2": "hip_20894"
+      },
+      {
+        "starId1": "hip_20894",
+        "starId2": "hip_23015"
+      },
+      {
+        "starId1": "hip_23015",
+        "starId2": "hip_20205"
+      },
+      {
+        "starId1": "aldebaran",
+        "starId2": "hip_25428"
+      },
+      {
+        "starId1": "aldebaran",
+        "starId2": "hip_17702"
+      }
+    ],
+    "description": "The bull constellation, one of the oldest recognised constellations."
+  },
+  {
+    "id": "cygnus",
+    "name": "Cygnus",
+    "chineseName": "天鹅座",
+    "starIds": [
+      "deneb",
+      "hip_100453",
+      "hip_95947",
+      "hip_102488",
+      "hip_94779"
+    ],
+    "lines": [
+      {
+        "starId1": "deneb",
+        "starId2": "hip_100453"
+      },
+      {
+        "starId1": "hip_100453",
+        "starId2": "hip_95947"
+      },
+      {
+        "starId1": "hip_94779",
+        "starId2": "hip_100453"
+      },
+      {
+        "starId1": "hip_100453",
+        "starId2": "hip_102488"
+      }
+    ],
+    "description": "The swan constellation; forms the Northern Cross."
+  },
+  {
+    "id": "crux",
+    "name": "Crux",
+    "chineseName": "南十字座",
+    "starIds": [
+      "acrux",
+      "mimosa",
+      "hip_61084"
+    ],
+    "lines": [
+      {
+        "starId1": "acrux",
+        "starId2": "hip_61084"
+      },
+      {
+        "starId1": "mimosa",
+        "starId2": "acrux"
+      }
+    ],
+    "description": "The smallest of the 88 modern constellations but one of the most distinctive in the southern sky."
+  },
+  {
+    "id": "canis_major",
+    "name": "Canis Major",
+    "chineseName": "大犬座",
+    "starIds": [
+      "sirius",
+      "hip_33579",
+      "hip_34444",
+      "hip_30324",
+      "hip_33160"
+    ],
+    "lines": [
+      {
+        "starId1": "sirius",
+        "starId2": "hip_30324"
+      },
+      {
+        "starId1": "sirius",
+        "starId2": "hip_34444"
+      },
+      {
+        "starId1": "hip_34444",
+        "starId2": "hip_33579"
+      },
+      {
+        "starId1": "hip_33579",
+        "starId2": "hip_33160"
+      }
+    ],
+    "description": "The 'greater dog' constellation containing Sirius, the brightest star in the night sky."
+  },
+  {
+    "id": "canis_minor",
+    "name": "Canis Minor",
+    "chineseName": "小犬座",
+    "starIds": [
+      "procyon",
+      "hip_36188"
+    ],
+    "lines": [
+      {
+        "starId1": "procyon",
+        "starId2": "hip_36188"
+      }
+    ],
+    "description": "The 'lesser dog' constellation; Procyon is its brightest star."
+  },
+  {
+    "id": "auriga",
+    "name": "Auriga",
+    "chineseName": "御夫座",
+    "starIds": [
+      "capella",
+      "hip_28360",
+      "hip_23767",
+      "hip_25428"
+    ],
+    "lines": [
+      {
+        "starId1": "capella",
+        "starId2": "hip_28360"
+      },
+      {
+        "starId1": "hip_28360",
+        "starId2": "hip_23767"
+      },
+      {
+        "starId1": "hip_25428",
+        "starId2": "capella"
+      }
+    ],
+    "description": "Brightest star in Auriga, sixth-brightest in the night sky."
+  },
+  {
+    "id": "perseus",
+    "name": "Perseus",
+    "chineseName": "英仙座",
+    "starIds": [
+      "hip_15863",
+      "hip_14576",
+      "hip_18532",
+      "hip_17358"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_15863",
+        "starId2": "hip_14576"
+      },
+      {
+        "starId1": "hip_15863",
+        "starId2": "hip_18532"
+      },
+      {
+        "starId1": "hip_18532",
+        "starId2": "hip_17358"
+      }
+    ],
+    "description": "The hero Perseus, containing the famous eclipsing binary Algol."
+  },
+  {
+    "id": "cassiopeia",
+    "name": "Cassiopeia",
+    "chineseName": "仙后座",
+    "starIds": [
+      "hip_746",
+      "hip_3179",
+      "hip_3821",
+      "hip_6686",
+      "hip_8886"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_746",
+        "starId2": "hip_3179"
+      },
+      {
+        "starId1": "hip_3179",
+        "starId2": "hip_3821"
+      },
+      {
+        "starId1": "hip_3821",
+        "starId2": "hip_6686"
+      },
+      {
+        "starId1": "hip_6686",
+        "starId2": "hip_8886"
+      }
+    ],
+    "description": "The W-shaped constellation of the queen Cassiopeia."
+  },
+  {
+    "id": "andromeda",
+    "name": "Andromeda",
+    "chineseName": "仙女座",
+    "starIds": [
+      "hip_677",
+      "hip_5447",
+      "hip_9640",
+      "hip_9010"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_677",
+        "starId2": "hip_5447"
+      },
+      {
+        "starId1": "hip_5447",
+        "starId2": "hip_9640"
+      },
+      {
+        "starId1": "hip_677",
+        "starId2": "hip_9010"
+      }
+    ],
+    "description": "The chained princess Andromeda; contains the Andromeda Galaxy."
+  },
+  {
+    "id": "pegasus",
+    "name": "Pegasus",
+    "chineseName": "飞马座",
+    "starIds": [
+      "hip_107315",
+      "hip_109427",
+      "hip_112447",
+      "hip_113881",
+      "hip_677",
+      "hip_112029"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_109427",
+        "starId2": "hip_112447"
+      },
+      {
+        "starId1": "hip_112447",
+        "starId2": "hip_113881"
+      },
+      {
+        "starId1": "hip_113881",
+        "starId2": "hip_677"
+      },
+      {
+        "starId1": "hip_677",
+        "starId2": "hip_109427"
+      },
+      {
+        "starId1": "hip_112447",
+        "starId2": "hip_107315"
+      }
+    ],
+    "description": "The winged horse Pegasus; its four brightest stars form the Great Square."
+  },
+  {
+    "id": "bootes",
+    "name": "Boötes",
+    "chineseName": "牧夫座",
+    "starIds": [
+      "arcturus",
+      "hip_72105",
+      "hip_71795",
+      "hip_67927"
+    ],
+    "lines": [
+      {
+        "starId1": "arcturus",
+        "starId2": "hip_72105"
+      },
+      {
+        "starId1": "arcturus",
+        "starId2": "hip_71795"
+      },
+      {
+        "starId1": "hip_71795",
+        "starId2": "hip_67927"
+      }
+    ],
+    "description": "Brightest star in Boötes; Arcturus is fourth-brightest in the night sky."
   },
   {
     "id": "lyra",
     "name": "Lyra",
     "chineseName": "天琴座",
-    "starIds": ["vega"],
-    "lines": [],
+    "starIds": [
+      "vega",
+      "hip_91971",
+      "hip_92420"
+    ],
+    "lines": [
+      {
+        "starId1": "vega",
+        "starId2": "hip_92420"
+      },
+      {
+        "starId1": "vega",
+        "starId2": "hip_91971"
+      },
+      {
+        "starId1": "hip_92420",
+        "starId2": "hip_91971"
+      }
+    ],
     "description": "A small constellation containing Vega, one of the vertices of the Summer Triangle."
   },
   {
     "id": "aquila",
     "name": "Aquila",
     "chineseName": "天鹰座",
-    "starIds": ["altair"],
-    "lines": [],
+    "starIds": [
+      "altair",
+      "hip_93805",
+      "hip_95501",
+      "hip_97804"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_93805",
+        "starId2": "altair"
+      },
+      {
+        "starId1": "altair",
+        "starId2": "hip_95501"
+      },
+      {
+        "starId1": "altair",
+        "starId2": "hip_97804"
+      }
+    ],
     "description": "The eagle constellation, home to Altair, another vertex of the Summer Triangle."
   },
   {
-    "id": "cygnus",
-    "name": "Cygnus",
-    "chineseName": "天鹅座",
-    "starIds": ["deneb"],
-    "lines": [],
-    "description": "The swan constellation; Deneb forms the tail of the swan and the Summer Triangle's third vertex."
-  },
-  {
-    "id": "canis_major",
-    "name": "Canis Major",
-    "chineseName": "大犬座",
-    "starIds": ["sirius"],
-    "lines": [],
-    "description": "The 'greater dog' constellation containing Sirius, the brightest star in the night sky."
-  },
-  {
-    "id": "taurus",
-    "name": "Taurus",
-    "chineseName": "金牛座",
-    "starIds": ["aldebaran"],
-    "lines": [],
-    "description": "The bull constellation, one of the oldest recognised constellations."
-  },
-  {
-    "id": "leo",
-    "name": "Leo",
-    "chineseName": "狮子座",
-    "starIds": ["regulus"],
-    "lines": [],
-    "description": "The lion constellation, one of the zodiacal constellations."
-  },
-  {
-    "id": "scorpius",
-    "name": "Scorpius",
-    "chineseName": "天蝎座",
-    "starIds": ["antares"],
-    "lines": [],
-    "description": "The scorpion constellation; Antares marks the scorpion's heart."
-  },
-  {
-    "id": "crux",
-    "name": "Crux",
-    "chineseName": "南十字座",
-    "starIds": ["acrux", "mimosa"],
-    "lines": [
-      { "starId1": "acrux", "starId2": "mimosa" }
+    "id": "centaurus",
+    "name": "Centaurus",
+    "chineseName": "半人马座",
+    "starIds": [
+      "hip_71683",
+      "hadar",
+      "hip_68933",
+      "hip_58952",
+      "hip_59196",
+      "hip_61932",
+      "hip_65936"
     ],
-    "description": "The smallest of the 88 modern constellations but one of the most distinctive in the southern sky."
+    "lines": [
+      {
+        "starId1": "hip_71683",
+        "starId2": "hadar"
+      },
+      {
+        "starId1": "hadar",
+        "starId2": "hip_68933"
+      },
+      {
+        "starId1": "hip_59196",
+        "starId2": "hip_61932"
+      },
+      {
+        "starId1": "hip_61932",
+        "starId2": "hip_65936"
+      },
+      {
+        "starId1": "hip_65936",
+        "starId2": "hadar"
+      }
+    ],
+    "description": "The centaur constellation; contains Alpha Centauri, the nearest star system to the Sun."
   },
   {
-    "id": "gemini",
-    "name": "Gemini",
-    "chineseName": "双子座",
-    "starIds": ["pollux"],
+    "id": "carina",
+    "name": "Carina",
+    "chineseName": "船底座",
+    "starIds": [
+      "canopus",
+      "hip_41037",
+      "hip_45238"
+    ],
+    "lines": [
+      {
+        "starId1": "canopus",
+        "starId2": "hip_41037"
+      },
+      {
+        "starId1": "hip_41037",
+        "starId2": "hip_45238"
+      }
+    ],
+    "description": "The keel of the ship Argo; contains Canopus, the second-brightest star."
+  },
+  {
+    "id": "vela",
+    "name": "Vela",
+    "chineseName": "船帆座",
+    "starIds": [
+      "hip_42913",
+      "hip_44382",
+      "hip_41636"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_42913",
+        "starId2": "hip_44382"
+      },
+      {
+        "starId1": "hip_44382",
+        "starId2": "hip_41636"
+      }
+    ],
+    "description": "The sails of the ship Argo."
+  },
+  {
+    "id": "eridanus",
+    "name": "Eridanus",
+    "chineseName": "波江座",
+    "starIds": [
+      "achernar",
+      "hip_17378",
+      "hip_13701"
+    ],
+    "lines": [
+      {
+        "starId1": "achernar",
+        "starId2": "hip_13701"
+      },
+      {
+        "starId1": "hip_13701",
+        "starId2": "hip_17378"
+      }
+    ],
+    "description": "Brightest star in Eridanus, known for its extremely rapid rotation."
+  },
+  {
+    "id": "ophiuchus",
+    "name": "Ophiuchus",
+    "chineseName": "蛇夫座",
+    "starIds": [
+      "hip_79593",
+      "hip_84970",
+      "hip_84012",
+      "hip_80883",
+      "hip_84143"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_79593",
+        "starId2": "hip_84970"
+      },
+      {
+        "starId1": "hip_84970",
+        "starId2": "hip_84012"
+      },
+      {
+        "starId1": "hip_84012",
+        "starId2": "hip_80883"
+      },
+      {
+        "starId1": "hip_80883",
+        "starId2": "hip_79593"
+      }
+    ],
+    "description": "The serpent bearer; one of the largest constellations."
+  },
+  {
+    "id": "hercules",
+    "name": "Hercules",
+    "chineseName": "武仙座",
+    "starIds": [
+      "hip_84345",
+      "hip_80816",
+      "hip_84379",
+      "hip_81693"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_84345",
+        "starId2": "hip_80816"
+      },
+      {
+        "starId1": "hip_80816",
+        "starId2": "hip_81693"
+      },
+      {
+        "starId1": "hip_84345",
+        "starId2": "hip_84379"
+      }
+    ],
+    "description": "The hero Hercules; contains the Great Globular Cluster M13."
+  },
+  {
+    "id": "draco",
+    "name": "Draco",
+    "chineseName": "天龙座",
+    "starIds": [
+      "hip_87585",
+      "hip_94376",
+      "hip_61281",
+      "hip_85670",
+      "hip_68756"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_87585",
+        "starId2": "hip_94376"
+      },
+      {
+        "starId1": "hip_87585",
+        "starId2": "hip_85670"
+      },
+      {
+        "starId1": "hip_85670",
+        "starId2": "hip_61281"
+      },
+      {
+        "starId1": "hip_61281",
+        "starId2": "hip_68756"
+      }
+    ],
+    "description": "The dragon constellation winding around the north celestial pole."
+  },
+  {
+    "id": "aries",
+    "name": "Aries",
+    "chineseName": "白羊座",
+    "starIds": [
+      "hip_9884",
+      "hip_8903",
+      "hip_13209"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_9884",
+        "starId2": "hip_8903"
+      },
+      {
+        "starId1": "hip_8903",
+        "starId2": "hip_13209"
+      }
+    ],
+    "description": "The ram constellation, first sign of the zodiac."
+  },
+  {
+    "id": "hydra",
+    "name": "Hydra",
+    "chineseName": "长蛇座",
+    "starIds": [
+      "hip_46390",
+      "hip_51069",
+      "hip_47227",
+      "hip_52943"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_46390",
+        "starId2": "hip_47227"
+      },
+      {
+        "starId1": "hip_47227",
+        "starId2": "hip_51069"
+      },
+      {
+        "starId1": "hip_51069",
+        "starId2": "hip_52943"
+      }
+    ],
+    "description": "The water snake, the largest constellation in the sky."
+  },
+  {
+    "id": "cetus",
+    "name": "Cetus",
+    "chineseName": "鲸鱼座",
+    "starIds": [
+      "hip_3419",
+      "hip_12387",
+      "hip_14135"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_12387",
+        "starId2": "hip_3419"
+      }
+    ],
+    "description": "The sea monster Cetus; contains the famous variable star Mira."
+  },
+  {
+    "id": "piscis_austrinus",
+    "name": "Piscis Austrinus",
+    "chineseName": "南鱼座",
+    "starIds": [
+      "fomalhaut"
+    ],
     "lines": [],
-    "description": "The twins constellation; Pollux and Castor mark the heads of the twins."
+    "description": "The southern fish; Fomalhaut surrounded by a dusty debris disc."
+  },
+  {
+    "id": "corona_borealis",
+    "name": "Corona Borealis",
+    "chineseName": "北冕座",
+    "starIds": [
+      "hip_76267",
+      "hip_75695"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_76267",
+        "starId2": "hip_75695"
+      }
+    ],
+    "description": "The northern crown; Alphecca is its brightest star."
+  },
+  {
+    "id": "triangulum_australe",
+    "name": "Triangulum Australe",
+    "chineseName": "南三角座",
+    "starIds": [
+      "hip_82273",
+      "hip_74946",
+      "hip_77952"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_82273",
+        "starId2": "hip_74946"
+      },
+      {
+        "starId1": "hip_74946",
+        "starId2": "hip_77952"
+      },
+      {
+        "starId1": "hip_77952",
+        "starId2": "hip_82273"
+      }
+    ],
+    "description": "The southern triangle; a small but distinctive constellation."
+  },
+  {
+    "id": "lupus",
+    "name": "Lupus",
+    "chineseName": "豺狼座",
+    "starIds": [
+      "hip_73273",
+      "hip_75177",
+      "hip_76297"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_73273",
+        "starId2": "hip_75177"
+      },
+      {
+        "starId1": "hip_75177",
+        "starId2": "hip_76297"
+      }
+    ],
+    "description": "The wolf constellation in the southern hemisphere."
+  },
+  {
+    "id": "corvus",
+    "name": "Corvus",
+    "chineseName": "乌鸦座",
+    "starIds": [
+      "hip_59803",
+      "hip_60965"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_59803",
+        "starId2": "hip_60965"
+      }
+    ],
+    "description": "The crow constellation; the four main stars form a quadrilateral."
+  },
+  {
+    "id": "libra",
+    "name": "Libra",
+    "chineseName": "天秤座",
+    "starIds": [
+      "hip_72622",
+      "hip_74785",
+      "hip_76552"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_72622",
+        "starId2": "hip_74785"
+      },
+      {
+        "starId1": "hip_74785",
+        "starId2": "hip_76552"
+      },
+      {
+        "starId1": "hip_76552",
+        "starId2": "hip_72622"
+      }
+    ],
+    "description": "The scales constellation; the only inanimate zodiacal constellation."
+  },
+  {
+    "id": "ara",
+    "name": "Ara",
+    "chineseName": "天坛座",
+    "starIds": [
+      "hip_83081",
+      "hip_85727"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_83081",
+        "starId2": "hip_85727"
+      }
+    ],
+    "description": "The altar constellation in the southern sky."
+  },
+  {
+    "id": "grus",
+    "name": "Grus",
+    "chineseName": "天鹤座",
+    "starIds": [
+      "hip_109268",
+      "hip_110893"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_109268",
+        "starId2": "hip_110893"
+      }
+    ],
+    "description": "The crane constellation in the far southern sky."
+  },
+  {
+    "id": "pavo",
+    "name": "Pavo",
+    "chineseName": "孔雀座",
+    "starIds": [
+      "hip_100751",
+      "hip_99473"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_100751",
+        "starId2": "hip_99473"
+      }
+    ],
+    "description": "The peacock constellation."
+  },
+  {
+    "id": "tucana",
+    "name": "Tucana",
+    "chineseName": "杜鹃座",
+    "starIds": [
+      "hip_110130"
+    ],
+    "lines": [],
+    "description": "The toucan constellation; contains the Small Magellanic Cloud."
+  },
+  {
+    "id": "cepheus",
+    "name": "Cepheus",
+    "chineseName": "仙王座",
+    "starIds": [
+      "hip_105199",
+      "hip_109492",
+      "hip_116727"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_105199",
+        "starId2": "hip_109492"
+      },
+      {
+        "starId1": "hip_109492",
+        "starId2": "hip_116727"
+      }
+    ],
+    "description": "The king Cepheus in Greek mythology."
+  },
+  {
+    "id": "phoenix",
+    "name": "Phoenix",
+    "chineseName": "凤凰座",
+    "starIds": [
+      "hip_2081"
+    ],
+    "lines": [],
+    "description": "The phoenix constellation in the far southern sky."
+  },
+  {
+    "id": "musca",
+    "name": "Musca",
+    "chineseName": "苍蝇座",
+    "starIds": [
+      "hip_61199",
+      "hip_61585"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_61199",
+        "starId2": "hip_61585"
+      }
+    ],
+    "description": "The fly constellation, near the Southern Cross."
+  },
+  {
+    "id": "circinus",
+    "name": "Circinus",
+    "chineseName": "圆规座",
+    "starIds": [
+      "hip_71352"
+    ],
+    "lines": [],
+    "description": "The drawing compass constellation."
+  },
+  {
+    "id": "pictor",
+    "name": "Pictor",
+    "chineseName": "绘架座",
+    "starIds": [
+      "hip_27321"
+    ],
+    "lines": [],
+    "description": "The painter's easel constellation."
+  },
+  {
+    "id": "hydrus",
+    "name": "Hydrus",
+    "chineseName": "水蛇座",
+    "starIds": [
+      "hip_9236",
+      "hip_17678"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_9236",
+        "starId2": "hip_17678"
+      }
+    ],
+    "description": "The male water snake constellation near the south celestial pole."
+  },
+  {
+    "id": "indus",
+    "name": "Indus",
+    "chineseName": "印第安座",
+    "starIds": [
+      "hip_101772"
+    ],
+    "lines": [],
+    "description": "The American Indian constellation."
+  },
+  {
+    "id": "sagitta",
+    "name": "Sagitta",
+    "chineseName": "天箭座",
+    "starIds": [
+      "hip_96229"
+    ],
+    "lines": [],
+    "description": "The arrow constellation."
+  },
+  {
+    "id": "delphinus",
+    "name": "Delphinus",
+    "chineseName": "海豚座",
+    "starIds": [
+      "hip_101421",
+      "hip_101769"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_101421",
+        "starId2": "hip_101769"
+      }
+    ],
+    "description": "The dolphin constellation; also called Job's Coffin."
+  },
+  {
+    "id": "serpens",
+    "name": "Serpens",
+    "chineseName": "巨蛇座",
+    "starIds": [
+      "hip_77450",
+      "hip_84748",
+      "hip_86742"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_77450",
+        "starId2": "hip_84748"
+      },
+      {
+        "starId1": "hip_84748",
+        "starId2": "hip_86742"
+      }
+    ],
+    "description": "The snake constellation; divided into Serpens Caput and Serpens Cauda."
+  },
+  {
+    "id": "lynx",
+    "name": "Lynx",
+    "chineseName": "天猫座",
+    "starIds": [
+      "hip_44248"
+    ],
+    "lines": [],
+    "description": "The lynx constellation between Ursa Major and Auriga."
+  },
+  {
+    "id": "canes_venatici",
+    "name": "Canes Venatici",
+    "chineseName": "猎犬座",
+    "starIds": [
+      "hip_63125"
+    ],
+    "lines": [],
+    "description": "The hunting dogs; Cor Caroli is its brightest star."
+  },
+  {
+    "id": "leo_minor",
+    "name": "Leo Minor",
+    "chineseName": "小狮座",
+    "starIds": [
+      "hip_57939"
+    ],
+    "lines": [],
+    "description": "The small lion constellation between Leo and Ursa Major."
+  },
+  {
+    "id": "cancer",
+    "name": "Cancer",
+    "chineseName": "巨蟹座",
+    "starIds": [
+      "hip_42806",
+      "hip_40526"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_42806",
+        "starId2": "hip_40526"
+      }
+    ],
+    "description": "The crab constellation; the dimmest of the zodiacal constellations."
+  },
+  {
+    "id": "monoceros",
+    "name": "Monoceros",
+    "chineseName": "麒麟座",
+    "starIds": [
+      "hip_35212",
+      "hip_30867"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_35212",
+        "starId2": "hip_30867"
+      }
+    ],
+    "description": "The unicorn constellation; contains the Rosette Nebula."
+  },
+  {
+    "id": "lepus",
+    "name": "Lepus",
+    "chineseName": "天兔座",
+    "starIds": [
+      "hip_25985",
+      "hip_27288"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_25985",
+        "starId2": "hip_27288"
+      }
+    ],
+    "description": "The hare constellation beneath Orion's feet."
+  },
+  {
+    "id": "columba",
+    "name": "Columba",
+    "chineseName": "天鸽座",
+    "starIds": [
+      "hip_26634",
+      "hip_27530"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_26634",
+        "starId2": "hip_27530"
+      }
+    ],
+    "description": "The dove constellation south of Lepus."
+  },
+  {
+    "id": "puppis",
+    "name": "Puppis",
+    "chineseName": "船尾座",
+    "starIds": [
+      "hip_39429",
+      "hip_38170"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_39429",
+        "starId2": "hip_38170"
+      }
+    ],
+    "description": "The stern of the ship Argo."
+  },
+  {
+    "id": "aquarius",
+    "name": "Aquarius",
+    "chineseName": "水瓶座",
+    "starIds": [
+      "hip_106278",
+      "hip_109074",
+      "hip_110395",
+      "hip_102618"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_109074",
+        "starId2": "hip_106278"
+      },
+      {
+        "starId1": "hip_109074",
+        "starId2": "hip_110395"
+      }
+    ],
+    "description": "The water bearer constellation; one of the oldest recognized constellations."
+  },
+  {
+    "id": "capricornus",
+    "name": "Capricornus",
+    "chineseName": "摩羯座",
+    "starIds": [
+      "hip_100064",
+      "hip_100345"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_100064",
+        "starId2": "hip_100345"
+      }
+    ],
+    "description": "The sea goat constellation; smallest of the zodiacal constellations."
   }
 ]

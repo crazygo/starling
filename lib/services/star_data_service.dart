@@ -36,13 +36,17 @@ class StarDataService {
 
   List<Star> _stars = [];
   List<Constellation> _constellations = [];
+  List<Constellation> _chineseConstellations = [];
   List<DailyCard> _dailyCards = [];
 
   /// All stars, sorted by ascending magnitude (brightest first).
   List<Star> get stars => _stars;
 
-  /// All constellations.
+  /// All Western (IAU) constellations.
   List<Constellation> get constellations => _constellations;
+
+  /// All Chinese asterisms / sky culture constellations.
+  List<Constellation> get chineseConstellations => _chineseConstellations;
 
   /// All daily cards, sorted by descending date (newest first).
   List<DailyCard> get dailyCards => _dailyCards;
@@ -76,6 +80,8 @@ class StarDataService {
         await rootBundle.loadString('assets/data/stars.json');
     final constellationsJson =
         await rootBundle.loadString('assets/data/constellations.json');
+    final chineseConstellationsJson =
+        await rootBundle.loadString('assets/data/constellations_chinese.json');
     final cardsJson =
         await rootBundle.loadString('assets/data/daily_cards.json');
 
@@ -85,6 +91,10 @@ class StarDataService {
       ..sort((a, b) => a.magnitude.compareTo(b.magnitude));
 
     _constellations = (jsonDecode(constellationsJson) as List)
+        .map((j) => Constellation.fromJson(j as Map<String, dynamic>))
+        .toList();
+
+    _chineseConstellations = (jsonDecode(chineseConstellationsJson) as List)
         .map((j) => Constellation.fromJson(j as Map<String, dynamic>))
         .toList();
 

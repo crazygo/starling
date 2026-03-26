@@ -1,0 +1,967 @@
+[
+  {
+    "id": "ziwei_yuan",
+    "name": "Purple Forbidden Enclosure",
+    "chineseName": "紫微垣",
+    "starIds": [
+      "hip_11767",
+      "hip_85822",
+      "hip_79822",
+      "hip_77055"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_11767",
+        "starId2": "hip_85822"
+      },
+      {
+        "starId1": "hip_85822",
+        "starId2": "hip_79822"
+      }
+    ],
+    "description": "The Purple Forbidden Enclosure surrounds the north celestial pole; ruled by the celestial emperor."
+  },
+  {
+    "id": "taiwei_yuan",
+    "name": "Supreme Palace Enclosure",
+    "chineseName": "太微垣",
+    "starIds": [
+      "regulus",
+      "hip_50583",
+      "hip_54872",
+      "hip_57632"
+    ],
+    "lines": [
+      {
+        "starId1": "regulus",
+        "starId2": "hip_50583"
+      },
+      {
+        "starId1": "hip_50583",
+        "starId2": "hip_54872"
+      }
+    ],
+    "description": "The Supreme Palace Enclosure; home of the five emperors."
+  },
+  {
+    "id": "tianshi_yuan",
+    "name": "Heavenly Market Enclosure",
+    "chineseName": "天市垣",
+    "starIds": [
+      "hip_77450",
+      "hip_84345",
+      "hip_84970"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_77450",
+        "starId2": "hip_84345"
+      },
+      {
+        "starId1": "hip_84345",
+        "starId2": "hip_84970"
+      }
+    ],
+    "description": "The Heavenly Market Enclosure; a celestial marketplace."
+  },
+  {
+    "id": "jiao_xiu",
+    "name": "Horn Mansions",
+    "chineseName": "角宿",
+    "starIds": [
+      "spica",
+      "hip_63608"
+    ],
+    "lines": [
+      {
+        "starId1": "spica",
+        "starId2": "hip_63608"
+      }
+    ],
+    "description": "角宿 (Horn) - First of the 28 lunar mansions; the horn of the Azure Dragon."
+  },
+  {
+    "id": "kang_xiu",
+    "name": "Neck Mansions",
+    "chineseName": "亢宿",
+    "starIds": [
+      "hip_68520",
+      "hip_70755"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_68520",
+        "starId2": "hip_70755"
+      }
+    ],
+    "description": "亢宿 (Neck) - Second of the 28 lunar mansions."
+  },
+  {
+    "id": "di_xiu",
+    "name": "Root Mansions",
+    "chineseName": "氐宿",
+    "starIds": [
+      "hip_72622",
+      "hip_74785"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_72622",
+        "starId2": "hip_74785"
+      }
+    ],
+    "description": "氐宿 (Root/Base) - Third of the 28 lunar mansions."
+  },
+  {
+    "id": "fang_xiu",
+    "name": "Room Mansions",
+    "chineseName": "房宿",
+    "starIds": [
+      "hip_79882",
+      "hip_82396"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_79882",
+        "starId2": "hip_82396"
+      }
+    ],
+    "description": "房宿 (Room) - Fourth of the 28 lunar mansions."
+  },
+  {
+    "id": "xin_xiu",
+    "name": "Heart Mansions",
+    "chineseName": "心宿",
+    "starIds": [
+      "antares"
+    ],
+    "lines": [],
+    "description": "心宿 (Heart) - Fifth of the 28 lunar mansions; Antares is the heart of the Azure Dragon."
+  },
+  {
+    "id": "wei_xiu",
+    "name": "Tail Mansions",
+    "chineseName": "尾宿",
+    "starIds": [
+      "hip_80582",
+      "hip_86670",
+      "hip_87073",
+      "hip_85927"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_80582",
+        "starId2": "hip_86670"
+      },
+      {
+        "starId1": "hip_86670",
+        "starId2": "hip_87073"
+      },
+      {
+        "starId1": "hip_87073",
+        "starId2": "hip_85927"
+      }
+    ],
+    "description": "尾宿 (Tail) - Sixth of the 28 lunar mansions; the tail of the Azure Dragon."
+  },
+  {
+    "id": "ji_xiu",
+    "name": "Basket Mansions",
+    "chineseName": "箕宿",
+    "starIds": [
+      "hip_90185",
+      "hip_92855",
+      "hip_89931"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_90185",
+        "starId2": "hip_92855"
+      },
+      {
+        "starId1": "hip_92855",
+        "starId2": "hip_89931"
+      }
+    ],
+    "description": "箕宿 (Winnowing Basket) - Seventh of the 28 lunar mansions."
+  },
+  {
+    "id": "dou_xiu",
+    "name": "Dipper Mansions",
+    "chineseName": "斗宿",
+    "starIds": [
+      "hip_90185",
+      "hip_92855",
+      "hip_89931",
+      "hip_81266",
+      "hip_92041",
+      "hip_88175"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_92041",
+        "starId2": "hip_88175"
+      },
+      {
+        "starId1": "hip_88175",
+        "starId2": "hip_90185"
+      },
+      {
+        "starId1": "hip_90185",
+        "starId2": "hip_89931"
+      },
+      {
+        "starId1": "hip_89931",
+        "starId2": "hip_81266"
+      },
+      {
+        "starId1": "hip_81266",
+        "starId2": "hip_92041"
+      }
+    ],
+    "description": "斗宿 (Dipper/南斗) - The Southern Dipper, eighth of the 28 lunar mansions."
+  },
+  {
+    "id": "niu_xiu",
+    "name": "Ox Mansions",
+    "chineseName": "牛宿",
+    "starIds": [
+      "altair"
+    ],
+    "lines": [],
+    "description": "牛宿 (Ox) - The Cowherder star region; corresponds to the Cowherd in the Weaving Maid legend."
+  },
+  {
+    "id": "nv_xiu",
+    "name": "Girl Mansions",
+    "chineseName": "女宿",
+    "starIds": [
+      "hip_106278",
+      "hip_109074"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_106278",
+        "starId2": "hip_109074"
+      }
+    ],
+    "description": "女宿 (Girl/Woman) - Tenth of the 28 lunar mansions."
+  },
+  {
+    "id": "xu_xiu",
+    "name": "Emptiness Mansions",
+    "chineseName": "虚宿",
+    "starIds": [
+      "hip_106278"
+    ],
+    "lines": [],
+    "description": "虚宿 (Emptiness) - Eleventh of the 28 lunar mansions."
+  },
+  {
+    "id": "wei_xiu2",
+    "name": "Rooftop Mansions",
+    "chineseName": "危宿",
+    "starIds": [
+      "hip_109074",
+      "hip_107315"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_109074",
+        "starId2": "hip_107315"
+      }
+    ],
+    "description": "危宿 (Rooftop) - Twelfth of the 28 lunar mansions."
+  },
+  {
+    "id": "shi_xiu",
+    "name": "Encampment Mansions",
+    "chineseName": "室宿",
+    "starIds": [
+      "hip_109427",
+      "hip_112447"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_109427",
+        "starId2": "hip_112447"
+      }
+    ],
+    "description": "室宿 (Encampment) - Thirteenth of the 28 lunar mansions; the Great Square of Pegasus."
+  },
+  {
+    "id": "bi_xiu",
+    "name": "Wall Mansions",
+    "chineseName": "壁宿",
+    "starIds": [
+      "hip_113881",
+      "hip_677"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_113881",
+        "starId2": "hip_677"
+      }
+    ],
+    "description": "壁宿 (Wall) - Fourteenth of the 28 lunar mansions."
+  },
+  {
+    "id": "kui_xiu",
+    "name": "Legs Mansions",
+    "chineseName": "奎宿",
+    "starIds": [
+      "hip_5447",
+      "hip_677"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_5447",
+        "starId2": "hip_677"
+      }
+    ],
+    "description": "奎宿 (Legs) - Fifteenth of the 28 lunar mansions."
+  },
+  {
+    "id": "lou_xiu",
+    "name": "Bond Mansions",
+    "chineseName": "娄宿",
+    "starIds": [
+      "hip_9884",
+      "hip_8903"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_9884",
+        "starId2": "hip_8903"
+      }
+    ],
+    "description": "娄宿 (Bond) - Sixteenth of the 28 lunar mansions."
+  },
+  {
+    "id": "wei_xiu3",
+    "name": "Stomach Mansions",
+    "chineseName": "胃宿",
+    "starIds": [
+      "hip_9884"
+    ],
+    "lines": [],
+    "description": "胃宿 (Stomach) - Seventeenth of the 28 lunar mansions."
+  },
+  {
+    "id": "mao_xiu",
+    "name": "Pleiades Mansions",
+    "chineseName": "昴宿",
+    "starIds": [
+      "hip_17702",
+      "hip_17847",
+      "hip_17499",
+      "hip_17573"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_17702",
+        "starId2": "hip_17847"
+      },
+      {
+        "starId1": "hip_17847",
+        "starId2": "hip_17499"
+      },
+      {
+        "starId1": "hip_17499",
+        "starId2": "hip_17573"
+      }
+    ],
+    "description": "昴宿 (Hairy Head/Pleiades) - Eighteenth of the 28 lunar mansions; the Pleiades cluster."
+  },
+  {
+    "id": "bi_xiu2",
+    "name": "Net Mansions",
+    "chineseName": "毕宿",
+    "starIds": [
+      "aldebaran",
+      "hip_20205",
+      "hip_20894",
+      "hip_23015",
+      "hip_23875"
+    ],
+    "lines": [
+      {
+        "starId1": "aldebaran",
+        "starId2": "hip_20894"
+      },
+      {
+        "starId1": "hip_20894",
+        "starId2": "hip_20205"
+      },
+      {
+        "starId1": "hip_20205",
+        "starId2": "hip_23015"
+      }
+    ],
+    "description": "毕宿 (Net) - Nineteenth of the 28 lunar mansions; the Hyades cluster and Aldebaran."
+  },
+  {
+    "id": "zi_xiu",
+    "name": "Turtle Beak Mansions",
+    "chineseName": "觜宿",
+    "starIds": [
+      "hip_25336"
+    ],
+    "lines": [],
+    "description": "觜宿 (Turtle Beak) - Twentieth of the 28 lunar mansions; near Orion."
+  },
+  {
+    "id": "shen_xiu",
+    "name": "Three Stars Mansions",
+    "chineseName": "参宿",
+    "starIds": [
+      "betelgeuse",
+      "rigel",
+      "hip_25336",
+      "hip_26311",
+      "hip_26727",
+      "hip_25930",
+      "hip_27366"
+    ],
+    "lines": [
+      {
+        "starId1": "betelgeuse",
+        "starId2": "hip_25336"
+      },
+      {
+        "starId1": "hip_25930",
+        "starId2": "hip_26311"
+      },
+      {
+        "starId1": "hip_26311",
+        "starId2": "hip_26727"
+      },
+      {
+        "starId1": "rigel",
+        "starId2": "hip_27366"
+      }
+    ],
+    "description": "参宿 (Three Stars/Orion) - Twenty-first of the 28 lunar mansions; Orion with its three-star belt."
+  },
+  {
+    "id": "jing_xiu",
+    "name": "Well Mansions",
+    "chineseName": "井宿",
+    "starIds": [
+      "hip_32246",
+      "hip_37740",
+      "hip_36188"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_32246",
+        "starId2": "hip_37740"
+      },
+      {
+        "starId1": "hip_37740",
+        "starId2": "hip_36188"
+      }
+    ],
+    "description": "井宿 (Well) - Twenty-second of the 28 lunar mansions; in Gemini."
+  },
+  {
+    "id": "gui_xiu",
+    "name": "Ghost Mansions",
+    "chineseName": "鬼宿",
+    "starIds": [
+      "hip_42806",
+      "hip_40526"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_42806",
+        "starId2": "hip_40526"
+      }
+    ],
+    "description": "鬼宿 (Ghost) - Twenty-third of the 28 lunar mansions; the Ghost cloud nebula."
+  },
+  {
+    "id": "liu_xiu",
+    "name": "Willow Mansions",
+    "chineseName": "柳宿",
+    "starIds": [
+      "hip_46390",
+      "hip_47227"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_46390",
+        "starId2": "hip_47227"
+      }
+    ],
+    "description": "柳宿 (Willow) - Twenty-fourth of the 28 lunar mansions; in Hydra."
+  },
+  {
+    "id": "xing_xiu",
+    "name": "Star Mansions",
+    "chineseName": "星宿",
+    "starIds": [
+      "hip_46390",
+      "hip_51069"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_46390",
+        "starId2": "hip_51069"
+      }
+    ],
+    "description": "星宿 (Star) - Twenty-fifth of the 28 lunar mansions; Alphard in Hydra."
+  },
+  {
+    "id": "zhang_xiu",
+    "name": "Extended Net Mansions",
+    "chineseName": "张宿",
+    "starIds": [
+      "hip_51069",
+      "hip_52943"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_51069",
+        "starId2": "hip_52943"
+      }
+    ],
+    "description": "张宿 (Extended Net) - Twenty-sixth of the 28 lunar mansions."
+  },
+  {
+    "id": "yi_xiu",
+    "name": "Wings Mansions",
+    "chineseName": "翼宿",
+    "starIds": [
+      "hip_59803"
+    ],
+    "lines": [],
+    "description": "翼宿 (Wings) - Twenty-seventh of the 28 lunar mansions; in Crater and Corvus."
+  },
+  {
+    "id": "zhen_xiu",
+    "name": "Chariot Mansions",
+    "chineseName": "轸宿",
+    "starIds": [
+      "hip_59803",
+      "hip_60965"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_59803",
+        "starId2": "hip_60965"
+      }
+    ],
+    "description": "轸宿 (Chariot) - Twenty-eighth of the 28 lunar mansions; in Corvus."
+  },
+  {
+    "id": "beidou",
+    "name": "Northern Dipper",
+    "chineseName": "北斗七星",
+    "starIds": [
+      "hip_54061",
+      "hip_53910",
+      "hip_58001",
+      "hip_59774",
+      "hip_62956",
+      "hip_65378",
+      "hip_67301"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_54061",
+        "starId2": "hip_53910"
+      },
+      {
+        "starId1": "hip_53910",
+        "starId2": "hip_58001"
+      },
+      {
+        "starId1": "hip_58001",
+        "starId2": "hip_59774"
+      },
+      {
+        "starId1": "hip_59774",
+        "starId2": "hip_62956"
+      },
+      {
+        "starId1": "hip_62956",
+        "starId2": "hip_65378"
+      },
+      {
+        "starId1": "hip_65378",
+        "starId2": "hip_67301"
+      }
+    ],
+    "description": "北斗七星 - The Northern Dipper (Big Dipper), a famous Chinese asterism for finding north."
+  },
+  {
+    "id": "zhinu",
+    "name": "Weaving Maid",
+    "chineseName": "织女",
+    "starIds": [
+      "vega",
+      "hip_91971",
+      "hip_92420"
+    ],
+    "lines": [
+      {
+        "starId1": "vega",
+        "starId2": "hip_92420"
+      },
+      {
+        "starId1": "vega",
+        "starId2": "hip_91971"
+      },
+      {
+        "starId1": "hip_92420",
+        "starId2": "hip_91971"
+      }
+    ],
+    "description": "织女 - The Weaving Maid (Vega); separated from the Cowherd by the Milky Way."
+  },
+  {
+    "id": "niulang",
+    "name": "Cowherd",
+    "chineseName": "牛郎",
+    "starIds": [
+      "altair",
+      "hip_93805",
+      "hip_95501"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_93805",
+        "starId2": "altair"
+      },
+      {
+        "starId1": "altair",
+        "starId2": "hip_95501"
+      }
+    ],
+    "description": "牛郎 - The Cowherd (Altair); in the legend he meets the Weaving Maid once a year."
+  },
+  {
+    "id": "tianshi_left",
+    "name": "Heavenly Market Left Wall",
+    "chineseName": "天市左垣",
+    "starIds": [
+      "hip_79593",
+      "hip_84970",
+      "hip_84345"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_79593",
+        "starId2": "hip_84970"
+      },
+      {
+        "starId1": "hip_84970",
+        "starId2": "hip_84345"
+      }
+    ],
+    "description": "天市左垣 - Left wall of the Heavenly Market Enclosure."
+  },
+  {
+    "id": "dizuo",
+    "name": "Emperor's Throne",
+    "chineseName": "帝座",
+    "starIds": [
+      "hip_81693"
+    ],
+    "lines": [],
+    "description": "帝座 - The Emperor's Throne star (Alpha Herculis / Rasalgethi)."
+  },
+  {
+    "id": "ziwei_right",
+    "name": "Purple Enclosure Right Wall",
+    "chineseName": "紫微右垣",
+    "starIds": [
+      "hip_11767",
+      "hip_85822",
+      "hip_79822"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_11767",
+        "starId2": "hip_85822"
+      },
+      {
+        "starId1": "hip_85822",
+        "starId2": "hip_79822"
+      }
+    ],
+    "description": "紫微右垣 - Right wall of the Purple Forbidden Enclosure surrounding the north pole."
+  },
+  {
+    "id": "gouchen",
+    "name": "Hook and Array",
+    "chineseName": "勾陈",
+    "starIds": [
+      "hip_11767",
+      "hip_85822"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_11767",
+        "starId2": "hip_85822"
+      }
+    ],
+    "description": "勾陈 - The Hook and Array asterism near the north celestial pole; includes Polaris."
+  },
+  {
+    "id": "nandou",
+    "name": "Southern Dipper",
+    "chineseName": "南斗六星",
+    "starIds": [
+      "hip_90185",
+      "hip_92855",
+      "hip_89931",
+      "hip_81266",
+      "hip_92041",
+      "hip_88175"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_92041",
+        "starId2": "hip_88175"
+      },
+      {
+        "starId1": "hip_88175",
+        "starId2": "hip_90185"
+      },
+      {
+        "starId1": "hip_90185",
+        "starId2": "hip_89931"
+      },
+      {
+        "starId1": "hip_89931",
+        "starId2": "hip_81266"
+      },
+      {
+        "starId1": "hip_81266",
+        "starId2": "hip_92041"
+      }
+    ],
+    "description": "南斗六星 - The Southern Dipper in Sagittarius; a key Chinese asterism."
+  },
+  {
+    "id": "tianlang",
+    "name": "Heavenly Wolf",
+    "chineseName": "天狼",
+    "starIds": [
+      "sirius"
+    ],
+    "lines": [],
+    "description": "天狼 - The Heavenly Wolf; Sirius, the brightest star in the night sky."
+  },
+  {
+    "id": "laoren",
+    "name": "Old Man Star",
+    "chineseName": "老人星",
+    "starIds": [
+      "canopus"
+    ],
+    "lines": [],
+    "description": "老人星 - The Old Man Star (Canopus); symbol of longevity in Chinese astronomy."
+  },
+  {
+    "id": "dajiaostar",
+    "name": "Great Horn",
+    "chineseName": "大角",
+    "starIds": [
+      "arcturus",
+      "hip_72105"
+    ],
+    "lines": [
+      {
+        "starId1": "arcturus",
+        "starId2": "hip_72105"
+      }
+    ],
+    "description": "大角 - The Great Horn (Arcturus); the brightest star in Boötes."
+  },
+  {
+    "id": "xinxiu_heart",
+    "name": "Heart of the Dragon",
+    "chineseName": "心宿三星",
+    "starIds": [
+      "antares"
+    ],
+    "lines": [],
+    "description": "心宿 - Heart of the Azure Dragon; Antares represents the heart of the celestial dragon."
+  },
+  {
+    "id": "wuche",
+    "name": "Five Chariots",
+    "chineseName": "五车",
+    "starIds": [
+      "capella",
+      "hip_28360",
+      "hip_25428"
+    ],
+    "lines": [
+      {
+        "starId1": "capella",
+        "starId2": "hip_28360"
+      },
+      {
+        "starId1": "capella",
+        "starId2": "hip_25428"
+      }
+    ],
+    "description": "五车 - The Five Chariots asterism in Auriga and Taurus area."
+  },
+  {
+    "id": "shen_group",
+    "name": "Orion Asterism",
+    "chineseName": "参",
+    "starIds": [
+      "betelgeuse",
+      "rigel",
+      "hip_25336",
+      "hip_25930",
+      "hip_26311",
+      "hip_26727",
+      "hip_27366"
+    ],
+    "lines": [
+      {
+        "starId1": "betelgeuse",
+        "starId2": "hip_25336"
+      },
+      {
+        "starId1": "hip_25930",
+        "starId2": "hip_26311"
+      },
+      {
+        "starId1": "hip_26311",
+        "starId2": "hip_26727"
+      },
+      {
+        "starId1": "betelgeuse",
+        "starId2": "hip_25930"
+      },
+      {
+        "starId1": "hip_27366",
+        "starId2": "hip_25930"
+      },
+      {
+        "starId1": "rigel",
+        "starId2": "hip_26727"
+      }
+    ],
+    "description": "参 - The Orion asterism (参宿/三参), one of the most important in Chinese astronomy."
+  },
+  {
+    "id": "beiji",
+    "name": "North Pole",
+    "chineseName": "北极",
+    "starIds": [
+      "hip_11767"
+    ],
+    "lines": [],
+    "description": "北极 - The North Pole star (Polaris); center of the sky in Chinese cosmology."
+  },
+  {
+    "id": "vermilion_bird_wing",
+    "name": "Vermilion Bird Wing",
+    "chineseName": "朱雀翼",
+    "starIds": [
+      "hip_59803",
+      "hip_60965"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_59803",
+        "starId2": "hip_60965"
+      }
+    ],
+    "description": "朱雀翼 - Wings of the Vermilion Bird of the South."
+  },
+  {
+    "id": "zhuque_south",
+    "name": "Vermilion Bird of the South",
+    "chineseName": "南方朱雀",
+    "starIds": [
+      "hip_46390",
+      "hip_51069",
+      "hip_59803"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_46390",
+        "starId2": "hip_51069"
+      },
+      {
+        "starId1": "hip_51069",
+        "starId2": "hip_59803"
+      }
+    ],
+    "description": "南方朱雀 - The Vermilion Bird of the South; one of the four symbols in Chinese astronomy."
+  },
+  {
+    "id": "qinglong_east",
+    "name": "Azure Dragon of the East",
+    "chineseName": "东方青龙",
+    "starIds": [
+      "spica",
+      "antares",
+      "hip_87073"
+    ],
+    "lines": [
+      {
+        "starId1": "spica",
+        "starId2": "antares"
+      },
+      {
+        "starId1": "antares",
+        "starId2": "hip_87073"
+      }
+    ],
+    "description": "东方青龙 - The Azure Dragon of the East; one of the four symbols in Chinese astronomy."
+  },
+  {
+    "id": "baihu_west",
+    "name": "White Tiger of the West",
+    "chineseName": "西方白虎",
+    "starIds": [
+      "aldebaran",
+      "hip_26311",
+      "hip_25336"
+    ],
+    "lines": [
+      {
+        "starId1": "aldebaran",
+        "starId2": "hip_26311"
+      },
+      {
+        "starId1": "hip_26311",
+        "starId2": "hip_25336"
+      }
+    ],
+    "description": "西方白虎 - The White Tiger of the West; one of the four symbols in Chinese astronomy."
+  },
+  {
+    "id": "xuanwu_north",
+    "name": "Black Tortoise of the North",
+    "chineseName": "北方玄武",
+    "starIds": [
+      "hip_109427",
+      "hip_112447",
+      "hip_90185",
+      "hip_92855"
+    ],
+    "lines": [
+      {
+        "starId1": "hip_109427",
+        "starId2": "hip_112447"
+      },
+      {
+        "starId1": "hip_90185",
+        "starId2": "hip_92855"
+      }
+    ],
+    "description": "北方玄武 - The Black Tortoise of the North; one of the four symbols in Chinese astronomy."
+  }
+]
