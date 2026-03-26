@@ -7,20 +7,34 @@ enum CultureMode {
   western,
 }
 
+/// Available location modes for determining the observer's position.
+enum LocationMode {
+  /// Default: Beijing (lat 39.9042°N, lon 116.4074°E).
+  beijing,
+
+  /// Use the device GPS to determine the observer's position.
+  gps,
+}
+
 /// App-wide settings, backed by [SharedPreferences] for persistence.
 ///
 /// Expose via [ChangeNotifierProvider] so any widget can read or update
 /// settings and have the UI rebuild automatically.
 class SettingsService extends ChangeNotifier {
   static const _keyCulture = 'culture_mode';
+  static const _keyLocation = 'location_mode';
 
   CultureMode _cultureMode = CultureMode.chinese;
+  LocationMode _locationMode = LocationMode.beijing;
 
   /// The currently selected culture mode.
   CultureMode get cultureMode => _cultureMode;
 
   /// Whether Chinese cultural names and constellation data should be shown.
   bool get isChinese => _cultureMode == CultureMode.chinese;
+
+  /// The currently selected location mode.
+  LocationMode get locationMode => _locationMode;
 
   /// Load persisted settings from [SharedPreferences].
   ///
@@ -31,11 +45,17 @@ class SettingsService extends ChangeNotifier {
   /// asynchronously after widgets have been mounted and are ready to listen.
   Future<void> load() async {
     final prefs = await SharedPreferences.getInstance();
-    final stored = prefs.getString(_keyCulture);
-    if (stored == CultureMode.western.name) {
+    final storedCulture = prefs.getString(_keyCulture);
+    if (storedCulture == CultureMode.western.name) {
       _cultureMode = CultureMode.western;
     } else {
       _cultureMode = CultureMode.chinese;
+    }
+    final storedLocation = prefs.getString(_keyLocation);
+    if (storedLocation == LocationMode.gps.name) {
+      _locationMode = LocationMode.gps;
+    } else {
+      _locationMode = LocationMode.beijing;
     }
     notifyListeners();
   }
@@ -50,5 +70,15 @@ class SettingsService extends ChangeNotifier {
     // overwrite the newer value in SharedPreferences with this stale one.
     if (_cultureMode != mode) return;
     await prefs.setString(_keyCulture, mode.name);
+  }
+
+  /// Update the location mode and persist the change.
+  Future<void> setLocationMode(LocationMode mode) async {
+    if (_locationMode == mode) return;
+    _locationMode = mode;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_locationMode != mode) return;
+    await prefs.setString(_keyLocation, mode.name);
   }
 }

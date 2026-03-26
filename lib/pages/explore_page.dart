@@ -30,6 +30,10 @@ class _ExplorePageState extends State<ExplorePage> {
   StarChartViewport _viewport = const StarChartViewport();
   Star? _selectedStar;
 
+  // Observation date/time
+  late DateTime _observeDate;
+  late TimeOfDay _observeTime;
+
   // Services
   final GyroService _gyroService = GyroService();
   final LocationService _locationService = LocationService();
@@ -47,6 +51,9 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   void initState() {
     super.initState();
+    final now = DateTime.now();
+    _observeDate = DateTime(now.year, now.month, now.day);
+    _observeTime = const TimeOfDay(hour: 22, minute: 0);
     _loadData();
     _locationService.start();
   }
@@ -59,7 +66,56 @@ class _ExplorePageState extends State<ExplorePage> {
         _stars = service.stars;
         _constellations = service.constellations;
         _loading = false;
+        _viewport = _seasonalViewport(DateTime.now());
       });
+    }
+  }
+
+  /// Returns a [StarChartViewport] centred on the season's representative
+  /// asterism for the given [dt].
+  StarChartViewport _seasonalViewport(DateTime dt) {
+    final month = dt.month;
+    double ra;
+    double dec;
+    if (month == 11 || month == 12 || month == 1 || month == 2) {
+      // 冬季：猎户座腰带中心
+      ra = 83.8;
+      dec = 0.0;
+    } else if (month >= 3 && month <= 5) {
+      // 春季：大熊座（北斗七星）
+      ra = 165.9;
+      dec = 56.4;
+    } else if (month >= 6 && month <= 8) {
+      // 夏季：夏季大三角（织女星）
+      ra = 279.2;
+      dec = 38.8;
+    } else {
+      // 秋季：飞马座（秋季四边形）
+      ra = 345.0;
+      dec = 15.0;
+    }
+    return StarChartViewport(centerRa: ra, centerDec: dec, zoom: 1.0);
+  }
+
+  Future<void> _pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _observeDate,
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null && mounted) {
+      setState(() => _observeDate = picked);
+    }
+  }
+
+  Future<void> _pickTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _observeTime,
+    );
+    if (picked != null && mounted) {
+      setState(() => _observeTime = picked);
     }
   }
 
@@ -270,6 +326,59 @@ class _ExplorePageState extends State<ExplorePage> {
             star: _selectedStar!,
             onClose: () => setState(() => _selectedStar = null),
           ),
+
+        // Bottom-left date/time card
+        Positioned(
+          left: 16,
+          bottom: 32,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black54,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: _pickDate,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.calendar_today,
+                          color: Colors.white54, size: 13),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${_observeDate.year.toString().padLeft(4, '0')}-'
+                        '${_observeDate.month.toString().padLeft(2, '0')}-'
+                        '${_observeDate.day.toString().padLeft(2, '0')}',
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 4),
+                GestureDetector(
+                  onTap: _pickTime,
+                  child: Row(
+                    children: [
+                      const Icon(Icons.access_time,
+                          color: Colors.white54, size: 13),
+                      const SizedBox(width: 6),
+                      Text(
+                        '${_observeTime.hour.toString().padLeft(2, '0')}:'
+                        '${_observeTime.minute.toString().padLeft(2, '0')}',
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 13),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

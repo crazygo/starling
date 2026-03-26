@@ -20,5 +20,10 @@ flutter config --enable-web
 # Install project dependencies
 flutter pub get
 
+# Ensure the assets/bin/ directory exists (FlatBuffers catalogs are generated
+# locally by the data pipeline in tool/; the directory must exist for the
+# Flutter asset bundle even when the .bin files are not yet generated).
+mkdir -p assets/bin
+
 # Build web release
 flutter build web --release
