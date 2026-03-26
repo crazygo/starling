@@ -56,6 +56,18 @@ class StellariumChineseParser {
     );
   }
 
+  /// Parse Chinese star names from [file] (`star_names.fab`).
+  ///
+  /// Returns a map of HIP number → `(nameZh, nameEn)`.
+  /// The file is optional — an empty map is returned when it is absent.
+  static Map<int, (String, String)> parseStarNames(File file) {
+    final starNameMap = <int, (String, String)>{};
+    if (file.existsSync()) {
+      _parseStarNames(file, starNameMap);
+    }
+    return starNameMap;
+  }
+
   // ── Private helpers ─────────────────────────────────────────────────────
 
   static void _parseIndexJson(

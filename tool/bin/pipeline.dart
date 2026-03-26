@@ -97,6 +97,23 @@ void main(List<String> args) {
   final chineseAsterisms = StellariumChineseParser.parse(chineseDir);
   print('   ✅ Chinese asterisms: ${chineseAsterisms.length}');
 
+  // Merge Chinese proper star names if star_names.fab is present (optional).
+  final chineseStarNamesFile = File('${chineseDir.path}/star_names.fab');
+  final chineseNameMap =
+      StellariumChineseParser.parseStarNames(chineseStarNamesFile);
+  if (chineseNameMap.isNotEmpty) {
+    stars = stars.map((s) {
+      final names = chineseNameMap[s.hip];
+      return names != null ? s.copyWith(nameZh: names.$1) : s;
+    }).toList(growable: false);
+    final namedZh = stars.where((s) => s.nameZh != null).length;
+    print('   ✅ Chinese star names: $namedZh named out of ${stars.length}');
+  } else {
+    print('   ⚠️  Chinese star names: none loaded'
+          ' (star_names.fab was empty or absent)'
+          ' — Chinese mode will fall back to English names');
+  }
+
   // ── Phase 2: Validate integrity ─────────────────────────────────────────
   final hipSet = stars.map((s) => s.hip).toSet();
 
