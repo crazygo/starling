@@ -1,12 +1,14 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:starling/l10n/generated/app_localizations.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';
 import '../services/gyro_service.dart';
 import '../services/location_service.dart';
+import '../services/settings_service.dart';
 import '../services/star_data_service.dart';
 import '../widgets/star_chart.dart';
 import '../widgets/star_info_popup.dart';
@@ -44,6 +46,10 @@ class _ExplorePageState extends State<ExplorePage> {
   Offset _gyroOffset = Offset.zero;
   DateTime? _lastGyroTime; // used to compute accurate Δt between events
 
+  // Settings listener
+  SettingsService? _settingsService;
+  bool _gpsStarted = false;
+
   // Search
   final TextEditingController _searchController = TextEditingController();
   bool _searchVisible = false;
@@ -56,7 +62,33 @@ class _ExplorePageState extends State<ExplorePage> {
     _observeDate = DateTime(now.year, now.month, now.day);
     _observeTime = const TimeOfDay(hour: 22, minute: 0);
     _loadData();
-    _locationService.start();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final newSettings = context.read<SettingsService>();
+    if (_settingsService != newSettings) {
+      _settingsService?.removeListener(_onSettingsChanged);
+      _settingsService = newSettings;
+      _settingsService!.addListener(_onSettingsChanged);
+      _syncLocationMode(newSettings.locationMode);
+    }
+  }
+
+  void _onSettingsChanged() {
+    if (!mounted || _settingsService == null) return;
+    _syncLocationMode(_settingsService!.locationMode);
+  }
+
+  void _syncLocationMode(LocationMode mode) {
+    if (mode == LocationMode.gps && !_gpsStarted) {
+      _gpsStarted = true;
+      _locationService.start();
+    } else if (mode == LocationMode.beijing && _gpsStarted) {
+      _gpsStarted = false;
+      _locationService.stop();
+    }
   }
 
   Future<void> _loadData() async {
@@ -181,6 +213,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
   @override
   void dispose() {
+    _settingsService?.removeListener(_onSettingsChanged);
     _gyroService.dispose();
     _gyroSub?.cancel();
     _locationService.dispose();
@@ -190,9 +223,10 @@ class _ExplorePageState extends State<ExplorePage> {
 
   @override
   Widget build(BuildContext context) {
+    final isChinese = context.select<SettingsService, bool>((s) => s.isChinese);
     return Scaffold(
       backgroundColor: const Color(0xFF05091A),
-      body: _loading ? _buildLoading() : _buildChart(),
+      body: _loading ? _buildLoading() : _buildChart(isChinese),
     );
   }
 
@@ -210,7 +244,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildChart() {
+  Widget _buildChart(bool isChinese) {
     return Stack(
       children: [
         // Star chart
@@ -300,7 +334,9 @@ class _ExplorePageState extends State<ExplorePage> {
                               leading: const Icon(Icons.star,
                                   color: Colors.amber, size: 16),
                               title: Text(
-                                star.chineseName ?? star.name,
+                                isChinese
+                                    ? (star.chineseName ?? star.name)
+                                    : star.name,
                                 style: const TextStyle(
                                     color: Colors.white, fontSize: 14),
                               ),
@@ -325,6 +361,7 @@ class _ExplorePageState extends State<ExplorePage> {
         if (_selectedStar != null)
           StarInfoPopup(
             star: _selectedStar!,
+            showChineseName: isChinese,
             onClose: () => setState(() => _selectedStar = null),
           ),
 
