@@ -98,12 +98,12 @@ void main(List<String> args) {
   print('   ✅ Chinese asterisms: ${chineseAsterisms.length}');
 
   // ── Phase 2: Validate integrity ─────────────────────────────────────────
+  final hipSet = stars.map((s) => s.hip).toSet();
+
   if (skipValidate) {
     print('⚠️  Phase 2: Validation skipped (--skip-validate)');
   } else {
     print('🔍 Phase 2: Validating integrity…');
-
-    final hipSet = stars.map((s) => s.hip).toSet();
 
     IntegrityChecker.checkMagnitudeRange(stars);
 
@@ -124,6 +124,18 @@ void main(List<String> args) {
     print('   ✅ Integrity checks passed');
   }
 
+  // Filter out constellation edges that reference HIPs absent from the
+  // catalog (e.g. dim stars just above the magnitude cutoff) so that the
+  // binary only contains resolvable references.
+  final filteredLines = Map.fromEntries(westernLines.entries.map((entry) {
+    final filtered = entry.value.copyWith(
+      edges: entry.value.edges
+          .where((e) => hipSet.contains(e.fromHip) && hipSet.contains(e.toHip))
+          .toList(growable: false),
+    );
+    return MapEntry(entry.key, filtered);
+  }));
+
   // ── Phase 3: Build .bin files ────────────────────────────────────────────
   print('📦 Phase 3: Building .bin files…');
 
@@ -132,7 +144,7 @@ void main(List<String> args) {
   catalogFile.writeAsBytesSync(catalogBytes);
   print('   ✅ catalog_base.bin     (${_kb(catalogBytes)} KB)');
 
-  final westernBytes = WesternBuilder.build(westernLines, westernBounds);
+  final westernBytes = WesternBuilder.build(filteredLines, westernBounds);
   final westernFile  = File('${outputDir.path}/culture_western.bin');
   westernFile.writeAsBytesSync(westernBytes);
   print('   ✅ culture_western.bin  (${_kb(westernBytes)} KB)');
