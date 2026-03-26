@@ -48,7 +48,6 @@ class _ExplorePageState extends State<ExplorePage> {
 
   // Settings listener
   SettingsService? _settingsService;
-  bool _gpsStarted = false;
 
   // Search
   final TextEditingController _searchController = TextEditingController();
@@ -82,11 +81,9 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   void _syncLocationMode(LocationMode mode) {
-    if (mode == LocationMode.gps && !_gpsStarted) {
-      _gpsStarted = true;
+    if (mode == LocationMode.gps) {
       _locationService.start();
-    } else if (mode == LocationMode.beijing && _gpsStarted) {
-      _gpsStarted = false;
+    } else {
       _locationService.stop();
     }
   }
