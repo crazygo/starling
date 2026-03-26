@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../services/settings_service.dart';
 
@@ -12,23 +13,24 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: const Color(0xFF05091A),
       appBar: AppBar(
         backgroundColor: const Color(0xFF05091A),
         elevation: 0,
-        title: const Column(
+        title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '设置',
-              style: TextStyle(
+              l10n.settingsTitle,
+              style: const TextStyle(
                 color: Colors.white,
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Text(
+            const Text(
               'Settings',
               style: TextStyle(color: Colors.blueGrey, fontSize: 12),
             ),
@@ -54,16 +56,17 @@ class _CultureSettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final settings = context.watch<SettingsService>();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
           child: Text(
-            '文化设置',
-            style: TextStyle(
+            l10n.cultureSettings,
+            style: const TextStyle(
               color: Colors.white70,
               fontSize: 13,
               fontWeight: FontWeight.w600,
@@ -80,14 +83,14 @@ class _CultureSettingsSection extends StatelessWidget {
           child: Column(
             children: [
               _CultureOptionTile(
-                title: '中国文化',
+                title: l10n.chineseCulture,
                 subtitle: 'Chinese Culture',
                 selected: settings.cultureMode == CultureMode.chinese,
                 onTap: () => settings.setCultureMode(CultureMode.chinese),
                 showDivider: true,
               ),
               _CultureOptionTile(
-                title: '西方文化',
+                title: l10n.westernCulture,
                 subtitle: 'Western Culture',
                 selected: settings.cultureMode == CultureMode.western,
                 onTap: () => settings.setCultureMode(CultureMode.western),

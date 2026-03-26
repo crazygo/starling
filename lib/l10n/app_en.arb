@@ -1,0 +1,13 @@
+{
+  "@@locale": "en",
+  "tabBallads": "Ballads",
+  "tabVoyage": "Voyage",
+  "tabSettings": "Settings",
+  "settingsTitle": "Settings",
+  "cultureSettings": "Culture Settings",
+  "chineseCulture": "Chinese Culture",
+  "westernCulture": "Western Culture",
+  "searchHint": "Search stars…",
+  "gyroOn": "Gyro On",
+  "gyroOff": "Gyro"
+}

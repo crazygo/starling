@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'pages/explore_page.dart';
 import 'pages/daily_cards_page.dart';
@@ -36,6 +38,17 @@ class _StarlingAppState extends State<StarlingApp> {
       child: MaterialApp(
         title: '星仔 Starling',
         debugShowCheckedModeBanner: false,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        localeResolutionCallback: (locale, supportedLocales) {
+          if (locale == null) return const Locale('zh');
+          for (final supported in supportedLocales) {
+            if (supported.languageCode == locale.languageCode) {
+              return supported;
+            }
+          }
+          return const Locale('zh');
+        },
         theme: ThemeData(
           brightness: Brightness.dark,
           colorScheme: ColorScheme.fromSeed(
@@ -87,18 +100,18 @@ class _MainScreenState extends State<_MainScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (i) => setState(() => _currentIndex = i),
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: '每日卡片',
+            icon: const Icon(Icons.calendar_today),
+            label: AppLocalizations.of(context)!.tabBallads,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: '探索',
+            icon: const Icon(Icons.explore),
+            label: AppLocalizations.of(context)!.tabVoyage,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: '设置',
+            icon: const Icon(Icons.settings),
+            label: AppLocalizations.of(context)!.tabSettings,
           ),
         ],
       ),

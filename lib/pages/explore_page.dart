@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';
@@ -211,7 +212,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       autofocus: true,
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        hintText: '搜索星体…',
+                        hintText: AppLocalizations.of(context)!.searchHint,
                         hintStyle:
                             const TextStyle(color: Colors.white38),
                         filled: true,
@@ -311,7 +312,9 @@ class _GyroButton extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             Text(
-              active ? '陀螺仪开' : '陀螺仪',
+              active
+                  ? AppLocalizations.of(context)!.gyroOn
+                  : AppLocalizations.of(context)!.gyroOff,
               style: TextStyle(
                 color: active ? Colors.blueAccent : Colors.white54,
                 fontSize: 12,

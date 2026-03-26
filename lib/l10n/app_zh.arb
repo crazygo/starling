@@ -1,0 +1,13 @@
+{
+  "@@locale": "zh",
+  "tabBallads": "吟游",
+  "tabVoyage": "巡天",
+  "tabSettings": "设置",
+  "settingsTitle": "设置",
+  "cultureSettings": "文化设置",
+  "chineseCulture": "中国文化",
+  "westernCulture": "西方文化",
+  "searchHint": "搜索星体…",
+  "gyroOn": "陀螺仪开",
+  "gyroOff": "陀螺仪"
+}
