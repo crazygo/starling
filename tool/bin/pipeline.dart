@@ -14,6 +14,7 @@ import 'package:args/args.dart';
 import '../lib/parsers/hipparcos_parser.dart';
 import '../lib/parsers/iau_lines_parser.dart';
 import '../lib/parsers/iau_boundary_parser.dart';
+import '../lib/parsers/western_star_names_parser.dart';
 import '../lib/parsers/stellarium_chinese_parser.dart';
 import '../lib/builders/catalog_builder.dart';
 import '../lib/builders/western_builder.dart';
@@ -58,18 +59,36 @@ void main(List<String> args) {
   // ── Phase 1: Parse raw data sources ────────────────────────────────────
   print('📥 Phase 1: Parsing sources…');
 
-  final hipparcosFile = File('sources/hipparcos/hip_main.csv');
-  final linesFile     = File('sources/iau/constellation_lines.csv');
-  final boundaryFile  = File('sources/iau/constellation_boundaries.csv');
-  final chineseDir    = Directory('sources/stellarium/chinese');
+  final hipparcosFile  = File('sources/hipparcos/hip_main.csv');
+  final linesFile      = File('sources/iau/constellation_lines.csv');
+  final boundaryFile   = File('sources/iau/constellation_boundaries.csv');
+  final starNamesFile  = File('sources/iau/star_names.fab');
+  final chineseDir     = Directory('sources/stellarium/chinese');
 
   _requireFile(hipparcosFile);
   _requireFile(linesFile);
   _requireFile(boundaryFile);
   _requireDir(chineseDir);
 
-  final stars = HipparcosParser.parse(hipparcosFile, maxMagnitude: maxMagnitude);
+  var stars = HipparcosParser.parse(hipparcosFile, maxMagnitude: maxMagnitude);
   print('   ✅ Stars: ${stars.length} (mag ≤ $maxMagnitude)');
+
+  // Merge western proper names if the file is present (optional).
+  if (starNamesFile.existsSync()) {
+    final nameMap = WesternStarNamesParser.parse(starNamesFile);
+    stars = stars.map((s) {
+      final name = nameMap[s.hip];
+      return name != null ? s.copyWith(nameEn: name) : s;
+    }).toList(growable: false);
+    final named = stars.where((s) => s.nameEn != null).length;
+    if (named > 0) {
+      print('   ✅ Star proper names: $named named out of ${stars.length}');
+    } else {
+      print('   ⚠️  Star proper names: none loaded'
+            ' (star_names.fab was empty or unparseable)'
+            ' — stars will use HIP-number identifiers');
+    }
+  }
 
   final westernLines    = IauLinesParser.parse(linesFile);
   final westernBounds   = IauBoundaryParser.parse(boundaryFile);

@@ -101,6 +101,8 @@ class StarDataService {
         dec: b.dec,
         mag: b.mag,
         colorIdx: b.colorIdx,
+        nameEn: b.nameEn,
+        nameZh: b.nameZh,
       );
     }).toList()
       ..sort((a, b) => a.magnitude.compareTo(b.magnitude));

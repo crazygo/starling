@@ -29,6 +29,8 @@ class StarRecord {
   final double dec;       // Declination, degrees (−90–+90)
   final double mag;       // Visual magnitude (Vmag)
   final double colorIdx;  // B−V colour index
+  final String? nameEn;   // Western proper name (null if unnamed)
+  final String? nameZh;   // Chinese proper name (null if unnamed)
 
   const StarRecord({
     required this.hip,
@@ -36,7 +38,29 @@ class StarRecord {
     required this.dec,
     required this.mag,
     required this.colorIdx,
+    this.nameEn,
+    this.nameZh,
   });
+
+  /// Return a copy with the given name fields set.
+  ///
+  /// Note: passing `null` here retains the existing value; there is no way
+  /// to clear a name via this method.  This is intentional — in the pipeline
+  /// names are only ever added, never removed.
+  StarRecord copyWith({
+    String? nameEn,
+    String? nameZh,
+  }) {
+    return StarRecord(
+      hip:      hip,
+      ra:       ra,
+      dec:      dec,
+      mag:      mag,
+      colorIdx: colorIdx,
+      nameEn:   nameEn   ?? this.nameEn,
+      nameZh:   nameZh   ?? this.nameZh,
+    );
+  }
 
   @override
   String toString() =>

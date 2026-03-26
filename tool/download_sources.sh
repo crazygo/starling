@@ -276,7 +276,43 @@ else
   fi
 fi
 
-# ── d. Stellarium Chinese skyculture ─────────────────────────────────────────
+# ── d. Western star proper names ─────────────────────────────────────────────
+# Source: Stellarium modern skyculture star_names.fab
+# Format: <hip>|_("<name>") <catalog-ids>
+# Saved as-is; the pipeline parser handles the format.
+
+echo ""
+echo "✨ Western star proper names (Stellarium modern skyculture)…"
+STAR_NAMES_TMP="$(mktemp /tmp/star_names_XXXXXX.fab)"
+
+if [[ -f "sources/iau/star_names.fab" ]]; then
+  echo "   ⏭  star_names.fab already exists, skipping"
+else
+  mkdir -p sources/iau
+
+  # Try master first; fall back to a known-good tagged release.
+  if curl --fail --silent --show-error --location \
+      --connect-timeout 15 --max-time 60 \
+      --output "$STAR_NAMES_TMP" \
+      "https://raw.githubusercontent.com/Stellarium/stellarium/master/skycultures/modern/star_names.fab" 2>/dev/null; then
+    cp "$STAR_NAMES_TMP" "sources/iau/star_names.fab"
+    echo "   ✅ Saved → sources/iau/star_names.fab (from master)"
+  elif curl --fail --silent --show-error --location \
+      --connect-timeout 15 --max-time 60 \
+      --output "$STAR_NAMES_TMP" \
+      "https://raw.githubusercontent.com/Stellarium/stellarium/refs/tags/v23.4/skycultures/modern/star_names.fab" 2>/dev/null; then
+    cp "$STAR_NAMES_TMP" "sources/iau/star_names.fab"
+    echo "   ✅ Saved → sources/iau/star_names.fab (from v23.4)"
+  else
+    # Not fatal — stars will fall back to "HIP <number>" identifiers.
+    touch "sources/iau/star_names.fab"
+    echo "   ⚠️  Could not download star_names.fab — created empty placeholder"
+    echo "      Stars will fall back to HIP-number identifiers."
+  fi
+fi
+rm -f "$STAR_NAMES_TMP"
+
+# ── e. Stellarium Chinese skyculture ─────────────────────────────────────────
 # Source: Stellarium GitHub skycultures/chinese/
 
 echo ""
