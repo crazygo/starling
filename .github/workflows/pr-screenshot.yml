@@ -8,8 +8,8 @@ jobs:
   screenshot:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write
-      contents: read
+      issues: write
+      contents: write
 
     steps:
       # 1. Checkout
@@ -59,55 +59,13 @@ jobs:
           path: screenshots/
           retention-days: 7
 
-      # 7. 发 PR comment
-      - name: Comment on PR
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const artifactUrl = `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-
-            // List screenshots that were actually generated
-            const screenshotFiles = fs.existsSync('screenshots')
-              ? fs.readdirSync('screenshots').filter(f => f.endsWith('.png'))
-              : [];
-
-            const body = [
-              '## 📸 页面截图预览',
-              '',
-              `构建时间：${new Date().toISOString().replace('T', ' ').slice(0, 19)} UTC`,
-              `分支：\`${context.payload.pull_request.head.ref}\``,
-              '',
-              '截图已生成，可在以下链接下载查看：',
-              `👉 [下载截图 Artifact](${artifactUrl})`,
-              '',
-              '| 截图文件 |',
-              '|----------|',
-              ...screenshotFiles.map(f => `| \`${f}\` |`),
-              '',
-              '<!-- pr-screenshot-bot -->',
-            ].join('\n');
-
-            const { data: comments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-            });
-
-            const existing = comments.find(c => c.body.includes('<!-- pr-screenshot-bot -->'));
-
-            if (existing) {
-              await github.rest.issues.updateComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                comment_id: existing.id,
-                body,
-              });
-            } else {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body,
-              });
-            }
+      # 7. 发布截图并更新 PR comment
+      - name: Publish screenshots to PR comment
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: node .github/scripts/publish_pr_screenshots.js
