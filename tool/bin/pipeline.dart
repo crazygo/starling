@@ -97,10 +97,10 @@ void main(List<String> args) {
   final chineseAsterisms = StellariumChineseParser.parse(chineseDir);
   print('   ✅ Chinese asterisms: ${chineseAsterisms.length}');
 
-  // Merge Chinese proper star names if star_names.fab is present (optional).
-  final chineseStarNamesFile = File('${chineseDir.path}/star_names.fab');
+  // Merge Chinese proper star names from index.json (optional).
+  final chineseIndexFile = File('${chineseDir.path}/index.json');
   final chineseNameMap =
-      StellariumChineseParser.parseStarNames(chineseStarNamesFile);
+      StellariumChineseParser.parseStarNames(chineseIndexFile);
   if (chineseNameMap.isNotEmpty) {
     stars = stars.map((s) {
       final names = chineseNameMap[s.hip];
@@ -110,7 +110,7 @@ void main(List<String> args) {
     print('   ✅ Chinese star names: $namedZh named out of ${stars.length}');
   } else {
     print('   ⚠️  Chinese star names: none loaded'
-          ' (star_names.fab was empty or absent)'
+          ' (index.json was empty or absent)'
           ' — Chinese mode will fall back to English names');
   }
 

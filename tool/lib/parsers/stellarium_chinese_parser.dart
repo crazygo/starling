@@ -56,16 +56,39 @@ class StellariumChineseParser {
     );
   }
 
-  /// Parse Chinese star names from [file] (`star_names.fab`).
+  /// Parse Chinese star names from the `index.json` [file].
   ///
+  /// The `common_names` section maps `"HIP <number>"` → list of name objects.
+  /// Each name object has `native` (Chinese characters) and `english` fields.
   /// Returns a map of HIP number → `(nameZh, nameEn)`.
   /// The file is optional — an empty map is returned when it is absent.
   static Map<int, (String, String)> parseStarNames(File file) {
-    final starNameMap = <int, (String, String)>{};
-    if (file.existsSync()) {
-      _parseStarNames(file, starNameMap);
+    final result = <int, (String, String)>{};
+    if (!file.existsSync()) return result;
+    try {
+      final json = jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
+      final commonNames =
+          json['common_names'] as Map<String, dynamic>? ?? const {};
+      for (final entry in commonNames.entries) {
+        // Keys are like "HIP 43", "HIP 124", etc.
+        final key = entry.key.trim();
+        if (!key.startsWith('HIP ')) continue;
+        final hip = int.tryParse(key.substring(4));
+        if (hip == null) continue;
+        final names = entry.value;
+        if (names is! List || names.isEmpty) continue;
+        final first = names[0];
+        if (first is! Map<String, dynamic>) continue;
+        final nameZh = first['native']?.toString();
+        final nameEn = first['english']?.toString();
+        if (nameZh == null || nameZh.isEmpty) continue;
+        // Only store the first occurrence for each HIP.
+        result.putIfAbsent(hip, () => (nameZh, nameEn ?? ''));
+      }
+    } catch (_) {
+      // index.json is optional – ignore parse errors.
     }
-    return starNameMap;
+    return result;
   }
 
   // ── Private helpers ─────────────────────────────────────────────────────
