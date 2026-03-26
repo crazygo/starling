@@ -37,7 +37,7 @@ jobs:
             const headSha = process.env.HEAD_SHA;
             const prNumber = Number(process.env.PR_NUMBER);
             const startedAt = Date.now();
-            const discoveryWindowMs = 2 * 60 * 1000;
+            const checkDiscoveryWindowMs = 2 * 60 * 1000;
             const pollDelayMs = 30 * 1000;
             const timeoutMs = 30 * 60 * 1000;
 
@@ -92,7 +92,7 @@ jobs:
               const pendingStatuses = relevantStatuses.filter((status) => status.state === 'pending');
               const failingStatuses = relevantStatuses.filter((status) => ['error', 'failure'].includes(status.state));
 
-              if (!hasRelevantChecks && Date.now() - startedAt >= discoveryWindowMs) {
+              if (!hasRelevantChecks && Date.now() - startedAt >= checkDiscoveryWindowMs) {
                 core.info('No other status checks were discovered for this pull request. Continuing with the Copilot review.');
                 break;
               }
@@ -185,7 +185,7 @@ jobs:
           )
           Path('/tmp/copilot-prompt.txt').write_text(prompt)
           PY
-          copilot -p "$(cat /tmp/copilot-prompt.txt)" --allow-tool='shell(cat:*)' --allow-tool=write --no-ask-user
+          copilot -p "$(cat /tmp/copilot-prompt.txt)" -s --add-dir=/tmp --allow-tool='shell(cat:*)' --allow-tool=write --no-ask-user
 
       - name: Post Copilot review comment
         uses: actions/github-script@v7
