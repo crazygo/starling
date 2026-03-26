@@ -54,22 +54,14 @@ class _DailyCardsPageState extends State<DailyCardsPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF05091A),
         elevation: 0,
-        title: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '每日星空',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              'Daily Cards',
-              style: TextStyle(color: Colors.blueGrey, fontSize: 12),
-            ),
-          ],
+        centerTitle: false,
+        title: const Text(
+          '每日星空',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: _loading

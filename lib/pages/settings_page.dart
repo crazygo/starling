@@ -22,22 +22,13 @@ class SettingsPage extends StatelessWidget {
         backgroundColor: const Color(0xFF05091A),
         elevation: 0,
         centerTitle: false,
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.settingsTitle,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              l10n.settingsSubtitle,
-              style: const TextStyle(color: Colors.blueGrey, fontSize: 12),
-            ),
-          ],
+        title: Text(
+          l10n.settingsTitle,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: ListView(
