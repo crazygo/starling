@@ -21,6 +21,45 @@ import '../../generated/stargazer_generated.dart' show Quadrant, Mansion;
 class StellariumChineseParser {
   StellariumChineseParser._();
 
+  /// Parse `common_names` from `index.json` in the Stellarium Chinese
+  /// sky-culture [directory] and return a map of HIP → Chinese proper name.
+  ///
+  /// Stars with multiple names take the first (primary) entry.
+  static Map<int, String> parseStarNames(Directory directory) {
+    final indexFile = File('${directory.path}/index.json');
+    if (!indexFile.existsSync()) return const {};
+
+    try {
+      final json =
+          jsonDecode(indexFile.readAsStringSync()) as Map<String, dynamic>;
+      final commonNames =
+          json['common_names'] as Map<String, dynamic>? ?? const {};
+
+      final result = <int, String>{};
+      for (final entry in commonNames.entries) {
+        // Key format: "HIP 12345"
+        final key = entry.key;
+        if (!key.startsWith('HIP ')) continue;
+        final hip = int.tryParse(key.substring(4));
+        if (hip == null) continue;
+
+        final names = entry.value as List<dynamic>? ?? const [];
+        if (names.isEmpty) continue;
+
+        final first = names[0] as Map<String, dynamic>;
+        final native = first['native']?.toString();
+        if (native != null && native.isNotEmpty) {
+          result.putIfAbsent(hip, () => native);
+        }
+      }
+      return result;
+    } catch (e) {
+      // index.json is optional — return empty map on parse errors.
+      stderr.writeln('⚠️  Could not parse Chinese star names: $e');
+      return const {};
+    }
+  }
+
   /// Parse the Stellarium Chinese sky-culture [directory] and return a list
   /// of [AsterismRecord]s.
   static List<AsterismRecord> parse(Directory directory) {

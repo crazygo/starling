@@ -94,6 +94,17 @@ void main(List<String> args) {
   final westernBounds   = IauBoundaryParser.parse(boundaryFile);
   print('   ✅ Western constellations: ${westernLines.length}');
 
+  // Merge Chinese star proper names from index.json common_names.
+  final chineseNameMap = StellariumChineseParser.parseStarNames(chineseDir);
+  if (chineseNameMap.isNotEmpty) {
+    stars = stars.map((s) {
+      final nameZh = chineseNameMap[s.hip];
+      return nameZh != null ? s.copyWith(nameZh: nameZh) : s;
+    }).toList(growable: false);
+    final named = stars.where((s) => s.nameZh != null).length;
+    print('   ✅ Chinese star names: $named named out of ${stars.length}');
+  }
+
   final chineseAsterisms = StellariumChineseParser.parse(chineseDir);
   print('   ✅ Chinese asterisms: ${chineseAsterisms.length}');
 
