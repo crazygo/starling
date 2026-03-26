@@ -38,8 +38,8 @@ class WesternStarNamesParser {
       // Extract the name from  _("<name>")
       final rest = trimmed.substring(pipeIdx + 1);
       final nameStart = rest.indexOf('_("');
-      final nameEnd   = rest.indexOf('")');
-      if (nameStart < 0 || nameEnd < 0 || nameEnd <= nameStart + 3) continue;
+      final nameEnd   = rest.indexOf('")', nameStart + 3);
+      if (nameStart < 0 || nameEnd < 0) continue;
 
       final name = rest.substring(nameStart + 3, nameEnd).trim();
       if (name.isEmpty) continue;

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../parsers/models.dart';
 
 /// Validates the integrity of parsed data against the acceptance criteria.
@@ -28,8 +30,7 @@ class IntegrityChecker {
       if (!validHips.contains(e.toHip))   orphans.add(e.toHip);
     }
     if (orphans.isNotEmpty) {
-      // ignore: avoid_print
-      print(
+      stderr.writeln(
         '   ⚠️  [$label] ${orphans.length} orphan hip_id(s) not in catalog '
         '(mag > cutoff?): ${orphans.take(10).toList()}'
         '${orphans.length > 10 ? "…" : ""}',

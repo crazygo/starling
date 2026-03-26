@@ -210,7 +210,7 @@ else
         "$BOUND_GZ_URL" 2>/dev/null; then
       echo "   ✅ Downloaded from $BOUND_GZ_URL"
       # RA is in degrees — divide by 15 to convert to hours.
-      zcat "$BOUND_GZ_TMP" | awk '
+      gzip -cd "$BOUND_GZ_TMP" | awk '
         /^[[:space:]]*$/ { next }
         NF >= 3 {
           ra_h = $1 / 15.0
