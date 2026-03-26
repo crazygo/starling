@@ -8,7 +8,7 @@
     "magnitude": -1.46,
     "spectralType": "A1V",
     "description": "The brightest star in the night sky, located in Canis Major.",
-    "constellation": "CMa"
+    "constellation": "canis_major"
   },
   {
     "id": "canopus",
@@ -19,7 +19,7 @@
     "magnitude": -0.74,
     "spectralType": "A9II",
     "description": "Second-brightest star, found in the constellation Carina.",
-    "constellation": "Car"
+    "constellation": "carina"
   },
   {
     "id": "hip_71683",
@@ -30,7 +30,7 @@
     "magnitude": -0.27,
     "spectralType": "G2V+K1V",
     "description": null,
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "arcturus",
@@ -41,7 +41,7 @@
     "magnitude": -0.05,
     "spectralType": "K1.5IIIpe",
     "description": "Brightest star in Boötes and fourth-brightest in the night sky.",
-    "constellation": "Boo"
+    "constellation": "bootes"
   },
   {
     "id": "vega",
@@ -52,7 +52,7 @@
     "magnitude": 0.03,
     "spectralType": "A0Va",
     "description": "Part of the Summer Triangle, in the constellation Lyra.",
-    "constellation": "Lyr"
+    "constellation": "lyra"
   },
   {
     "id": "capella",
@@ -63,7 +63,7 @@
     "magnitude": 0.08,
     "spectralType": "G8III+G0III",
     "description": "Brightest star in Auriga, sixth-brightest in the night sky.",
-    "constellation": "Aur"
+    "constellation": "auriga"
   },
   {
     "id": "rigel",
@@ -74,7 +74,7 @@
     "magnitude": 0.13,
     "spectralType": "B8Ia",
     "description": "Blue supergiant in Orion, representing the hunter's left foot.",
-    "constellation": "Ori"
+    "constellation": "orion"
   },
   {
     "id": "procyon",
@@ -85,7 +85,7 @@
     "magnitude": 0.34,
     "spectralType": "F5IV-V",
     "description": "Brightest star in Canis Minor and eighth-brightest overall.",
-    "constellation": "CMi"
+    "constellation": "canis_minor"
   },
   {
     "id": "achernar",
@@ -96,7 +96,7 @@
     "magnitude": 0.46,
     "spectralType": "B6Vep",
     "description": "Brightest star in Eridanus, known for its extremely rapid rotation.",
-    "constellation": "Eri"
+    "constellation": "eridanus"
   },
   {
     "id": "betelgeuse",
@@ -107,7 +107,7 @@
     "magnitude": 0.5,
     "spectralType": "M2Iab",
     "description": "Red supergiant in Orion marking the hunter's right shoulder.",
-    "constellation": "Ori"
+    "constellation": "orion"
   },
   {
     "id": "hadar",
@@ -118,7 +118,7 @@
     "magnitude": 0.61,
     "spectralType": "B1III",
     "description": "Second-brightest star in Centaurus.",
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "altair",
@@ -129,7 +129,7 @@
     "magnitude": 0.77,
     "spectralType": "A7V",
     "description": "Brightest star in Aquila and part of the Summer Triangle.",
-    "constellation": "Aql"
+    "constellation": "aquila"
   },
   {
     "id": "acrux",
@@ -140,7 +140,7 @@
     "magnitude": 0.77,
     "spectralType": "B0.5IV+B1V",
     "description": "Brightest star in the Southern Cross (Crux).",
-    "constellation": "Cru"
+    "constellation": "crux"
   },
   {
     "id": "aldebaran",
@@ -151,7 +151,7 @@
     "magnitude": 0.85,
     "spectralType": "K5+III",
     "description": "Brightest star in Taurus, the 'eye of the bull'.",
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "spica",
@@ -162,7 +162,7 @@
     "magnitude": 0.97,
     "spectralType": "B1V+B4V",
     "description": "Brightest star in Virgo; also known as Alpha Virginis.",
-    "constellation": "Vir"
+    "constellation": "virgo"
   },
   {
     "id": "antares",
@@ -173,7 +173,7 @@
     "magnitude": 1.09,
     "spectralType": "M1.5Iab",
     "description": "Red supergiant in Scorpius, rival of Mars in colour.",
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "pollux",
@@ -184,7 +184,7 @@
     "magnitude": 1.14,
     "spectralType": "K0IIIb",
     "description": "Brightest star in Gemini and the nearest giant star to the Sun.",
-    "constellation": "Gem"
+    "constellation": "gemini"
   },
   {
     "id": "fomalhaut",
@@ -195,7 +195,7 @@
     "magnitude": 1.16,
     "spectralType": "A3V",
     "description": "Brightest star in Piscis Austrinus, surrounded by a dusty disc.",
-    "constellation": "PsA"
+    "constellation": "piscis_austrinus"
   },
   {
     "id": "deneb",
@@ -206,7 +206,7 @@
     "magnitude": 1.25,
     "spectralType": "A2Ia",
     "description": "Brightest star in Cygnus and part of the Summer Triangle.",
-    "constellation": "Cyg"
+    "constellation": "cygnus"
   },
   {
     "id": "mimosa",
@@ -217,7 +217,7 @@
     "magnitude": 1.25,
     "spectralType": "B0.5III",
     "description": "Second-brightest star in the Southern Cross (Crux).",
-    "constellation": "Cru"
+    "constellation": "crux"
   },
   {
     "id": "regulus",
@@ -228,7 +228,7 @@
     "magnitude": 1.36,
     "spectralType": "B8IVn",
     "description": "Brightest star in Leo, also called the 'little king'.",
-    "constellation": "Leo"
+    "constellation": "leo"
   },
   {
     "id": "hip_33579",
@@ -239,7 +239,7 @@
     "magnitude": 1.5,
     "spectralType": "B2Iab",
     "description": null,
-    "constellation": "CMa"
+    "constellation": "canis_major"
   },
   {
     "id": "hip_36850",
@@ -250,7 +250,7 @@
     "magnitude": 1.58,
     "spectralType": "A2V",
     "description": null,
-    "constellation": "Gem"
+    "constellation": "gemini"
   },
   {
     "id": "hip_61084",
@@ -261,7 +261,7 @@
     "magnitude": 1.59,
     "spectralType": "M3.5III",
     "description": null,
-    "constellation": "Cru"
+    "constellation": "crux"
   },
   {
     "id": "hip_25336",
@@ -272,7 +272,7 @@
     "magnitude": 1.64,
     "spectralType": "B2III",
     "description": null,
-    "constellation": "Ori"
+    "constellation": "orion"
   },
   {
     "id": "hip_25428",
@@ -283,7 +283,7 @@
     "magnitude": 1.65,
     "spectralType": "B7III",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_45238",
@@ -294,7 +294,7 @@
     "magnitude": 1.68,
     "spectralType": "A2IV",
     "description": null,
-    "constellation": "Car"
+    "constellation": "carina"
   },
   {
     "id": "hip_26311",
@@ -305,7 +305,7 @@
     "magnitude": 1.7,
     "spectralType": "B0Ia",
     "description": null,
-    "constellation": "Ori"
+    "constellation": "orion"
   },
   {
     "id": "hip_109268",
@@ -316,7 +316,7 @@
     "magnitude": 1.74,
     "spectralType": "B7IV",
     "description": null,
-    "constellation": "Gru"
+    "constellation": "grus"
   },
   {
     "id": "hip_62956",
@@ -327,7 +327,7 @@
     "magnitude": 1.77,
     "spectralType": "A0pCr",
     "description": null,
-    "constellation": "UMa"
+    "constellation": "ursa_major"
   },
   {
     "id": "hip_26727",
@@ -338,7 +338,7 @@
     "magnitude": 1.77,
     "spectralType": "O9.5Ib",
     "description": null,
-    "constellation": "Ori"
+    "constellation": "orion"
   },
   {
     "id": "hip_39953",
@@ -349,7 +349,7 @@
     "magnitude": 1.78,
     "spectralType": "WC8+O",
     "description": null,
-    "constellation": "Vel"
+    "constellation": "vela"
   },
   {
     "id": "hip_15863",
@@ -360,7 +360,7 @@
     "magnitude": 1.79,
     "spectralType": "F5Ib",
     "description": null,
-    "constellation": "Per"
+    "constellation": "perseus"
   },
   {
     "id": "hip_90185",
@@ -371,7 +371,7 @@
     "magnitude": 1.79,
     "spectralType": "B9.5III",
     "description": null,
-    "constellation": "Sgr"
+    "constellation": "sagittarius"
   },
   {
     "id": "hip_54061",
@@ -382,7 +382,7 @@
     "magnitude": 1.79,
     "spectralType": "K0IIIa",
     "description": null,
-    "constellation": "UMa"
+    "constellation": "ursa_major"
   },
   {
     "id": "hip_41636",
@@ -393,7 +393,7 @@
     "magnitude": 1.83,
     "spectralType": "WC8+O9",
     "description": null,
-    "constellation": "Vel"
+    "constellation": "vela"
   },
   {
     "id": "hip_34444",
@@ -404,7 +404,7 @@
     "magnitude": 1.84,
     "spectralType": "F8Ia",
     "description": null,
-    "constellation": "CMa"
+    "constellation": "canis_major"
   },
   {
     "id": "hip_67301",
@@ -415,7 +415,7 @@
     "magnitude": 1.86,
     "spectralType": "B3V",
     "description": null,
-    "constellation": "UMa"
+    "constellation": "ursa_major"
   },
   {
     "id": "hip_41037",
@@ -426,7 +426,7 @@
     "magnitude": 1.86,
     "spectralType": "K3III",
     "description": null,
-    "constellation": "Car"
+    "constellation": "carina"
   },
   {
     "id": "hip_86670",
@@ -437,7 +437,7 @@
     "magnitude": 1.87,
     "spectralType": "F0II",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_28360",
@@ -448,7 +448,7 @@
     "magnitude": 1.9,
     "spectralType": "A2IV",
     "description": null,
-    "constellation": "Aur"
+    "constellation": "auriga"
   },
   {
     "id": "hip_82273",
@@ -459,7 +459,7 @@
     "magnitude": 1.92,
     "spectralType": "K4II",
     "description": null,
-    "constellation": "TrA"
+    "constellation": "triangulum_australe"
   },
   {
     "id": "hip_32246",
@@ -470,7 +470,7 @@
     "magnitude": 1.93,
     "spectralType": "A0IV",
     "description": null,
-    "constellation": "Gem"
+    "constellation": "gemini"
   },
   {
     "id": "hip_100751",
@@ -481,7 +481,7 @@
     "magnitude": 1.94,
     "spectralType": "B2IV",
     "description": null,
-    "constellation": "Pav"
+    "constellation": "pavo"
   },
   {
     "id": "hip_42913",
@@ -492,7 +492,7 @@
     "magnitude": 1.96,
     "spectralType": "A1V",
     "description": null,
-    "constellation": "Vel"
+    "constellation": "vela"
   },
   {
     "id": "hip_11767",
@@ -503,7 +503,7 @@
     "magnitude": 1.97,
     "spectralType": "F7Ib",
     "description": null,
-    "constellation": "UMi"
+    "constellation": "ursa_minor"
   },
   {
     "id": "hip_30324",
@@ -514,7 +514,7 @@
     "magnitude": 1.98,
     "spectralType": "B1II-III",
     "description": null,
-    "constellation": "CMa"
+    "constellation": "canis_major"
   },
   {
     "id": "hip_46390",
@@ -525,7 +525,7 @@
     "magnitude": 1.98,
     "spectralType": "K3II-III",
     "description": null,
-    "constellation": "Hya"
+    "constellation": "hydra"
   },
   {
     "id": "hip_9884",
@@ -536,7 +536,7 @@
     "magnitude": 2.01,
     "spectralType": "K2IIIb",
     "description": null,
-    "constellation": "Ari"
+    "constellation": "aries"
   },
   {
     "id": "hip_50583",
@@ -547,7 +547,7 @@
     "magnitude": 2.01,
     "spectralType": "K0IIIb",
     "description": null,
-    "constellation": "Leo"
+    "constellation": "leo"
   },
   {
     "id": "hip_3419",
@@ -558,7 +558,7 @@
     "magnitude": 2.04,
     "spectralType": "K0III",
     "description": null,
-    "constellation": "Cet"
+    "constellation": "cetus"
   },
   {
     "id": "hip_65378",
@@ -569,7 +569,7 @@
     "magnitude": 2.04,
     "spectralType": "A2V",
     "description": null,
-    "constellation": "UMa"
+    "constellation": "ursa_major"
   },
   {
     "id": "hip_92855",
@@ -580,7 +580,7 @@
     "magnitude": 2.05,
     "spectralType": "B2.5V",
     "description": null,
-    "constellation": "Sgr"
+    "constellation": "sagittarius"
   },
   {
     "id": "hip_68933",
@@ -591,7 +591,7 @@
     "magnitude": 2.06,
     "spectralType": "K0IIIb",
     "description": null,
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "hip_677",
@@ -602,7 +602,7 @@
     "magnitude": 2.07,
     "spectralType": "B8IVpMnHg",
     "description": null,
-    "constellation": "And"
+    "constellation": "andromeda"
   },
   {
     "id": "hip_27366",
@@ -613,7 +613,7 @@
     "magnitude": 2.07,
     "spectralType": "B0.5Ia",
     "description": null,
-    "constellation": "Ori"
+    "constellation": "orion"
   },
   {
     "id": "hip_5447",
@@ -624,7 +624,7 @@
     "magnitude": 2.07,
     "spectralType": "M0IIIvar",
     "description": null,
-    "constellation": "And"
+    "constellation": "andromeda"
   },
   {
     "id": "hip_79593",
@@ -635,7 +635,7 @@
     "magnitude": 2.08,
     "spectralType": "A5III",
     "description": null,
-    "constellation": "Oph"
+    "constellation": "ophiuchus"
   },
   {
     "id": "hip_85822",
@@ -646,7 +646,7 @@
     "magnitude": 2.08,
     "spectralType": "K4III",
     "description": null,
-    "constellation": "UMi"
+    "constellation": "ursa_minor"
   },
   {
     "id": "hip_14576",
@@ -657,7 +657,7 @@
     "magnitude": 2.09,
     "spectralType": "B8V",
     "description": null,
-    "constellation": "Per"
+    "constellation": "perseus"
   },
   {
     "id": "hip_54872",
@@ -668,7 +668,7 @@
     "magnitude": 2.14,
     "spectralType": "A3Vvar",
     "description": null,
-    "constellation": "Leo"
+    "constellation": "leo"
   },
   {
     "id": "hip_110893",
@@ -679,7 +679,7 @@
     "magnitude": 2.15,
     "spectralType": "M3III",
     "description": null,
-    "constellation": "Gru"
+    "constellation": "grus"
   },
   {
     "id": "hip_9640",
@@ -690,7 +690,7 @@
     "magnitude": 2.17,
     "spectralType": "K3IIb",
     "description": null,
-    "constellation": "And"
+    "constellation": "andromeda"
   },
   {
     "id": "hip_58952",
@@ -701,7 +701,7 @@
     "magnitude": 2.2,
     "spectralType": "A1V",
     "description": null,
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "hip_44816",
@@ -712,7 +712,7 @@
     "magnitude": 2.21,
     "spectralType": "K5Ib",
     "description": null,
-    "constellation": "Vel"
+    "constellation": "vela"
   },
   {
     "id": "hip_39429",
@@ -723,7 +723,7 @@
     "magnitude": 2.21,
     "spectralType": "O4If",
     "description": null,
-    "constellation": "Pup"
+    "constellation": "puppis"
   },
   {
     "id": "hip_100453",
@@ -734,7 +734,7 @@
     "magnitude": 2.23,
     "spectralType": "F8Ib",
     "description": null,
-    "constellation": "Cyg"
+    "constellation": "cygnus"
   },
   {
     "id": "hip_76267",
@@ -745,7 +745,7 @@
     "magnitude": 2.24,
     "spectralType": "A0V",
     "description": null,
-    "constellation": "CrB"
+    "constellation": "corona_borealis"
   },
   {
     "id": "hip_3179",
@@ -756,7 +756,7 @@
     "magnitude": 2.24,
     "spectralType": "K0IIa",
     "description": null,
-    "constellation": "Cas"
+    "constellation": "cassiopeia"
   },
   {
     "id": "hip_87585",
@@ -767,7 +767,7 @@
     "magnitude": 2.24,
     "spectralType": "K5III",
     "description": null,
-    "constellation": "Dra"
+    "constellation": "draco"
   },
   {
     "id": "hip_25930",
@@ -778,7 +778,7 @@
     "magnitude": 2.25,
     "spectralType": "O9.5II",
     "description": null,
-    "constellation": "Ori"
+    "constellation": "orion"
   },
   {
     "id": "hip_746",
@@ -789,7 +789,7 @@
     "magnitude": 2.27,
     "spectralType": "F2III",
     "description": null,
-    "constellation": "Cas"
+    "constellation": "cassiopeia"
   },
   {
     "id": "hip_80582",
@@ -800,7 +800,7 @@
     "magnitude": 2.29,
     "spectralType": "K2IIIb",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_87073",
@@ -811,7 +811,7 @@
     "magnitude": 2.3,
     "spectralType": "B2IV",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_73273",
@@ -822,7 +822,7 @@
     "magnitude": 2.3,
     "spectralType": "B1.5III",
     "description": null,
-    "constellation": "Lup"
+    "constellation": "lupus"
   },
   {
     "id": "hip_59196",
@@ -833,7 +833,7 @@
     "magnitude": 2.3,
     "spectralType": "B1III",
     "description": null,
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "hip_65936",
@@ -844,7 +844,7 @@
     "magnitude": 2.31,
     "spectralType": "B1.5Vne",
     "description": null,
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "hip_79882",
@@ -855,7 +855,7 @@
     "magnitude": 2.32,
     "spectralType": "B0.2IV",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_53910",
@@ -866,7 +866,7 @@
     "magnitude": 2.34,
     "spectralType": "A1V",
     "description": null,
-    "constellation": "UMa"
+    "constellation": "ursa_major"
   },
   {
     "id": "hip_72105",
@@ -877,7 +877,7 @@
     "magnitude": 2.35,
     "spectralType": "K0IIvar",
     "description": null,
-    "constellation": "Boo"
+    "constellation": "bootes"
   },
   {
     "id": "hip_107315",
@@ -888,7 +888,7 @@
     "magnitude": 2.39,
     "spectralType": "K2Ib",
     "description": null,
-    "constellation": "Peg"
+    "constellation": "pegasus"
   },
   {
     "id": "hip_2081",
@@ -899,7 +899,7 @@
     "magnitude": 2.4,
     "spectralType": "K0IIIb",
     "description": null,
-    "constellation": "Phe"
+    "constellation": "phoenix"
   },
   {
     "id": "hip_109427",
@@ -910,7 +910,7 @@
     "magnitude": 2.42,
     "spectralType": "M2.5II-III",
     "description": null,
-    "constellation": "Peg"
+    "constellation": "pegasus"
   },
   {
     "id": "hip_84970",
@@ -921,7 +921,7 @@
     "magnitude": 2.43,
     "spectralType": "A2.5V",
     "description": null,
-    "constellation": "Oph"
+    "constellation": "ophiuchus"
   },
   {
     "id": "hip_58001",
@@ -932,7 +932,7 @@
     "magnitude": 2.44,
     "spectralType": "A0Ve",
     "description": null,
-    "constellation": "UMa"
+    "constellation": "ursa_major"
   },
   {
     "id": "hip_105199",
@@ -943,7 +943,7 @@
     "magnitude": 2.45,
     "spectralType": "A7IV-V",
     "description": null,
-    "constellation": "Cep"
+    "constellation": "cepheus"
   },
   {
     "id": "hip_33160",
@@ -954,7 +954,7 @@
     "magnitude": 2.45,
     "spectralType": "B5Ia",
     "description": null,
-    "constellation": "CMa"
+    "constellation": "canis_major"
   },
   {
     "id": "hip_102488",
@@ -965,7 +965,7 @@
     "magnitude": 2.46,
     "spectralType": "K0III",
     "description": null,
-    "constellation": "Cyg"
+    "constellation": "cygnus"
   },
   {
     "id": "hip_3821",
@@ -976,7 +976,7 @@
     "magnitude": 2.47,
     "spectralType": "B0.5IVpe",
     "description": null,
-    "constellation": "Cas"
+    "constellation": "cassiopeia"
   },
   {
     "id": "hip_112447",
@@ -987,7 +987,7 @@
     "magnitude": 2.49,
     "spectralType": "B9.5III",
     "description": null,
-    "constellation": "Peg"
+    "constellation": "pegasus"
   },
   {
     "id": "hip_44382",
@@ -998,7 +998,7 @@
     "magnitude": 2.5,
     "spectralType": "B2IV-V",
     "description": null,
-    "constellation": "Vel"
+    "constellation": "vela"
   },
   {
     "id": "hip_12387",
@@ -1009,7 +1009,7 @@
     "magnitude": 2.54,
     "spectralType": "M1.5IIIa",
     "description": null,
-    "constellation": "Cet"
+    "constellation": "cetus"
   },
   {
     "id": "hip_61932",
@@ -1020,7 +1020,7 @@
     "magnitude": 2.55,
     "spectralType": "B2.5IV",
     "description": null,
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "hip_57632",
@@ -1031,7 +1031,7 @@
     "magnitude": 2.56,
     "spectralType": "A4V",
     "description": null,
-    "constellation": "Leo"
+    "constellation": "leo"
   },
   {
     "id": "hip_25985",
@@ -1042,7 +1042,7 @@
     "magnitude": 2.58,
     "spectralType": "F0Ib",
     "description": null,
-    "constellation": "Lep"
+    "constellation": "lepus"
   },
   {
     "id": "hip_89931",
@@ -1053,7 +1053,7 @@
     "magnitude": 2.59,
     "spectralType": "A2.5Va",
     "description": null,
-    "constellation": "Sgr"
+    "constellation": "sagittarius"
   },
   {
     "id": "hip_59803",
@@ -1064,7 +1064,7 @@
     "magnitude": 2.59,
     "spectralType": "B8III",
     "description": null,
-    "constellation": "Crv"
+    "constellation": "corvus"
   },
   {
     "id": "hip_74785",
@@ -1075,7 +1075,7 @@
     "magnitude": 2.61,
     "spectralType": "B8V",
     "description": null,
-    "constellation": "Lib"
+    "constellation": "libra"
   },
   {
     "id": "hip_82396",
@@ -1086,7 +1086,7 @@
     "magnitude": 2.62,
     "spectralType": "B0.5III",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_23767",
@@ -1097,7 +1097,7 @@
     "magnitude": 2.62,
     "spectralType": "A0p",
     "description": null,
-    "constellation": "Aur"
+    "constellation": "auriga"
   },
   {
     "id": "hip_77450",
@@ -1108,7 +1108,7 @@
     "magnitude": 2.65,
     "spectralType": "K2IIIb",
     "description": null,
-    "constellation": "Ser"
+    "constellation": "serpens"
   },
   {
     "id": "hip_26634",
@@ -1119,7 +1119,7 @@
     "magnitude": 2.65,
     "spectralType": "B7IVe",
     "description": null,
-    "constellation": "Col"
+    "constellation": "columba"
   },
   {
     "id": "hip_8903",
@@ -1130,7 +1130,7 @@
     "magnitude": 2.66,
     "spectralType": "A5V",
     "description": null,
-    "constellation": "Ari"
+    "constellation": "aries"
   },
   {
     "id": "hip_6686",
@@ -1141,7 +1141,7 @@
     "magnitude": 2.68,
     "spectralType": "A5III",
     "description": null,
-    "constellation": "Cas"
+    "constellation": "cassiopeia"
   },
   {
     "id": "hip_75177",
@@ -1152,7 +1152,7 @@
     "magnitude": 2.68,
     "spectralType": "B2III",
     "description": null,
-    "constellation": "Lup"
+    "constellation": "lupus"
   },
   {
     "id": "hip_61199",
@@ -1163,7 +1163,7 @@
     "magnitude": 2.69,
     "spectralType": "B2IV",
     "description": null,
-    "constellation": "Mus"
+    "constellation": "musca"
   },
   {
     "id": "hip_85927",
@@ -1174,7 +1174,7 @@
     "magnitude": 2.7,
     "spectralType": "B2IV",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_93805",
@@ -1185,7 +1185,7 @@
     "magnitude": 2.72,
     "spectralType": "K3II",
     "description": null,
-    "constellation": "Aql"
+    "constellation": "aquila"
   },
   {
     "id": "hip_81266",
@@ -1196,7 +1196,7 @@
     "magnitude": 2.72,
     "spectralType": "K3III",
     "description": null,
-    "constellation": "Sgr"
+    "constellation": "sagittarius"
   },
   {
     "id": "hip_63608",
@@ -1207,7 +1207,7 @@
     "magnitude": 2.74,
     "spectralType": "F0V",
     "description": null,
-    "constellation": "Vir"
+    "constellation": "virgo"
   },
   {
     "id": "hip_84012",
@@ -1218,7 +1218,7 @@
     "magnitude": 2.74,
     "spectralType": "M1III",
     "description": null,
-    "constellation": "Oph"
+    "constellation": "ophiuchus"
   },
   {
     "id": "hip_61281",
@@ -1229,7 +1229,7 @@
     "magnitude": 2.74,
     "spectralType": "G8III",
     "description": null,
-    "constellation": "Dra"
+    "constellation": "draco"
   },
   {
     "id": "hip_72622",
@@ -1240,7 +1240,7 @@
     "magnitude": 2.75,
     "spectralType": "A3IV",
     "description": null,
-    "constellation": "Lib"
+    "constellation": "libra"
   },
   {
     "id": "hip_84345",
@@ -1251,7 +1251,7 @@
     "magnitude": 2.77,
     "spectralType": "G7IIIa",
     "description": null,
-    "constellation": "Her"
+    "constellation": "hercules"
   },
   {
     "id": "hip_76297",
@@ -1262,7 +1262,7 @@
     "magnitude": 2.78,
     "spectralType": "B2IV",
     "description": null,
-    "constellation": "Lup"
+    "constellation": "lupus"
   },
   {
     "id": "hip_94376",
@@ -1273,7 +1273,7 @@
     "magnitude": 2.79,
     "spectralType": "G2II-III",
     "description": null,
-    "constellation": "Dra"
+    "constellation": "draco"
   },
   {
     "id": "hip_17378",
@@ -1284,7 +1284,7 @@
     "magnitude": 2.79,
     "spectralType": "A3IIIvar",
     "description": null,
-    "constellation": "Eri"
+    "constellation": "eridanus"
   },
   {
     "id": "hip_9236",
@@ -1295,7 +1295,7 @@
     "magnitude": 2.8,
     "spectralType": "G2IV",
     "description": null,
-    "constellation": "Hyi"
+    "constellation": "hydrus"
   },
   {
     "id": "hip_80816",
@@ -1306,7 +1306,7 @@
     "magnitude": 2.81,
     "spectralType": "F9IV",
     "description": null,
-    "constellation": "Her"
+    "constellation": "hercules"
   },
   {
     "id": "hip_38170",
@@ -1317,7 +1317,7 @@
     "magnitude": 2.81,
     "spectralType": "F6IIp",
     "description": null,
-    "constellation": "Pup"
+    "constellation": "puppis"
   },
   {
     "id": "hip_92041",
@@ -1328,7 +1328,7 @@
     "magnitude": 2.82,
     "spectralType": "K1.5IIIb",
     "description": null,
-    "constellation": "Sgr"
+    "constellation": "sagittarius"
   },
   {
     "id": "hip_78820",
@@ -1339,7 +1339,7 @@
     "magnitude": 2.82,
     "spectralType": "B0.2V",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_57757",
@@ -1350,7 +1350,7 @@
     "magnitude": 2.83,
     "spectralType": "G9IIIab",
     "description": null,
-    "constellation": "Vir"
+    "constellation": "virgo"
   },
   {
     "id": "hip_113881",
@@ -1361,7 +1361,7 @@
     "magnitude": 2.83,
     "spectralType": "B2IV",
     "description": null,
-    "constellation": "Peg"
+    "constellation": "pegasus"
   },
   {
     "id": "hip_68520",
@@ -1372,7 +1372,7 @@
     "magnitude": 2.83,
     "spectralType": "G9III",
     "description": null,
-    "constellation": "Vir"
+    "constellation": "virgo"
   },
   {
     "id": "hip_27288",
@@ -1383,7 +1383,7 @@
     "magnitude": 2.84,
     "spectralType": "G5II",
     "description": null,
-    "constellation": "Lep"
+    "constellation": "lepus"
   },
   {
     "id": "hip_83081",
@@ -1394,7 +1394,7 @@
     "magnitude": 2.84,
     "spectralType": "K3Ib",
     "description": null,
-    "constellation": "Ara"
+    "constellation": "ara"
   },
   {
     "id": "hip_85727",
@@ -1405,7 +1405,7 @@
     "magnitude": 2.84,
     "spectralType": "B2Vne",
     "description": null,
-    "constellation": "Ara"
+    "constellation": "ara"
   },
   {
     "id": "hip_100064",
@@ -1416,7 +1416,7 @@
     "magnitude": 2.85,
     "spectralType": "A5mA9",
     "description": null,
-    "constellation": "Cap"
+    "constellation": "capricornus"
   },
   {
     "id": "hip_74946",
@@ -1427,7 +1427,7 @@
     "magnitude": 2.85,
     "spectralType": "F2V",
     "description": null,
-    "constellation": "TrA"
+    "constellation": "triangulum_australe"
   },
   {
     "id": "hip_18532",
@@ -1438,7 +1438,7 @@
     "magnitude": 2.86,
     "spectralType": "B1Ib",
     "description": null,
-    "constellation": "Per"
+    "constellation": "perseus"
   },
   {
     "id": "hip_17678",
@@ -1449,7 +1449,7 @@
     "magnitude": 2.86,
     "spectralType": "F0V",
     "description": null,
-    "constellation": "Hyi"
+    "constellation": "hydrus"
   },
   {
     "id": "hip_17702",
@@ -1460,7 +1460,7 @@
     "magnitude": 2.87,
     "spectralType": "B7IIIe",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_94779",
@@ -1471,7 +1471,7 @@
     "magnitude": 2.87,
     "spectralType": "B9.5IVn",
     "description": null,
-    "constellation": "Cyg"
+    "constellation": "cygnus"
   },
   {
     "id": "hip_37740",
@@ -1482,7 +1482,7 @@
     "magnitude": 2.87,
     "spectralType": "M3IIIa",
     "description": null,
-    "constellation": "Gem"
+    "constellation": "gemini"
   },
   {
     "id": "hip_110130",
@@ -1493,7 +1493,7 @@
     "magnitude": 2.87,
     "spectralType": "K3III",
     "description": null,
-    "constellation": "Tuc"
+    "constellation": "tucana"
   },
   {
     "id": "hip_29655",
@@ -1504,7 +1504,7 @@
     "magnitude": 2.87,
     "spectralType": "M3III",
     "description": null,
-    "constellation": "Gem"
+    "constellation": "gemini"
   },
   {
     "id": "hip_17358",
@@ -1515,7 +1515,7 @@
     "magnitude": 2.89,
     "spectralType": "B0.5IIIe",
     "description": null,
-    "constellation": "Per"
+    "constellation": "perseus"
   },
   {
     "id": "hip_78401",
@@ -1526,7 +1526,7 @@
     "magnitude": 2.89,
     "spectralType": "B1V",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_88635",
@@ -1537,7 +1537,7 @@
     "magnitude": 2.89,
     "spectralType": "F2II",
     "description": null,
-    "constellation": "Sgr"
+    "constellation": "sagittarius"
   },
   {
     "id": "hip_77952",
@@ -1548,7 +1548,7 @@
     "magnitude": 2.89,
     "spectralType": "A1V",
     "description": null,
-    "constellation": "TrA"
+    "constellation": "triangulum_australe"
   },
   {
     "id": "hip_63125",
@@ -1559,7 +1559,7 @@
     "magnitude": 2.89,
     "spectralType": "A0pSiSrHg",
     "description": null,
-    "constellation": "CVn"
+    "constellation": "canes_venatici"
   },
   {
     "id": "hip_106278",
@@ -1570,7 +1570,7 @@
     "magnitude": 2.91,
     "spectralType": "G0Ib",
     "description": null,
-    "constellation": "Aqr"
+    "constellation": "aquarius"
   },
   {
     "id": "hip_112029",
@@ -1581,7 +1581,7 @@
     "magnitude": 2.94,
     "spectralType": "G2II",
     "description": null,
-    "constellation": "Peg"
+    "constellation": "pegasus"
   },
   {
     "id": "hip_60965",
@@ -1592,7 +1592,7 @@
     "magnitude": 2.95,
     "spectralType": "A0IV",
     "description": null,
-    "constellation": "Crv"
+    "constellation": "corvus"
   },
   {
     "id": "hip_61359",
@@ -1603,7 +1603,7 @@
     "magnitude": 2.95,
     "spectralType": "B9.5V",
     "description": null,
-    "constellation": "Crv"
+    "constellation": "corvus"
   },
   {
     "id": "hip_109074",
@@ -1614,7 +1614,7 @@
     "magnitude": 2.96,
     "spectralType": "G2Ib",
     "description": null,
-    "constellation": "Aqr"
+    "constellation": "aquarius"
   },
   {
     "id": "hip_50335",
@@ -1625,7 +1625,7 @@
     "magnitude": 2.98,
     "spectralType": "G1II",
     "description": null,
-    "constellation": "Leo"
+    "constellation": "leo"
   },
   {
     "id": "hip_97804",
@@ -1636,7 +1636,7 @@
     "magnitude": 2.99,
     "spectralType": "A0Vn",
     "description": null,
-    "constellation": "Aql"
+    "constellation": "aquila"
   },
   {
     "id": "hip_51069",
@@ -1647,7 +1647,7 @@
     "magnitude": 3.0,
     "spectralType": "G8III",
     "description": null,
-    "constellation": "Hya"
+    "constellation": "hydra"
   },
   {
     "id": "hip_8916",
@@ -1658,7 +1658,7 @@
     "magnitude": 3.0,
     "spectralType": "A5III",
     "description": null,
-    "constellation": "Tri"
+    "constellation": "triangulum"
   },
   {
     "id": "hip_36188",
@@ -1669,7 +1669,18 @@
     "magnitude": 3.01,
     "spectralType": "G8Ib",
     "description": null,
-    "constellation": "Gem"
+    "constellation": "gemini"
+  },
+  {
+    "id": "hip_36284",
+    "name": "Gomeisa",
+    "chineseName": null,
+    "rightAscension": 111.788,
+    "declination": 8.289,
+    "magnitude": 2.89,
+    "spectralType": "B8Ve",
+    "description": null,
+    "constellation": "canis_minor"
   },
   {
     "id": "hip_20889",
@@ -1680,7 +1691,7 @@
     "magnitude": 3.01,
     "spectralType": "B2IVpe",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_71795",
@@ -1691,7 +1702,7 @@
     "magnitude": 3.03,
     "spectralType": "A7III",
     "description": null,
-    "constellation": "Boo"
+    "constellation": "bootes"
   },
   {
     "id": "hip_71860",
@@ -1702,7 +1713,7 @@
     "magnitude": 3.04,
     "spectralType": "B2IVne",
     "description": null,
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "hip_12770",
@@ -1713,7 +1724,7 @@
     "magnitude": 3.04,
     "spectralType": "M7IIIe",
     "description": null,
-    "constellation": "Cet"
+    "constellation": "cetus"
   },
   {
     "id": "hip_79822",
@@ -1724,7 +1735,7 @@
     "magnitude": 3.05,
     "spectralType": "A2V",
     "description": null,
-    "constellation": "UMi"
+    "constellation": "ursa_minor"
   },
   {
     "id": "hip_61585",
@@ -1735,7 +1746,7 @@
     "magnitude": 3.05,
     "spectralType": "B2V",
     "description": null,
-    "constellation": "Mus"
+    "constellation": "musca"
   },
   {
     "id": "hip_85670",
@@ -1746,7 +1757,7 @@
     "magnitude": 3.07,
     "spectralType": "G9III",
     "description": null,
-    "constellation": "Dra"
+    "constellation": "draco"
   },
   {
     "id": "hip_85696",
@@ -1757,7 +1768,7 @@
     "magnitude": 3.08,
     "spectralType": "B1.5IV",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_95947",
@@ -1768,7 +1779,7 @@
     "magnitude": 3.08,
     "spectralType": "K3II",
     "description": null,
-    "constellation": "Cyg"
+    "constellation": "cygnus"
   },
   {
     "id": "hip_47227",
@@ -1779,7 +1790,7 @@
     "magnitude": 3.11,
     "spectralType": "K2III",
     "description": null,
-    "constellation": "Hya"
+    "constellation": "hydra"
   },
   {
     "id": "hip_101772",
@@ -1790,7 +1801,7 @@
     "magnitude": 3.11,
     "spectralType": "K1III",
     "description": null,
-    "constellation": "Ind"
+    "constellation": "indus"
   },
   {
     "id": "hip_27530",
@@ -1801,7 +1812,7 @@
     "magnitude": 3.12,
     "spectralType": "K2III",
     "description": null,
-    "constellation": "Col"
+    "constellation": "columba"
   },
   {
     "id": "hip_44248",
@@ -1812,7 +1823,7 @@
     "magnitude": 3.13,
     "spectralType": "K7IIIb",
     "description": null,
-    "constellation": "Lyn"
+    "constellation": "lynx"
   },
   {
     "id": "hip_84379",
@@ -1823,7 +1834,7 @@
     "magnitude": 3.15,
     "spectralType": "K3IIb",
     "description": null,
-    "constellation": "Her"
+    "constellation": "hercules"
   },
   {
     "id": "hip_78527",
@@ -1834,7 +1845,7 @@
     "magnitude": 3.17,
     "spectralType": "B6III",
     "description": null,
-    "constellation": "Dra"
+    "constellation": "draco"
   },
   {
     "id": "hip_71352",
@@ -1845,7 +1856,7 @@
     "magnitude": 3.19,
     "spectralType": "A7V",
     "description": null,
-    "constellation": "Cir"
+    "constellation": "circinus"
   },
   {
     "id": "hip_80883",
@@ -1856,7 +1867,7 @@
     "magnitude": 3.2,
     "spectralType": "K2III",
     "description": null,
-    "constellation": "Oph"
+    "constellation": "ophiuchus"
   },
   {
     "id": "hip_109492",
@@ -1867,7 +1878,7 @@
     "magnitude": 3.23,
     "spectralType": "B2IIIev",
     "description": null,
-    "constellation": "Cep"
+    "constellation": "cepheus"
   },
   {
     "id": "hip_84143",
@@ -1878,7 +1889,7 @@
     "magnitude": 3.24,
     "spectralType": "G9.5IIIb",
     "description": null,
-    "constellation": "Oph"
+    "constellation": "ophiuchus"
   },
   {
     "id": "hip_13701",
@@ -1889,7 +1900,7 @@
     "magnitude": 3.24,
     "spectralType": "A4III",
     "description": null,
-    "constellation": "Eri"
+    "constellation": "eridanus"
   },
   {
     "id": "hip_91971",
@@ -1900,7 +1911,7 @@
     "magnitude": 3.25,
     "spectralType": "A0IVn",
     "description": null,
-    "constellation": "Lyr"
+    "constellation": "lyra"
   },
   {
     "id": "hip_86742",
@@ -1911,7 +1922,7 @@
     "magnitude": 3.26,
     "spectralType": "K0III",
     "description": null,
-    "constellation": "Ser"
+    "constellation": "serpens"
   },
   {
     "id": "hip_88192",
@@ -1922,7 +1933,7 @@
     "magnitude": 3.27,
     "spectralType": "B2IV",
     "description": null,
-    "constellation": "Oph"
+    "constellation": "ophiuchus"
   },
   {
     "id": "hip_102618",
@@ -1933,7 +1944,7 @@
     "magnitude": 3.27,
     "spectralType": "A3V",
     "description": null,
-    "constellation": "Aqr"
+    "constellation": "aquarius"
   },
   {
     "id": "hip_27321",
@@ -1944,7 +1955,7 @@
     "magnitude": 3.27,
     "spectralType": "A8V",
     "description": null,
-    "constellation": "Pic"
+    "constellation": "pictor"
   },
   {
     "id": "hip_26069",
@@ -1955,7 +1966,7 @@
     "magnitude": 3.27,
     "spectralType": "A0IIIp",
     "description": null,
-    "constellation": "Dor"
+    "constellation": "dorado"
   },
   {
     "id": "hip_9010",
@@ -1966,7 +1977,7 @@
     "magnitude": 3.27,
     "spectralType": "K3IIIb",
     "description": null,
-    "constellation": "And"
+    "constellation": "andromeda"
   },
   {
     "id": "hip_59774",
@@ -1977,7 +1988,7 @@
     "magnitude": 3.31,
     "spectralType": "A3V",
     "description": null,
-    "constellation": "UMa"
+    "constellation": "ursa_major"
   },
   {
     "id": "hip_86228",
@@ -1988,7 +1999,7 @@
     "magnitude": 3.33,
     "spectralType": "F2III",
     "description": null,
-    "constellation": "Sco"
+    "constellation": "scorpius"
   },
   {
     "id": "hip_83000",
@@ -1999,7 +2010,7 @@
     "magnitude": 3.34,
     "spectralType": "K0III",
     "description": null,
-    "constellation": "Oph"
+    "constellation": "ophiuchus"
   },
   {
     "id": "hip_116727",
@@ -2010,7 +2021,7 @@
     "magnitude": 3.35,
     "spectralType": "K1Ib",
     "description": null,
-    "constellation": "Cep"
+    "constellation": "cepheus"
   },
   {
     "id": "hip_8886",
@@ -2021,7 +2032,7 @@
     "magnitude": 3.35,
     "spectralType": "B3III",
     "description": null,
-    "constellation": "Cas"
+    "constellation": "cassiopeia"
   },
   {
     "id": "hip_19893",
@@ -2032,7 +2043,7 @@
     "magnitude": 3.35,
     "spectralType": "G8III",
     "description": null,
-    "constellation": "Ret"
+    "constellation": "reticulum"
   },
   {
     "id": "hip_70755",
@@ -2043,7 +2054,7 @@
     "magnitude": 3.38,
     "spectralType": "M3III",
     "description": null,
-    "constellation": "Vir"
+    "constellation": "virgo"
   },
   {
     "id": "hip_73334",
@@ -2054,7 +2065,7 @@
     "magnitude": 3.41,
     "spectralType": "B2IV",
     "description": null,
-    "constellation": "Cen"
+    "constellation": "centaurus"
   },
   {
     "id": "hip_99473",
@@ -2065,7 +2076,7 @@
     "magnitude": 3.43,
     "spectralType": "A7V",
     "description": null,
-    "constellation": "Pav"
+    "constellation": "pavo"
   },
   {
     "id": "hip_6537",
@@ -2076,7 +2087,7 @@
     "magnitude": 3.45,
     "spectralType": "K1III",
     "description": null,
-    "constellation": "Cet"
+    "constellation": "cetus"
   },
   {
     "id": "hip_18724",
@@ -2087,7 +2098,7 @@
     "magnitude": 3.47,
     "spectralType": "B3V",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_96229",
@@ -2098,7 +2109,7 @@
     "magnitude": 3.47,
     "spectralType": "K5III",
     "description": null,
-    "constellation": "Sge"
+    "constellation": "sagitta"
   },
   {
     "id": "hip_81693",
@@ -2109,7 +2120,7 @@
     "magnitude": 3.48,
     "spectralType": "M5Ib-II",
     "description": null,
-    "constellation": "Her"
+    "constellation": "hercules"
   },
   {
     "id": "hip_67927",
@@ -2120,7 +2131,7 @@
     "magnitude": 3.49,
     "spectralType": "G8IIIa",
     "description": null,
-    "constellation": "Boo"
+    "constellation": "bootes"
   },
   {
     "id": "hip_90568",
@@ -2131,7 +2142,7 @@
     "magnitude": 3.49,
     "spectralType": "B3V",
     "description": null,
-    "constellation": "Tel"
+    "constellation": "telescopium"
   },
   {
     "id": "hip_5765",
@@ -2142,7 +2153,7 @@
     "magnitude": 3.5,
     "spectralType": "G8V",
     "description": null,
-    "constellation": "Cet"
+    "constellation": "cetus"
   },
   {
     "id": "hip_42806",
@@ -2153,7 +2164,7 @@
     "magnitude": 3.52,
     "spectralType": "K4III",
     "description": null,
-    "constellation": "Cnc"
+    "constellation": "cancer"
   },
   {
     "id": "hip_92420",
@@ -2164,7 +2175,7 @@
     "magnitude": 3.52,
     "spectralType": "B8II",
     "description": null,
-    "constellation": "Lyr"
+    "constellation": "lyra"
   },
   {
     "id": "hip_34693",
@@ -2175,7 +2186,7 @@
     "magnitude": 3.53,
     "spectralType": "F2III",
     "description": null,
-    "constellation": "Gem"
+    "constellation": "gemini"
   },
   {
     "id": "hip_12486",
@@ -2186,7 +2197,7 @@
     "magnitude": 3.54,
     "spectralType": "K1V",
     "description": null,
-    "constellation": "Eri"
+    "constellation": "eridanus"
   },
   {
     "id": "hip_18543",
@@ -2197,7 +2208,7 @@
     "magnitude": 3.54,
     "spectralType": "K1V",
     "description": null,
-    "constellation": "Eri"
+    "constellation": "eridanus"
   },
   {
     "id": "hip_84748",
@@ -2208,7 +2219,7 @@
     "magnitude": 3.54,
     "spectralType": "A0V",
     "description": null,
-    "constellation": "Ser"
+    "constellation": "serpens"
   },
   {
     "id": "hip_23015",
@@ -2219,7 +2230,7 @@
     "magnitude": 3.54,
     "spectralType": "K0III",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_55705",
@@ -2230,7 +2241,7 @@
     "magnitude": 3.56,
     "spectralType": "G8III+",
     "description": null,
-    "constellation": "Crt"
+    "constellation": "crater"
   },
   {
     "id": "hip_72487",
@@ -2241,7 +2252,7 @@
     "magnitude": 3.57,
     "spectralType": "K3III",
     "description": null,
-    "constellation": "Boo"
+    "constellation": "bootes"
   },
   {
     "id": "hip_75458",
@@ -2252,7 +2263,7 @@
     "magnitude": 3.57,
     "spectralType": "F7V",
     "description": null,
-    "constellation": "Dra"
+    "constellation": "draco"
   },
   {
     "id": "hip_4906",
@@ -2263,7 +2274,7 @@
     "magnitude": 3.62,
     "spectralType": "G7III",
     "description": null,
-    "constellation": "Psc"
+    "constellation": "pisces"
   },
   {
     "id": "hip_17847",
@@ -2274,7 +2285,7 @@
     "magnitude": 3.63,
     "spectralType": "B8III",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_12393",
@@ -2285,7 +2296,7 @@
     "magnitude": 3.63,
     "spectralType": "B8Vn",
     "description": null,
-    "constellation": "Ari"
+    "constellation": "aries"
   },
   {
     "id": "hip_101421",
@@ -2296,7 +2307,7 @@
     "magnitude": 3.63,
     "spectralType": "F5IV",
     "description": null,
-    "constellation": "Del"
+    "constellation": "delphinus"
   },
   {
     "id": "hip_20894",
@@ -2307,7 +2318,7 @@
     "magnitude": 3.65,
     "spectralType": "K0IIIb",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_75695",
@@ -2318,7 +2329,7 @@
     "magnitude": 3.66,
     "spectralType": "F0V",
     "description": null,
-    "constellation": "CrB"
+    "constellation": "corona_borealis"
   },
   {
     "id": "hip_68756",
@@ -2329,7 +2340,7 @@
     "magnitude": 3.67,
     "spectralType": "A0III",
     "description": null,
-    "constellation": "Dra"
+    "constellation": "draco"
   },
   {
     "id": "hip_100345",
@@ -2340,7 +2351,7 @@
     "magnitude": 3.68,
     "spectralType": "F0V",
     "description": null,
-    "constellation": "Cap"
+    "constellation": "capricornus"
   },
   {
     "id": "hip_42515",
@@ -2351,7 +2362,7 @@
     "magnitude": 3.68,
     "spectralType": "B1.5III",
     "description": null,
-    "constellation": "Pyx"
+    "constellation": "pyxis"
   },
   {
     "id": "hip_17499",
@@ -2362,7 +2373,7 @@
     "magnitude": 3.7,
     "spectralType": "B6IIIe",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_95501",
@@ -2373,7 +2384,7 @@
     "magnitude": 3.71,
     "spectralType": "G8IVvar",
     "description": null,
-    "constellation": "Aql"
+    "constellation": "aquila"
   },
   {
     "id": "hip_35264",
@@ -2384,7 +2395,7 @@
     "magnitude": 3.73,
     "spectralType": "F5II-III",
     "description": null,
-    "constellation": "Pup"
+    "constellation": "puppis"
   },
   {
     "id": "hip_15197",
@@ -2395,7 +2406,7 @@
     "magnitude": 3.73,
     "spectralType": "K2V",
     "description": null,
-    "constellation": "Eri"
+    "constellation": "eridanus"
   },
   {
     "id": "hip_84893",
@@ -2406,7 +2417,7 @@
     "magnitude": 3.74,
     "spectralType": "A5III",
     "description": null,
-    "constellation": "Oph"
+    "constellation": "ophiuchus"
   },
   {
     "id": "hip_30867",
@@ -2417,7 +2428,7 @@
     "magnitude": 3.74,
     "spectralType": "B3Ve",
     "description": null,
-    "constellation": "Mon"
+    "constellation": "monoceros"
   },
   {
     "id": "hip_107089",
@@ -2428,7 +2439,7 @@
     "magnitude": 3.76,
     "spectralType": "K1III",
     "description": null,
-    "constellation": "Oct"
+    "constellation": "octans"
   },
   {
     "id": "hip_109139",
@@ -2439,7 +2450,7 @@
     "magnitude": 3.77,
     "spectralType": "A1V",
     "description": null,
-    "constellation": "Aqr"
+    "constellation": "aquarius"
   },
   {
     "id": "hip_41312",
@@ -2450,7 +2461,7 @@
     "magnitude": 3.77,
     "spectralType": "K2III",
     "description": null,
-    "constellation": "Vol"
+    "constellation": "volans"
   },
   {
     "id": "hip_20205",
@@ -2461,7 +2472,7 @@
     "magnitude": 3.77,
     "spectralType": "K0IIIb",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_101769",
@@ -2472,7 +2483,7 @@
     "magnitude": 3.77,
     "spectralType": "B9IV",
     "description": null,
-    "constellation": "Del"
+    "constellation": "delphinus"
   },
   {
     "id": "hip_13268",
@@ -2483,7 +2494,7 @@
     "magnitude": 3.8,
     "spectralType": "K3III",
     "description": null,
-    "constellation": "Per"
+    "constellation": "perseus"
   },
   {
     "id": "hip_20042",
@@ -2494,7 +2505,7 @@
     "magnitude": 3.82,
     "spectralType": "K1III",
     "description": null,
-    "constellation": "Eri"
+    "constellation": "eridanus"
   },
   {
     "id": "hip_52943",
@@ -2505,7 +2516,7 @@
     "magnitude": 3.83,
     "spectralType": "M1/M2III",
     "description": null,
-    "constellation": "Hya"
+    "constellation": "hydra"
   },
   {
     "id": "hip_72370",
@@ -2516,7 +2527,7 @@
     "magnitude": 3.83,
     "spectralType": "K3III",
     "description": null,
-    "constellation": "Aps"
+    "constellation": "apus"
   },
   {
     "id": "hip_23875",
@@ -2527,7 +2538,7 @@
     "magnitude": 3.84,
     "spectralType": "A7III",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_110395",
@@ -2538,7 +2549,7 @@
     "magnitude": 3.85,
     "spectralType": "A0V",
     "description": null,
-    "constellation": "Aqr"
+    "constellation": "aquarius"
   },
   {
     "id": "hip_12843",
@@ -2549,7 +2560,7 @@
     "magnitude": 3.86,
     "spectralType": "K1III",
     "description": null,
-    "constellation": "Hor"
+    "constellation": "horologium"
   },
   {
     "id": "hip_14879",
@@ -2560,7 +2571,7 @@
     "magnitude": 3.87,
     "spectralType": "F8IV",
     "description": null,
-    "constellation": "For"
+    "constellation": "fornax"
   },
   {
     "id": "hip_17573",
@@ -2571,7 +2582,7 @@
     "magnitude": 3.87,
     "spectralType": "B7III",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_13209",
@@ -2582,7 +2593,7 @@
     "magnitude": 3.88,
     "spectralType": "A1pSrSi",
     "description": null,
-    "constellation": "Ari"
+    "constellation": "aries"
   },
   {
     "id": "hip_57380",
@@ -2593,7 +2604,7 @@
     "magnitude": 3.89,
     "spectralType": "A2V",
     "description": null,
-    "constellation": "Vir"
+    "constellation": "virgo"
   },
   {
     "id": "hip_76552",
@@ -2604,7 +2615,7 @@
     "magnitude": 3.91,
     "spectralType": "K0III",
     "description": null,
-    "constellation": "Lib"
+    "constellation": "libra"
   },
   {
     "id": "hip_103569",
@@ -2615,7 +2626,7 @@
     "magnitude": 3.92,
     "spectralType": "G0III+A5Vn",
     "description": null,
-    "constellation": "Equ"
+    "constellation": "equuleus"
   },
   {
     "id": "hip_35212",
@@ -2626,7 +2637,7 @@
     "magnitude": 3.93,
     "spectralType": "K0III",
     "description": null,
-    "constellation": "Mon"
+    "constellation": "monoceros"
   },
   {
     "id": "hip_10602",
@@ -2637,7 +2648,7 @@
     "magnitude": 3.93,
     "spectralType": "A2IV",
     "description": null,
-    "constellation": "Eri"
+    "constellation": "eridanus"
   },
   {
     "id": "hip_40526",
@@ -2648,7 +2659,7 @@
     "magnitude": 3.94,
     "spectralType": "K0III",
     "description": null,
-    "constellation": "Cnc"
+    "constellation": "cancer"
   },
   {
     "id": "hip_116247",
@@ -2659,7 +2670,7 @@
     "magnitude": 4.01,
     "spectralType": "F4IV",
     "description": null,
-    "constellation": "Psc"
+    "constellation": "pisces"
   },
   {
     "id": "hip_78963",
@@ -2670,7 +2681,7 @@
     "magnitude": 4.02,
     "spectralType": "F8Ib",
     "description": null,
-    "constellation": "Nor"
+    "constellation": "norma"
   },
   {
     "id": "hip_58576",
@@ -2681,7 +2692,7 @@
     "magnitude": 4.02,
     "spectralType": "B8III",
     "description": null,
-    "constellation": "Crv"
+    "constellation": "corvus"
   },
   {
     "id": "hip_17884",
@@ -2692,7 +2703,7 @@
     "magnitude": 4.03,
     "spectralType": "G0Ia",
     "description": null,
-    "constellation": "Cam"
+    "constellation": "camelopardalis"
   },
   {
     "id": "hip_53740",
@@ -2703,7 +2714,7 @@
     "magnitude": 4.07,
     "spectralType": "K1III",
     "description": null,
-    "constellation": "Crt"
+    "constellation": "crater"
   },
   {
     "id": "hip_40702",
@@ -2714,7 +2725,7 @@
     "magnitude": 4.07,
     "spectralType": "F5V",
     "description": null,
-    "constellation": "Cha"
+    "constellation": "chamaeleon"
   },
   {
     "id": "hip_90496",
@@ -2725,7 +2736,7 @@
     "magnitude": 4.1,
     "spectralType": "F0V",
     "description": null,
-    "constellation": "CrA"
+    "constellation": "corona_australis"
   },
   {
     "id": "hip_17608",
@@ -2736,7 +2747,7 @@
     "magnitude": 4.14,
     "spectralType": "B6IVev",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_107608",
@@ -2747,7 +2758,7 @@
     "magnitude": 4.17,
     "spectralType": "A1V",
     "description": null,
-    "constellation": "PsA"
+    "constellation": "piscis_austrinus"
   },
   {
     "id": "hip_111954",
@@ -2758,7 +2769,7 @@
     "magnitude": 4.2,
     "spectralType": "A0V",
     "description": null,
-    "constellation": "PsA"
+    "constellation": "piscis_austrinus"
   },
   {
     "id": "hip_57939",
@@ -2769,7 +2780,7 @@
     "magnitude": 4.21,
     "spectralType": "G8III",
     "description": null,
-    "constellation": "LMi"
+    "constellation": "leo_minor"
   },
   {
     "id": "hip_92953",
@@ -2780,7 +2791,7 @@
     "magnitude": 4.22,
     "spectralType": "A0V",
     "description": null,
-    "constellation": "CrA"
+    "constellation": "corona_australis"
   },
   {
     "id": "hip_49841",
@@ -2791,7 +2802,7 @@
     "magnitude": 4.25,
     "spectralType": "K4III",
     "description": null,
-    "constellation": "Ant"
+    "constellation": "antlia"
   },
   {
     "id": "hip_64241",
@@ -2802,7 +2813,7 @@
     "magnitude": 4.26,
     "spectralType": "F9.5V",
     "description": null,
-    "constellation": "Com"
+    "constellation": "coma_berenices"
   },
   {
     "id": "hip_57283",
@@ -2813,7 +2824,7 @@
     "magnitude": 4.27,
     "spectralType": "B9V",
     "description": null,
-    "constellation": "Hya"
+    "constellation": "hydra"
   },
   {
     "id": "hip_7097",
@@ -2824,7 +2835,7 @@
     "magnitude": 4.28,
     "spectralType": "G4III",
     "description": null,
-    "constellation": "Psc"
+    "constellation": "pisces"
   },
   {
     "id": "hip_117452",
@@ -2835,7 +2846,7 @@
     "magnitude": 4.3,
     "spectralType": "B7IIIa",
     "description": null,
-    "constellation": "Scl"
+    "constellation": "sculptor"
   },
   {
     "id": "hip_17563",
@@ -2846,7 +2857,7 @@
     "magnitude": 4.3,
     "spectralType": "B6V",
     "description": null,
-    "constellation": "Tau"
+    "constellation": "taurus"
   },
   {
     "id": "hip_77055",
@@ -2857,7 +2868,7 @@
     "magnitude": 4.36,
     "spectralType": "A1V",
     "description": null,
-    "constellation": "UMi"
+    "constellation": "ursa_minor"
   },
   {
     "id": "hip_116231",
@@ -2868,7 +2879,7 @@
     "magnitude": 4.37,
     "spectralType": "B7III",
     "description": null,
-    "constellation": "Scl"
+    "constellation": "sculptor"
   },
   {
     "id": "hip_95771",
@@ -2879,7 +2890,7 @@
     "magnitude": 4.44,
     "spectralType": "M1III",
     "description": null,
-    "constellation": "Vul"
+    "constellation": "vulpecula"
   },
   {
     "id": "hip_21060",
@@ -2890,7 +2901,7 @@
     "magnitude": 4.45,
     "spectralType": "F2V",
     "description": null,
-    "constellation": "Cae"
+    "constellation": "caelum"
   },
   {
     "id": "hip_102831",
@@ -2901,7 +2912,7 @@
     "magnitude": 4.67,
     "spectralType": "G6III",
     "description": null,
-    "constellation": "Mic"
+    "constellation": "microscopium"
   },
   {
     "id": "hip_103076",
@@ -2912,6 +2923,6 @@
     "magnitude": 4.9,
     "spectralType": null,
     "description": null,
-    "constellation": "Mic"
+    "constellation": "microscopium"
   }
 ]
