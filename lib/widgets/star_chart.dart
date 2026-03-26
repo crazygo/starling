@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';
@@ -40,6 +41,15 @@ class StarChartViewport {
 class StarChart extends StatefulWidget {
   final List<Star> stars;
   final List<Constellation> constellations;
+
+  /// Chinese asterisms used by the label system even when [showChineseName]
+  /// is false (so the painter always has access to both cultures).
+  final List<Constellation> chineseConstellations;
+
+  /// When true, label text uses Chinese names and the Chinese asterism system
+  /// is used for Group 2 labels.
+  final bool showChineseName;
+
   final StarChartViewport viewport;
   final ValueChanged<StarChartViewport> onViewportChanged;
   final ValueChanged<Star>? onStarTapped;
@@ -52,6 +62,8 @@ class StarChart extends StatefulWidget {
     super.key,
     required this.stars,
     required this.constellations,
+    required this.chineseConstellations,
+    required this.showChineseName,
     required this.viewport,
     required this.onViewportChanged,
     this.onStarTapped,
@@ -149,6 +161,8 @@ class _StarChartState extends State<StarChart> {
             painter: _StarPainter(
               stars: widget.stars,
               constellations: widget.constellations,
+              chineseConstellations: widget.chineseConstellations,
+              showChineseName: widget.showChineseName,
               viewport: widget.viewport,
               gyroOffset: widget.gyroOffset,
               size: size,
@@ -162,12 +176,35 @@ class _StarChartState extends State<StarChart> {
 }
 
 // ---------------------------------------------------------------------------
+// Label Rendering Data Structures
+// ---------------------------------------------------------------------------
+
+/// A resolved label ready to be drawn on the canvas.
+class _LabelSpec {
+  final Offset textPos; // top-left where the paragraph will be drawn
+  final Rect rect; // bounding rect (text + padding) used for overlap detection
+  final String text;
+  final double fontSize;
+  final Color color; // alpha already baked in
+
+  const _LabelSpec({
+    required this.textPos,
+    required this.rect,
+    required this.text,
+    required this.fontSize,
+    required this.color,
+  });
+}
+
+// ---------------------------------------------------------------------------
 // Painter
 // ---------------------------------------------------------------------------
 
 class _StarPainter extends CustomPainter {
   final List<Star> stars;
   final List<Constellation> constellations;
+  final List<Constellation> chineseConstellations;
+  final bool showChineseName;
   final StarChartViewport viewport;
   final Offset? gyroOffset;
   final Size size;
@@ -175,6 +212,28 @@ class _StarPainter extends CustomPainter {
   // Normalized [0, 1) background star positions precomputed once.
   // Using a fixed seed means the pattern is deterministic and stable.
   static final List<Offset> _bgStarPositions = _precomputeBgStars();
+
+  // Important celestial objects whitelist (matched against star.name).
+  static const _importantNames = {
+    'Sun', 'Moon', 'Mercury', 'Venus', 'Mars',
+    'Jupiter', 'Saturn', 'Uranus', 'Neptune',
+  };
+
+  // Pattern for auto-generated HIP identifiers that have no real proper name.
+  static final _hipRegex = RegExp(r'^HIP \d+$');
+
+  // Label placement constants.
+  static const _labelHorizontalOffset = 6.0; // px gap between star and label
+  static const _labelVerticalOffset = 2.0; // px gap below star centre
+  static const _labelPadding = 8.0; // inflate label rect for overlap detection
+  static const _labelTextHeightExtra = 4.0; // extra height beyond font size
+  static const _maxCompetitiveLabels = 20; // Group 3 cap
+
+  // Cached label specs — one computation per painter instance.
+  // Since _StarPainter is recreated on every build(), the cache is
+  // automatically fresh: it starts null, is filled on the first paint(),
+  // and is discarded when the widget rebuilds with changed properties.
+  List<_LabelSpec>? _cachedLabelSpecs;
 
   static List<Offset> _precomputeBgStars() {
     final rng = Random(42);
@@ -184,9 +243,11 @@ class _StarPainter extends CustomPainter {
     );
   }
 
-  const _StarPainter({
+  _StarPainter({
     required this.stars,
     required this.constellations,
+    required this.chineseConstellations,
+    required this.showChineseName,
     required this.viewport,
     required this.size,
     this.gyroOffset,
@@ -198,6 +259,8 @@ class _StarPainter extends CustomPainter {
       old.gyroOffset != gyroOffset ||
       old.stars != stars ||
       old.constellations != constellations ||
+      old.chineseConstellations != chineseConstellations ||
+      old.showChineseName != showChineseName ||
       old.size != size;
 
   Offset? _project(double raDeg, double decDeg) {
@@ -233,6 +296,7 @@ class _StarPainter extends CustomPainter {
     _drawBackgroundStars(canvas, size);
     _drawConstellationLines(canvas);
     _drawStars(canvas);
+    _drawLabels(canvas, size);
   }
 
   void _drawBackgroundStars(Canvas canvas, Size size) {
@@ -300,5 +364,247 @@ class _StarPainter extends CustomPainter {
     if (bv < 0.7) return const Color(0xFFFFE788);
     if (bv < 1.1) return const Color(0xFFFFB347);
     return const Color(0xFFFF6347);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Label rendering
+  // ---------------------------------------------------------------------------
+
+  /// Measures the layout width of [text] at [fontSize].
+  double _textWidth(String text, double fontSize) {
+    final tp = TextPainter(
+      text: TextSpan(text: text, style: TextStyle(fontSize: fontSize)),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    return tp.width;
+  }
+
+  /// Resolves the display name for [star] based on [showChineseName].
+  /// Returns `null` if the resolved name is a raw HIP identifier.
+  String? _starLabel(Star star) {
+    final label =
+        showChineseName ? (star.chineseName ?? star.name) : star.name;
+    if (_hipRegex.hasMatch(label)) return null;
+    return label;
+  }
+
+  /// Tries to place a label near [starPos] in one of 4 candidate positions,
+  /// picking the first that does not overlap any rect in [placedRects].
+  ///
+  /// Returns `(textTopLeft, boundingRect)` on success.
+  /// For forced labels (Group 1 / 2) falls back to position 1 on full overlap.
+  /// For Group 3 labels returns `null` when no free position exists.
+  (Offset, Rect)? _tryPlace({
+    required Offset starPos,
+    required double textWidth,
+    required double fontSize,
+    required List<Rect> placedRects,
+    required bool forced,
+  }) {
+    final textH = fontSize + _labelTextHeightExtra;
+    final rectW = textWidth + _labelPadding * 2;
+    final rectH = textH + _labelPadding * 2;
+
+    // 4 candidate text top-left positions
+    final candidates = [
+      Offset(starPos.dx + _labelHorizontalOffset,
+          starPos.dy - fontSize - _labelVerticalOffset), // right-upper
+      Offset(starPos.dx - textWidth - _labelHorizontalOffset,
+          starPos.dy - fontSize - _labelVerticalOffset), // left-upper
+      Offset(starPos.dx + _labelHorizontalOffset,
+          starPos.dy + _labelVerticalOffset), // right-lower
+      Offset(starPos.dx - textWidth - _labelHorizontalOffset,
+          starPos.dy + _labelVerticalOffset), // left-lower
+    ];
+
+    for (final tl in candidates) {
+      final rect = Rect.fromLTWH(
+          tl.dx - _labelPadding, tl.dy - _labelPadding, rectW, rectH);
+      if (!placedRects.any((r) => r.overlaps(rect))) {
+        return (tl, rect);
+      }
+    }
+
+    // All positions overlap
+    if (forced) {
+      // Use position 1 (right-upper) as last-resort fallback
+      final tl = candidates[0];
+      final rect = Rect.fromLTWH(
+          tl.dx - _labelPadding, tl.dy - _labelPadding, rectW, rectH);
+      return (tl, rect);
+    }
+    return null; // Group 3: skip
+  }
+
+  /// Computes the average screen position of the visible member stars of
+  /// [constellation]. Returns `null` if no member star is in the viewport.
+  Offset? _constellationCenter(
+      Constellation constellation, Map<String, Star> starMap) {
+    double sumX = 0, sumY = 0;
+    int count = 0;
+    for (final id in constellation.starIds) {
+      final star = starMap[id];
+      if (star == null) continue;
+      final pos = _project(star.rightAscension, star.declination);
+      if (pos == null) continue;
+      sumX += pos.dx;
+      sumY += pos.dy;
+      count++;
+    }
+    if (count == 0) return null;
+    return Offset(sumX / count, sumY / count);
+  }
+
+  /// Builds the full list of [_LabelSpec]s for the current viewport, running
+  /// the greedy placement algorithm.  The result is cached in
+  /// [_cachedLabelSpecs] and reused until the next repaint.
+  List<_LabelSpec> _buildLabelSpecs() {
+    if (_cachedLabelSpecs != null) return _cachedLabelSpecs!;
+
+    final starMap = <String, Star>{for (final s in stars) s.id: s};
+
+    // Determine which constellations drive Group-2 labels.
+    final group2Constellations =
+        showChineseName ? chineseConstellations : constellations;
+
+    // Build the set of star IDs that belong to any Group-2 constellation.
+    final memberStarIds = <String>{};
+    for (final c in group2Constellations) {
+      memberStarIds.addAll(c.starIds);
+    }
+
+    final placedRects = <Rect>[];
+    final specs = <_LabelSpec>[];
+
+    // Helper: attempt to place a forced (Group 1 / 2) label and add it.
+    void addForced(
+        Offset starPos, String text, double fontSize, Color color) {
+      final w = _textWidth(text, fontSize);
+      final result = _tryPlace(
+        starPos: starPos,
+        textWidth: w,
+        fontSize: fontSize,
+        placedRects: placedRects,
+        forced: true,
+      );
+      if (result != null) {
+        final (tl, rect) = result;
+        placedRects.add(rect);
+        specs.add(_LabelSpec(
+            textPos: tl, rect: rect, text: text, fontSize: fontSize, color: color));
+      }
+    }
+
+    // ── Group 1: Important celestial objects (always render) ──────────────
+    final importantStarIds = <String>{};
+    for (final star in stars) {
+      final isImportant = _importantNames.contains(star.name) ||
+          _importantNames.contains(star.chineseName);
+      if (!isImportant) continue;
+      final pos = _project(star.rightAscension, star.declination);
+      if (pos == null) continue;
+      final label =
+          showChineseName ? (star.chineseName ?? star.name) : star.name;
+      addForced(pos, label, 12.0, const Color(0xFFFFD700));
+      importantStarIds.add(star.id);
+    }
+
+    // ── Group 2: Constellation / asterism names + member star names ───────
+    final constellationColor =
+        Colors.blueGrey.shade200.withAlpha(200);
+    final memberStarColor = Colors.white.withAlpha(180);
+
+    // Track which member stars have already been labeled to avoid duplicates
+    // when the same star appears in multiple constellations.
+    final labeledMemberIds = <String>{};
+
+    for (final constellation in group2Constellations) {
+      // Constellation / asterism name label
+      final nameLabel = showChineseName
+          ? (constellation.chineseName ?? constellation.name)
+          : constellation.name;
+
+      final center = _constellationCenter(constellation, starMap);
+      if (center != null) {
+        addForced(center, nameLabel, 13.0, constellationColor);
+      }
+
+      // Member star proper names
+      for (final id in constellation.starIds) {
+        if (labeledMemberIds.contains(id)) continue;
+        final star = starMap[id];
+        if (star == null) continue;
+        final label = _starLabel(star);
+        if (label == null) continue;
+        final pos = _project(star.rightAscension, star.declination);
+        if (pos == null) continue;
+        addForced(pos, label, 10.0, memberStarColor);
+        labeledMemberIds.add(id);
+      }
+    }
+
+    // ── Group 3: Competitive stars ────────────────────────────────────────
+    // Collect stars in the viewport that are not Group-1 or Group-2 members
+    // and have a proper name.  Stars list is already sorted by magnitude
+    // ascending (brightest first = lowest value first).
+    final competitionColor = Colors.white.withAlpha(140);
+    int competitionCount = 0;
+
+    for (final star in stars) {
+      if (competitionCount >= _maxCompetitiveLabels) break;
+      if (memberStarIds.contains(star.id)) continue;
+      if (importantStarIds.contains(star.id)) continue;
+      final label = _starLabel(star);
+      if (label == null) continue;
+      final pos = _project(star.rightAscension, star.declination);
+      if (pos == null) continue;
+
+      final w = _textWidth(label, 10.0);
+      final result = _tryPlace(
+        starPos: pos,
+        textWidth: w,
+        fontSize: 10.0,
+        placedRects: placedRects,
+        forced: false,
+      );
+      if (result != null) {
+        final (tl, rect) = result;
+        placedRects.add(rect);
+        specs.add(_LabelSpec(
+            textPos: tl,
+            rect: rect,
+            text: label,
+            fontSize: 10.0,
+            color: competitionColor));
+        competitionCount++;
+      }
+    }
+
+    _cachedLabelSpecs = specs;
+    return specs;
+  }
+
+  /// Renders all computed label specs onto [canvas].
+  void _drawLabels(Canvas canvas, Size _) {
+    final specs = _buildLabelSpecs();
+    for (final spec in specs) {
+      final pb = ui.ParagraphBuilder(
+        ui.ParagraphStyle(
+          textAlign: TextAlign.left,
+          maxLines: 1,
+          ellipsis: '…',
+        ),
+      )
+        ..pushStyle(ui.TextStyle(
+          color: spec.color,
+          fontSize: spec.fontSize,
+        ))
+        ..addText(spec.text);
+
+      final paragraph = pb.build()
+        ..layout(ui.ParagraphConstraints(
+            width: spec.rect.width));
+      canvas.drawParagraph(paragraph, spec.textPos);
+    }
   }
 }
