@@ -114,6 +114,8 @@ class StarObjectBuilder extends fb.ObjectBuilder {
   final double dec;
   final double mag;
   final double colorIdx;
+  final String? nameEn;
+  final String? nameZh;
 
   StarObjectBuilder({
     required this.hip,
@@ -121,16 +123,24 @@ class StarObjectBuilder extends fb.ObjectBuilder {
     required this.dec,
     required this.mag,
     required this.colorIdx,
+    this.nameEn,
+    this.nameZh,
   });
 
   @override
   int finish(fb.Builder fbBuilder) {
-    fbBuilder.startTable(5);
+    // Strings must be written before startTable.
+    final nameEnOffset = nameEn != null ? fbBuilder.writeString(nameEn!) : null;
+    final nameZhOffset = nameZh != null ? fbBuilder.writeString(nameZh!) : null;
+
+    fbBuilder.startTable(7);
     fbBuilder.addUint32(0, hip);
     fbBuilder.addFloat32(1, ra);
     fbBuilder.addFloat32(2, dec);
     fbBuilder.addFloat32(3, mag);
     fbBuilder.addFloat32(4, colorIdx);
+    if (nameEnOffset != null) fbBuilder.addOffset(5, nameEnOffset);
+    if (nameZhOffset != null) fbBuilder.addOffset(6, nameZhOffset);
     return fbBuilder.endTable();
   }
 

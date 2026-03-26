@@ -133,6 +133,8 @@ class BinStar {
   final double dec;
   final double mag;
   final double colorIdx;
+  final String? nameEn;
+  final String? nameZh;
 
   const BinStar({
     required this.hip,
@@ -140,6 +142,8 @@ class BinStar {
     required this.dec,
     required this.mag,
     required this.colorIdx,
+    this.nameEn,
+    this.nameZh,
   });
 }
 
@@ -166,6 +170,8 @@ class StarCatalogReader {
       dec: _tableFloat32(_buf, tableOffset, 2),
       mag: _tableFloat32(_buf, tableOffset, 3),
       colorIdx: _tableFloat32(_buf, tableOffset, 4),
+      nameEn: _tableString(_buf, tableOffset, 5),
+      nameZh: _tableString(_buf, tableOffset, 6),
     );
   }
 

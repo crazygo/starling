@@ -178,51 +178,141 @@ rm -f "$FAB_TMP"
 
 # ── c. IAU constellation boundaries ──────────────────────────────────────────
 # Source: Davenhall & Leggett VI/49 (CDS)
-# The boundary file uses a fixed-width format; we convert to the
-# ra_hours,dec_deg,abbr CSV expected by IauBoundaryParser.
+# Two available files (tried in order):
+#   bound_20.dat.gz — space-separated, RA in degrees (÷15 → hours), 4 columns
+#   constbnd.dat    — space-separated, RA in hours, 3+ columns
+# Output CSV: ra_hours,dec_deg,abbr as expected by IauBoundaryParser.
 # An empty file is acceptable — boundaries are decorative, not required for
 # constellation line rendering.
 
 echo ""
 echo "🔲 IAU constellation boundaries (VI/49)…"
-BOUND_TMP="$(mktemp /tmp/bound_XXXXXX.dat)"
 
 if [[ -f "sources/iau/constellation_boundaries.csv" ]]; then
   echo "   ⏭  constellation_boundaries.csv already exists, skipping"
 else
   mkdir -p sources/iau
-  echo "   ⬇  bound_20.dat"
+  require_cmd gzip
 
-  if curl --fail --silent --show-error --location \
-      --connect-timeout 15 --max-time 120 \
-      --output "$BOUND_TMP" \
-      "https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat" 2>/dev/null; then
+  BOUND_OK=0
 
-    # Fixed-width format: cols 1-8 RA (hours), 9-17 Dec (degrees), 18-21 abbr
-    awk '
-      /^[[:space:]]*$/ { next }
-      {
-        ra   = substr($0,  1, 8) + 0
-        dec  = substr($0,  9, 9) + 0
-        abbr = substr($0, 18, 4)
-        gsub(/[[:space:]]/, "", abbr)
-        if (length(abbr) > 0) printf "%.6f,%.4f,%s\n", ra, dec, toupper(abbr)
-      }
-    ' "$BOUND_TMP" > "sources/iau/constellation_boundaries.csv"
+  # ── c1. bound_20.dat.gz (space-separated, RA in degrees) ─────────────────
+  # Format: ra_deg  dec_deg  abbr  I/O
+  BOUND_GZ_TMP="$(mktemp /tmp/bound_XXXXXX.dat.gz)"
+  for BOUND_GZ_URL in \
+    "https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat.gz" \
+    "https://vizier.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat.gz" \
+  ; do
+    echo "   ⬇  bound_20.dat.gz from $BOUND_GZ_URL"
+    if curl --fail --silent --show-error --location \
+        --connect-timeout 15 --max-time 120 \
+        --output "$BOUND_GZ_TMP" \
+        "$BOUND_GZ_URL" 2>/dev/null; then
+      echo "   ✅ Downloaded from $BOUND_GZ_URL"
+      # RA is in degrees — divide by 15 to convert to hours.
+      gzip -cd "$BOUND_GZ_TMP" | awk '
+        /^[[:space:]]*$/ { next }
+        NF >= 3 {
+          ra_h = $1 / 15.0
+          dec  = $2 + 0
+          abbr = $3
+          gsub(/[[:space:]]/, "", abbr)
+          if (length(abbr) > 0) printf "%.6f,%.4f,%s\n", ra_h, dec, toupper(abbr)
+        }
+      ' > "sources/iau/constellation_boundaries.csv"
+      BOUND_OK=1
+      break
+    else
+      echo "   ⚠️  Failed: $BOUND_GZ_URL"
+    fi
+  done
+  rm -f "$BOUND_GZ_TMP"
+
+  # ── c2. constbnd.dat (space-separated, RA in hours) ──────────────────────
+  # Format: ra_hours  dec_deg  abbr [abbr2]
+  if [[ $BOUND_OK -eq 0 ]]; then
+    BOUND_TMP="$(mktemp /tmp/constbnd_XXXXXX.dat)"
+    for BOUND_URL in \
+      "https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/constbnd.dat" \
+      "https://vizier.cds.unistra.fr/ftp/cats/VI/49/constbnd.dat" \
+    ; do
+      echo "   ⬇  constbnd.dat from $BOUND_URL"
+      if curl --fail --silent --show-error --location \
+          --connect-timeout 15 --max-time 120 \
+          --output "$BOUND_TMP" \
+          "$BOUND_URL" 2>/dev/null; then
+        echo "   ✅ Downloaded from $BOUND_URL"
+        # RA is already in hours.
+        awk '
+          /^[[:space:]]*$/ { next }
+          NF >= 3 {
+            ra_h = $1 + 0
+            dec  = $2 + 0
+            abbr = $3
+            gsub(/[[:space:]]/, "", abbr)
+            if (length(abbr) > 0) printf "%.6f,%.4f,%s\n", ra_h, dec, toupper(abbr)
+          }
+        ' "$BOUND_TMP" > "sources/iau/constellation_boundaries.csv"
+        BOUND_OK=1
+        break
+      else
+        echo "   ⚠️  Failed: $BOUND_URL"
+      fi
+    done
+    rm -f "$BOUND_TMP"
+  fi
+
+  if [[ $BOUND_OK -eq 1 ]]; then
     echo "   ✅ Saved → sources/iau/constellation_boundaries.csv"
-
   else
-    # Create an empty placeholder — the pipeline and WesternBuilder
-    # handle missing boundary data gracefully.
+    # All sources failed — create an empty placeholder so the pipeline
+    # can still run (boundaries are decorative, not required for line rendering).
     echo "# ra_hours,dec_deg,abbr" > "sources/iau/constellation_boundaries.csv"
-    echo "   ⚠️  CDS not reachable — created empty placeholder"
-    echo "       To add boundaries later, download bound_20.dat from:"
-    echo "       https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat"
+    echo "   ❌ All CDS sources failed — created empty placeholder"
+    echo "      Constellation boundary rendering will be disabled."
+    echo "      To fix manually: download bound_20.dat.gz from"
+    echo "      https://cdsarc.cds.unistra.fr/viz-bin/cat/VI/49"
+    echo "      and re-run this script."
   fi
 fi
-rm -f "$BOUND_TMP"
 
-# ── d. Stellarium Chinese skyculture ─────────────────────────────────────────
+# ── d. Western star proper names ─────────────────────────────────────────────
+# Source: Stellarium modern skyculture star_names.fab
+# Format: <hip>|_("<name>") <catalog-ids>
+# Saved as-is; the pipeline parser handles the format.
+
+echo ""
+echo "✨ Western star proper names (Stellarium modern skyculture)…"
+STAR_NAMES_TMP="$(mktemp /tmp/star_names_XXXXXX.fab)"
+
+if [[ -f "sources/iau/star_names.fab" ]]; then
+  echo "   ⏭  star_names.fab already exists, skipping"
+else
+  mkdir -p sources/iau
+
+  # Try master first; fall back to a known-good tagged release.
+  if curl --fail --silent --show-error --location \
+      --connect-timeout 15 --max-time 60 \
+      --output "$STAR_NAMES_TMP" \
+      "https://raw.githubusercontent.com/Stellarium/stellarium/master/skycultures/modern/star_names.fab" 2>/dev/null; then
+    cp "$STAR_NAMES_TMP" "sources/iau/star_names.fab"
+    echo "   ✅ Saved → sources/iau/star_names.fab (from master)"
+  elif curl --fail --silent --show-error --location \
+      --connect-timeout 15 --max-time 60 \
+      --output "$STAR_NAMES_TMP" \
+      "https://raw.githubusercontent.com/Stellarium/stellarium/refs/tags/v23.4/skycultures/modern/star_names.fab" 2>/dev/null; then
+    cp "$STAR_NAMES_TMP" "sources/iau/star_names.fab"
+    echo "   ✅ Saved → sources/iau/star_names.fab (from v23.4)"
+  else
+    # Not fatal — stars will fall back to "HIP <number>" identifiers.
+    touch "sources/iau/star_names.fab"
+    echo "   ⚠️  Could not download star_names.fab — created empty placeholder"
+    echo "      Stars will fall back to HIP-number identifiers."
+  fi
+fi
+rm -f "$STAR_NAMES_TMP"
+
+# ── e. Stellarium Chinese skyculture ─────────────────────────────────────────
 # Source: Stellarium GitHub skycultures/chinese/
 
 echo ""

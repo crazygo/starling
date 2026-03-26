@@ -45,10 +45,13 @@ class Star {
     required double dec,
     required double mag,
     required double colorIdx,
+    String? nameEn,
+    String? nameZh,
   }) {
     return Star(
       id: 'hip_$hip',
-      name: 'HIP $hip',
+      name: nameEn ?? 'HIP $hip',
+      chineseName: nameZh,
       rightAscension: ra,
       declination: dec,
       magnitude: mag,

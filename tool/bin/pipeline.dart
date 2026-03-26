@@ -14,6 +14,7 @@ import 'package:args/args.dart';
 import '../lib/parsers/hipparcos_parser.dart';
 import '../lib/parsers/iau_lines_parser.dart';
 import '../lib/parsers/iau_boundary_parser.dart';
+import '../lib/parsers/western_star_names_parser.dart';
 import '../lib/parsers/stellarium_chinese_parser.dart';
 import '../lib/builders/catalog_builder.dart';
 import '../lib/builders/western_builder.dart';
@@ -58,18 +59,36 @@ void main(List<String> args) {
   // ── Phase 1: Parse raw data sources ────────────────────────────────────
   print('📥 Phase 1: Parsing sources…');
 
-  final hipparcosFile = File('sources/hipparcos/hip_main.csv');
-  final linesFile     = File('sources/iau/constellation_lines.csv');
-  final boundaryFile  = File('sources/iau/constellation_boundaries.csv');
-  final chineseDir    = Directory('sources/stellarium/chinese');
+  final hipparcosFile  = File('sources/hipparcos/hip_main.csv');
+  final linesFile      = File('sources/iau/constellation_lines.csv');
+  final boundaryFile   = File('sources/iau/constellation_boundaries.csv');
+  final starNamesFile  = File('sources/iau/star_names.fab');
+  final chineseDir     = Directory('sources/stellarium/chinese');
 
   _requireFile(hipparcosFile);
   _requireFile(linesFile);
   _requireFile(boundaryFile);
   _requireDir(chineseDir);
 
-  final stars = HipparcosParser.parse(hipparcosFile, maxMagnitude: maxMagnitude);
+  var stars = HipparcosParser.parse(hipparcosFile, maxMagnitude: maxMagnitude);
   print('   ✅ Stars: ${stars.length} (mag ≤ $maxMagnitude)');
+
+  // Merge western proper names if the file is present (optional).
+  if (starNamesFile.existsSync()) {
+    final nameMap = WesternStarNamesParser.parse(starNamesFile);
+    stars = stars.map((s) {
+      final name = nameMap[s.hip];
+      return name != null ? s.copyWith(nameEn: name) : s;
+    }).toList(growable: false);
+    final named = stars.where((s) => s.nameEn != null).length;
+    if (named > 0) {
+      print('   ✅ Star proper names: $named named out of ${stars.length}');
+    } else {
+      print('   ⚠️  Star proper names: none loaded'
+            ' (star_names.fab was empty or unparseable)'
+            ' — stars will use HIP-number identifiers');
+    }
+  }
 
   final westernLines    = IauLinesParser.parse(linesFile);
   final westernBounds   = IauBoundaryParser.parse(boundaryFile);
@@ -79,12 +98,12 @@ void main(List<String> args) {
   print('   ✅ Chinese asterisms: ${chineseAsterisms.length}');
 
   // ── Phase 2: Validate integrity ─────────────────────────────────────────
+  final hipSet = stars.map((s) => s.hip).toSet();
+
   if (skipValidate) {
     print('⚠️  Phase 2: Validation skipped (--skip-validate)');
   } else {
     print('🔍 Phase 2: Validating integrity…');
-
-    final hipSet = stars.map((s) => s.hip).toSet();
 
     IntegrityChecker.checkMagnitudeRange(stars);
 
@@ -105,6 +124,18 @@ void main(List<String> args) {
     print('   ✅ Integrity checks passed');
   }
 
+  // Filter out constellation edges that reference HIPs absent from the
+  // catalog (e.g. dim stars just above the magnitude cutoff) so that the
+  // binary only contains resolvable references.
+  final filteredLines = Map.fromEntries(westernLines.entries.map((entry) {
+    final filtered = entry.value.copyWith(
+      edges: entry.value.edges
+          .where((e) => hipSet.contains(e.fromHip) && hipSet.contains(e.toHip))
+          .toList(growable: false),
+    );
+    return MapEntry(entry.key, filtered);
+  }));
+
   // ── Phase 3: Build .bin files ────────────────────────────────────────────
   print('📦 Phase 3: Building .bin files…');
 
@@ -113,7 +144,7 @@ void main(List<String> args) {
   catalogFile.writeAsBytesSync(catalogBytes);
   print('   ✅ catalog_base.bin     (${_kb(catalogBytes)} KB)');
 
-  final westernBytes = WesternBuilder.build(westernLines, westernBounds);
+  final westernBytes = WesternBuilder.build(filteredLines, westernBounds);
   final westernFile  = File('${outputDir.path}/culture_western.bin');
   westernFile.writeAsBytesSync(westernBytes);
   print('   ✅ culture_western.bin  (${_kb(westernBytes)} KB)');

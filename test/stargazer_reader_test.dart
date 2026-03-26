@@ -48,6 +48,20 @@ void main() {
       expect(sirius.mag, closeTo(-1.44, 0.1));
     });
 
+    test('Sirius (HIP 32349) has proper name "Sirius"', () {
+      final all = reader.readAll();
+      final sirius = all.firstWhere((s) => s.hip == 32349);
+      expect(sirius.nameEn, 'Sirius');
+    });
+
+    test('unnamed stars have null nameEn', () {
+      // HIP 1 (faint star, well below mag 4.0) should have no proper name.
+      final all = reader.readAll();
+      final unnamed = all.where((s) => s.nameEn == null);
+      expect(unnamed.length, greaterThan(8000),
+          reason: 'Most stars should have no proper name');
+    });
+
     test('Vega (HIP 91262) has correct approximate RA', () {
       final all = reader.readAll();
       final vega = all.firstWhere((s) => s.hip == 91262);
