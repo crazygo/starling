@@ -511,7 +511,7 @@ class _StarPainter extends CustomPainter {
 
     // ── Group 2: Constellation / asterism names + member star names ───────
     final constellationColor =
-        Colors.blueGrey[200]!.withAlpha(200);
+        Colors.blueGrey.shade200.withAlpha(200);
     final memberStarColor = Colors.white.withAlpha(180);
 
     // Track which member stars have already been labeled to avoid duplicates
