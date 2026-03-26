@@ -235,6 +235,24 @@ class _StarPainter extends CustomPainter {
   // and is discarded when the widget rebuilds with changed properties.
   List<_LabelSpec>? _cachedLabelSpecs;
 
+  // Star IDs that belong to the drawn constellation lines (always western).
+  // Used by _drawStars() to exempt member stars from magnitude culling so
+  // constellation lines never break when zooming out.
+  late final Set<String> _constellationMemberStarIds = {
+    for (final c in constellations)
+      for (final id in c.starIds) id,
+  };
+
+  // Star IDs that belong to the culture-specific (Group-2) constellation list.
+  // Used by _buildLabelSpecs() for label grouping.  Reuses the western set
+  // when showChineseName is false to avoid duplicate work.
+  late final Set<String> _labelMemberStarIds = showChineseName
+      ? {
+          for (final c in chineseConstellations)
+            for (final id in c.starIds) id,
+        }
+      : _constellationMemberStarIds;
+
   static List<Offset> _precomputeBgStars() {
     final rng = Random(42);
     return List.generate(
@@ -293,17 +311,9 @@ class _StarPainter extends CustomPainter {
       Paint()..color = const Color(0xFF05091A),
     );
 
-    // Precompute star IDs that belong to the active constellations/asterisms so
-    // that faint member stars are never culled (constellation lines must not
-    // break when zooming out).
-    final activeMemberStarIds = <String>{};
-    for (final c in constellations) {
-      activeMemberStarIds.addAll(c.starIds);
-    }
-
     _drawBackgroundStars(canvas, size);
     _drawConstellationLines(canvas);
-    _drawStars(canvas, activeMemberStarIds);
+    _drawStars(canvas, _constellationMemberStarIds);
     _drawLabels(canvas, size);
   }
 
@@ -488,12 +498,6 @@ class _StarPainter extends CustomPainter {
     final group2Constellations =
         showChineseName ? chineseConstellations : constellations;
 
-    // Build the set of star IDs that belong to any Group-2 constellation.
-    final memberStarIds = <String>{};
-    for (final c in group2Constellations) {
-      memberStarIds.addAll(c.starIds);
-    }
-
     final placedRects = <Rect>[];
     final specs = <_LabelSpec>[];
 
@@ -573,7 +577,7 @@ class _StarPainter extends CustomPainter {
 
     for (final star in stars) {
       if (competitionCount >= _maxCompetitiveLabels) break;
-      if (memberStarIds.contains(star.id)) continue;
+      if (_labelMemberStarIds.contains(star.id)) continue;
       if (importantStarIds.contains(star.id)) continue;
       final label = _starLabel(star);
       if (label == null) continue;
