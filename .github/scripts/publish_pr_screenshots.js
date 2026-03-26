@@ -183,10 +183,21 @@ async function syncPreviewFiles(files) {
 }
 
 async function upsertPrComment(body) {
-  const comments = await githubRequest(
-    `/repos/${owner}/${repo}/issues/${prNumber}/comments?per_page=100`,
-  );
-  const existing = comments.find((comment) => comment.body?.includes(COMMENT_MARKER));
+  let existing = null;
+  let page = 1;
+
+  while (!existing) {
+    const comments = await githubRequest(
+      `/repos/${owner}/${repo}/issues/${prNumber}/comments?per_page=100&page=${page}`,
+    );
+
+    if (!comments.length) {
+      break;
+    }
+
+    existing = comments.find((comment) => comment.body?.includes(COMMENT_MARKER));
+    page += 1;
+  }
 
   if (existing) {
     await githubRequest(`/repos/${owner}/${repo}/issues/comments/${existing.id}`, {
