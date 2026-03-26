@@ -171,7 +171,6 @@
       "hip_89931",
       "hip_81266",
       "hip_92041",
-      "hip_88175",
       "hip_88635"
     ],
     "lines": [
@@ -186,14 +185,6 @@
       {
         "starId1": "hip_81266",
         "starId2": "hip_92041"
-      },
-      {
-        "starId1": "hip_92041",
-        "starId2": "hip_88175"
-      },
-      {
-        "starId1": "hip_88175",
-        "starId2": "hip_90185"
       },
       {
         "starId1": "hip_81266",
@@ -253,10 +244,6 @@
       {
         "starId1": "hip_50583",
         "starId2": "hip_50335"
-      },
-      {
-        "starId1": "hip_50335",
-        "starId2": "hip_50583"
       },
       {
         "starId1": "hip_50583",
@@ -894,8 +881,7 @@
     "chineseName": "鲸鱼座",
     "starIds": [
       "hip_3419",
-      "hip_12387",
-      "hip_14135"
+      "hip_12387"
     ],
     "lines": [
       {

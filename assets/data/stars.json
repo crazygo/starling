@@ -440,17 +440,6 @@
     "constellation": "Sco"
   },
   {
-    "id": "hip_85267",
-    "name": "Theta Scorpii",
-    "chineseName": null,
-    "rightAscension": 264.329,
-    "declination": -42.998,
-    "magnitude": 1.87,
-    "spectralType": "F0II",
-    "description": null,
-    "constellation": "Sco"
-  },
-  {
     "id": "hip_28360",
     "name": "Menkalinan",
     "chineseName": "五车三",
@@ -594,32 +583,10 @@
     "constellation": "Sgr"
   },
   {
-    "id": "hip_89642",
-    "name": "Sigma Sagittarii",
-    "chineseName": null,
-    "rightAscension": 275.249,
-    "declination": -26.297,
-    "magnitude": 2.05,
-    "spectralType": "B2.5V",
-    "description": null,
-    "constellation": "Sgr"
-  },
-  {
     "id": "hip_68933",
     "name": "Menkent",
     "chineseName": "库楼三",
     "rightAscension": 211.671,
-    "declination": -36.37,
-    "magnitude": 2.06,
-    "spectralType": "K0IIIb",
-    "description": null,
-    "constellation": "Cen"
-  },
-  {
-    "id": "hip_68002",
-    "name": "Theta Centauri",
-    "chineseName": "库楼一",
-    "rightAscension": 210.956,
     "declination": -36.37,
     "magnitude": 2.06,
     "spectralType": "K0IIIb",
@@ -735,28 +702,6 @@
     "spectralType": "A1V",
     "description": null,
     "constellation": "Cen"
-  },
-  {
-    "id": "hip_47908",
-    "name": "Zeta Puppis",
-    "chineseName": "弧矢二",
-    "rightAscension": 120.896,
-    "declination": -40.003,
-    "magnitude": 2.21,
-    "spectralType": "O4If",
-    "description": null,
-    "constellation": "Pup"
-  },
-  {
-    "id": "hip_43813",
-    "name": "Suhail",
-    "chineseName": "天记",
-    "rightAscension": 136.999,
-    "declination": -43.433,
-    "magnitude": 2.21,
-    "spectralType": "K4.5Ib",
-    "description": null,
-    "constellation": "Vel"
   },
   {
     "id": "hip_44816",
@@ -1397,17 +1342,6 @@
     "constellation": "Sco"
   },
   {
-    "id": "hip_88175",
-    "name": "Lambda Sagittarii",
-    "chineseName": null,
-    "rightAscension": 271.452,
-    "declination": -25.421,
-    "magnitude": 2.82,
-    "spectralType": "K1.5IIIb",
-    "description": null,
-    "constellation": "Sgr"
-  },
-  {
     "id": "hip_57757",
     "name": "Vindemiatrix",
     "chineseName": "东次相",
@@ -1774,17 +1708,6 @@
     "id": "hip_12770",
     "name": "Mira",
     "chineseName": "刍藁增二",
-    "rightAscension": 34.836,
-    "declination": -2.978,
-    "magnitude": 3.04,
-    "spectralType": "M7IIIe",
-    "description": null,
-    "constellation": "Cet"
-  },
-  {
-    "id": "hip_14135",
-    "name": "Omicron Ceti",
-    "chineseName": null,
     "rightAscension": 34.836,
     "declination": -2.978,
     "magnitude": 3.04,

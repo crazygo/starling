@@ -194,18 +194,9 @@
       "hip_92855",
       "hip_89931",
       "hip_81266",
-      "hip_92041",
-      "hip_88175"
+      "hip_92041"
     ],
     "lines": [
-      {
-        "starId1": "hip_92041",
-        "starId2": "hip_88175"
-      },
-      {
-        "starId1": "hip_88175",
-        "starId2": "hip_90185"
-      },
       {
         "starId1": "hip_90185",
         "starId2": "hip_89931"
@@ -718,18 +709,9 @@
       "hip_92855",
       "hip_89931",
       "hip_81266",
-      "hip_92041",
-      "hip_88175"
+      "hip_92041"
     ],
     "lines": [
-      {
-        "starId1": "hip_92041",
-        "starId2": "hip_88175"
-      },
-      {
-        "starId1": "hip_88175",
-        "starId2": "hip_90185"
-      },
       {
         "starId1": "hip_90185",
         "starId2": "hip_89931"
