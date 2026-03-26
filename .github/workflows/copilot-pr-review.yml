@@ -169,7 +169,23 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_TITLE: ${{ github.event.pull_request.title }}
         run: |
-          copilot -p "You are reviewing pull request #${PR_NUMBER} titled '${PR_TITLE}' in the ${GITHUB_REPOSITORY} repository. Read the diff from /tmp/pr.diff using shell cat, then write a concise English markdown review to /tmp/copilot-review.md. The review must contain the sections 'Summary', 'Potential risks', and 'Recommended follow-ups'. Focus on correctness, regressions, security, and maintainability. If no problems are found, say so clearly." --allow-tool='shell(cat:*)' --allow-tool=write --no-ask-user
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          prompt = (
+              f"You are reviewing pull request #{os.environ['PR_NUMBER']} titled "
+              f"{json.dumps(os.environ['PR_TITLE'])} in the {os.environ['GITHUB_REPOSITORY']} "
+              "repository. Read the diff from /tmp/pr.diff using shell cat, then write a concise "
+              "English markdown review to /tmp/copilot-review.md. The review must contain the "
+              "sections 'Summary', 'Potential risks', and 'Recommended follow-ups'. Focus on "
+              "correctness, regressions, security, and maintainability. If no problems are found, "
+              "say so clearly."
+          )
+          Path('/tmp/copilot-prompt.txt').write_text(prompt)
+          PY
+          copilot -p "$(cat /tmp/copilot-prompt.txt)" --allow-tool='shell(cat:*)' --allow-tool=write --no-ask-user
 
       - name: Post Copilot review comment
         uses: actions/github-script@v7
