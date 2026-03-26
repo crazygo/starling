@@ -585,7 +585,7 @@ class _StarPainter extends CustomPainter {
   }
 
   /// Renders all computed label specs onto [canvas].
-  void _drawLabels(Canvas canvas, Size size) {
+  void _drawLabels(Canvas canvas, Size _) {
     final specs = _buildLabelSpecs();
     for (final spec in specs) {
       final pb = ui.ParagraphBuilder(
