@@ -27,6 +27,9 @@ jobs:
       - name: Wait for other checks to finish
         uses: actions/github-script@v7
         env:
+          CHECK_DISCOVERY_WINDOW_MS: "120000"
+          CHECK_POLL_DELAY_MS: "30000"
+          CHECK_TIMEOUT_MS: "1800000"
           CURRENT_WORKFLOW: ${{ github.workflow }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -37,9 +40,9 @@ jobs:
             const headSha = process.env.HEAD_SHA;
             const prNumber = Number(process.env.PR_NUMBER);
             const startedAt = Date.now();
-            const checkDiscoveryWindowMs = 2 * 60 * 1000;
-            const pollDelayMs = 30 * 1000;
-            const timeoutMs = 30 * 60 * 1000;
+            const checkDiscoveryWindowMs = Number(process.env.CHECK_DISCOVERY_WINDOW_MS);
+            const pollDelayMs = Number(process.env.CHECK_POLL_DELAY_MS);
+            const timeoutMs = Number(process.env.CHECK_TIMEOUT_MS);
 
             function sleep(ms) {
               return new Promise((resolve) => setTimeout(resolve, ms));
@@ -185,7 +188,7 @@ jobs:
           )
           Path('/tmp/copilot-prompt.txt').write_text(prompt)
           PY
-          copilot -p "$(cat /tmp/copilot-prompt.txt)" -s --add-dir=/tmp --allow-tool='shell(cat:*)' --allow-tool=write --no-ask-user
+          copilot -p "$(cat /tmp/copilot-prompt.txt)" -s --add-dir=/tmp --allow-tool='shell(cat /tmp/pr.diff)' --allow-tool=write --no-ask-user
 
       - name: Post Copilot review comment
         uses: actions/github-script@v7
