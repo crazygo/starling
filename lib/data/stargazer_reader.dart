@@ -1,3 +1,4 @@
+import 'dart:convert' show utf8;
 import 'dart:typed_data';
 
 // ---------------------------------------------------------------------------
@@ -28,7 +29,7 @@ String _readString(ByteData buf, int strOffset) {
     buf.offsetInBytes + strOffset + 4,
     len,
   );
-  return String.fromCharCodes(bytes);
+  return utf8.decode(bytes);
 }
 
 /// Follow the root-table offset encoded at the start of a FlatBuffers buffer.

@@ -35,6 +35,7 @@ class Star {
       spectralType: json['spectralType'] as String?,
       description: json['description'] as String?,
       constellation: json['constellation'] as String?,
+      colorIdx: (json['colorIdx'] as num?)?.toDouble(),
     );
   }
 

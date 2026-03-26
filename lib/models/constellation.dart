@@ -91,7 +91,6 @@ class Constellation {
   /// [edgePairs] is an interleaved list of [fromHip, toHip, …] uint16 values.
   factory Constellation.fromChineseBin({
     required String name,
-    required String nameEn,
     required List<int> edgePairs,
   }) {
     final lines = <ConstellationLine>[];

@@ -121,7 +121,6 @@ class StarDataService {
     _chineseConstellations = chineseReader.readAll().map((a) {
       return Constellation.fromChineseBin(
         name: a.name,
-        nameEn: a.nameEn,
         edgePairs: a.edges,
       );
     }).toList();
