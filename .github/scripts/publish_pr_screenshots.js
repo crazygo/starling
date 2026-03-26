@@ -84,18 +84,30 @@ async function githubRequest(apiPath, options = {}) {
   }
 
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      data = null;
+    }
+  }
 
   if (!response.ok) {
-    const apiMessage = data?.message ? ` - ${data.message}` : '';
+    const apiMessage =
+      data && typeof data === 'object' && data.message
+        ? ` - ${data.message}`
+        : text
+        ? ` - ${text}`
+        : '';
     const error = new Error(
       `GitHub API ${options.method || 'GET'} ${apiPath} failed: ${response.status}${apiMessage}`,
     );
-    error.response = data;
+    error.response = data !== null ? data : text;
     throw error;
   }
 
-  return data;
+  return data !== null ? data : text || null;
 }
 
 async function ensurePreviewBranch() {
