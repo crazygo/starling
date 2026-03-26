@@ -59,7 +59,7 @@ function previewImageUrl(fileName) {
     .split('/')
     .map(encodeURIComponent)
     .join('/');
-  return `https://raw.githubusercontent.com/${owner}/${repo}/${PREVIEW_BRANCH}/${encodedPath}?v=${encodeURIComponent(runId)}`;
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${PREVIEW_BRANCH}/${encodedPath}?v=${encodeURIComponent(sha)}`;
 }
 
 function humanizeFileName(fileName) {
