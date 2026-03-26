@@ -230,9 +230,17 @@ class _StarPainter extends CustomPainter {
       Paint()..color = const Color(0xFF05091A),
     );
 
+    // Precompute star IDs that belong to the active constellations/asterisms so
+    // that faint member stars are never culled (constellation lines must not
+    // break when zooming out).
+    final activeMemberStarIds = <String>{};
+    for (final c in constellations) {
+      activeMemberStarIds.addAll(c.starIds);
+    }
+
     _drawBackgroundStars(canvas, size);
     _drawConstellationLines(canvas);
-    _drawStars(canvas);
+    _drawStars(canvas, activeMemberStarIds);
   }
 
   void _drawBackgroundStars(Canvas canvas, Size size) {
@@ -266,8 +274,21 @@ class _StarPainter extends CustomPainter {
     }
   }
 
-  void _drawStars(Canvas canvas) {
+  void _drawStars(Canvas canvas, Set<String> activeMemberStarIds) {
+    // Dynamic magnitude threshold: at low zoom (zoomed out) only brighter stars
+    // are shown. Formula yields ~4.5 at zoom=1.0, ~6.5 (full catalogue) at
+    // zoom>=2.0, and floors at 3.0 when very zoomed out. Member stars of the
+    // active constellations are always shown so constellation lines stay intact.
+    final magThreshold =
+        (2.5 + viewport.zoom * 2.0).clamp(3.0, 6.5);
+
     for (final star in stars) {
+      // Cull faint non-member stars when zoomed out.
+      if (star.magnitude > magThreshold &&
+          !activeMemberStarIds.contains(star.id)) {
+        continue;
+      }
+
       final pos = _project(star.rightAscension, star.declination);
       if (pos == null) continue;
 
