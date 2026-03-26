@@ -134,7 +134,7 @@ jobs:
           COPILOT_REVIEW_TOKEN: ${{ secrets.COPILOT_REVIEW_TOKEN }}
         run: |
           if [ -z "${COPILOT_REVIEW_TOKEN}" ]; then
-            echo "COPILOT_REVIEW_TOKEN is required. Create a fine-grained PAT with the Copilot Requests permission and add it as a repository secret."
+            echo "COPILOT_REVIEW_TOKEN is required. Create a fine-grained PAT with the Copilot Request permission and add it as a repository secret."
             exit 1
           fi
 
@@ -188,7 +188,13 @@ jobs:
           )
           Path('/tmp/copilot-prompt.txt').write_text(prompt)
           PY
-          copilot -p "$(cat /tmp/copilot-prompt.txt)" -s --add-dir=/tmp --allow-tool='shell(cat /tmp/pr.diff)' --allow-tool=write --no-ask-user
+          copilot \
+            -p "$(cat /tmp/copilot-prompt.txt)" \
+            -s \
+            --add-dir=/tmp \
+            --allow-tool='shell(cat /tmp/pr.diff)' \
+            --allow-tool=write \
+            --no-ask-user
 
       - name: Post Copilot review comment
         uses: actions/github-script@v7
