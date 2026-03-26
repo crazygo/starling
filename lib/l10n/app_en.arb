@@ -1,0 +1,16 @@
+{
+  "@@locale": "en",
+  "tabBallads": "Ballads",
+  "tabVoyage": "Voyage",
+  "tabSettings": "Settings",
+  "settingsTitle": "Settings",
+  "settingsSubtitle": "App Preferences",
+  "cultureSettings": "Culture Settings",
+  "chineseCulture": "Chinese Culture",
+  "chineseCultureSubtitle": "Chinese star names and constellations",
+  "westernCulture": "Western Culture",
+  "westernCultureSubtitle": "Western star names and constellations",
+  "searchHint": "Search stars…",
+  "gyroOn": "Gyro On",
+  "gyroOff": "Gyro"
+}

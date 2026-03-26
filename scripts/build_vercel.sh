@@ -25,5 +25,8 @@ flutter pub get
 # Flutter asset bundle even when the .bin files are not yet generated).
 mkdir -p assets/bin
 
-# Build web release
+# Generate localization files (from lib/l10n/*.arb → lib/l10n/generated/)
+flutter gen-l10n
+
+# Build web release (wasm dry run warnings are non-fatal and can be ignored)
 flutter build web --release
