@@ -1,0 +1,14 @@
+@Copilot 请帮忙确认一个可疑的问题：
+
+PR 里重新生成的 `culture_western.bin` 大小为 **10.8 KB**，但原来 main 分支上的是 **79.8 KB**，缩小了约 7 倍。
+
+请检查：
+1. 重新生成的 `culture_western.bin` 里，88 个星座的 `boundary` 字段是否真的包含了多边形顶点数据（非空数组）？
+2. 如果 boundary 数据实际上是空的，说明下载的 `bound_20.dat` 没有被正确 parse 或写入，请修复 pipeline。
+3. 如果 boundary 数据是正确写入的，请解释文件大小差异的原因。
+
+可以通过在 `tool/` 下运行以下命令来验证：
+```bash
+dart run bin/pipeline.dart --mag 6.5 --output ../assets/bin
+```
+然后检查输出日志中 `culture_western.bin` 的大小是否接近 79.8 KB。
