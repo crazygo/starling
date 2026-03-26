@@ -180,8 +180,8 @@ jobs:
           prompt = (
               f"You are reviewing pull request #{os.environ['PR_NUMBER']} titled "
               f"{json.dumps(os.environ['PR_TITLE'])} in the {os.environ['GITHUB_REPOSITORY']} "
-              "repository. Read the diff from /tmp/pr.diff using shell cat, then write a concise "
-              "English markdown review to /tmp/copilot-review.md. The review must contain the "
+              "repository. Read the diff from /tmp/pr.diff using shell cat, then output a concise "
+              "English markdown review. The review must contain the "
               "sections 'Summary', 'Potential risks', and 'Recommended follow-ups'. Focus on "
               "correctness, regressions, security, and maintainability. If no problems are found, "
               "say so clearly."
@@ -191,10 +191,8 @@ jobs:
           copilot \
             -p "$(cat /tmp/copilot-prompt.txt)" \
             -s \
-            --add-dir=/tmp \
             --allow-tool='shell(cat /tmp/pr.diff)' \
-            --allow-tool=write \
-            --no-ask-user
+            --no-ask-user > /tmp/copilot-review.md
 
       - name: Post Copilot review comment
         uses: actions/github-script@v7
