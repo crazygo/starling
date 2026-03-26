@@ -83,21 +83,21 @@ jobs:
 
               const relevantCheckRuns = checkRuns.filter((checkRun) => checkRun.name !== process.env.CURRENT_WORKFLOW);
               const relevantStatuses = combinedStatus.statuses.filter((status) => status.context !== process.env.CURRENT_WORKFLOW);
-              const hasSignals = relevantCheckRuns.length > 0 || relevantStatuses.length > 0;
+              const hasRelevantChecks = relevantCheckRuns.length > 0 || relevantStatuses.length > 0;
               const pendingCheckRuns = relevantCheckRuns.filter((checkRun) => checkRun.status !== 'completed');
               const failingCheckRuns = relevantCheckRuns.filter((checkRun) => (
                 checkRun.status === 'completed' &&
                 !['success', 'neutral', 'skipped'].includes(checkRun.conclusion ?? '')
               ));
-              const pendingStatuses = relevantStatuses.filter((status) => ['pending'].includes(status.state));
+              const pendingStatuses = relevantStatuses.filter((status) => status.state === 'pending');
               const failingStatuses = relevantStatuses.filter((status) => ['error', 'failure'].includes(status.state));
 
-              if (!hasSignals && Date.now() - startedAt >= discoveryWindowMs) {
+              if (!hasRelevantChecks && Date.now() - startedAt >= discoveryWindowMs) {
                 core.info('No other status checks were discovered for this pull request. Continuing with the Copilot review.');
                 break;
               }
 
-              if (hasSignals && pendingCheckRuns.length === 0 && pendingStatuses.length === 0) {
+              if (hasRelevantChecks && pendingCheckRuns.length === 0 && pendingStatuses.length === 0) {
                 if (failingCheckRuns.length > 0 || failingStatuses.length > 0) {
                   const failures = [
                     ...failingCheckRuns.map((checkRun) => `${checkRun.name}=${checkRun.conclusion}`),
