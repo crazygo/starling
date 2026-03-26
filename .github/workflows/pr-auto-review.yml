@@ -24,6 +24,7 @@ jobs:
       - name: Check and comment
         uses: actions/github-script@v7
         with:
+          github-token: ${{ secrets.STARLING_COPILOT_TRIGGER || secrets.GITHUB_TOKEN }}
           script: |
             const pullNumber = context.payload.pull_request
               ? context.payload.pull_request.number
