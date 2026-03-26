@@ -1,7 +1,7 @@
 name: PR Screenshot Preview
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
 
 jobs:
@@ -14,6 +14,8 @@ jobs:
     steps:
       # 1. Checkout
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       # 2. Flutter 环境
       - uses: subosito/flutter-action@v2
