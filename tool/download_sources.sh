@@ -178,53 +178,91 @@ rm -f "$FAB_TMP"
 
 # ── c. IAU constellation boundaries ──────────────────────────────────────────
 # Source: Davenhall & Leggett VI/49 (CDS)
-# The boundary file uses a fixed-width format; we convert to the
-# ra_hours,dec_deg,abbr CSV expected by IauBoundaryParser.
+# Two available files (tried in order):
+#   bound_20.dat.gz — space-separated, RA in degrees (÷15 → hours), 4 columns
+#   constbnd.dat    — space-separated, RA in hours, 3+ columns
+# Output CSV: ra_hours,dec_deg,abbr as expected by IauBoundaryParser.
 # An empty file is acceptable — boundaries are decorative, not required for
 # constellation line rendering.
 
 echo ""
 echo "🔲 IAU constellation boundaries (VI/49)…"
-BOUND_TMP="$(mktemp /tmp/bound_XXXXXX.dat)"
 
 if [[ -f "sources/iau/constellation_boundaries.csv" ]]; then
   echo "   ⏭  constellation_boundaries.csv already exists, skipping"
 else
   mkdir -p sources/iau
+  require_cmd gzip
 
   BOUND_OK=0
 
-  # Try multiple mirrors in order; break on first success.
-  for BOUND_URL in \
-    "https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat" \
-    "https://cdsarc.cds.unistra.fr/ftp/VI/49/bound_20.dat" \
-    "https://vizier.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat" \
+  # ── c1. bound_20.dat.gz (space-separated, RA in degrees) ─────────────────
+  # Format: ra_deg  dec_deg  abbr  I/O
+  BOUND_GZ_TMP="$(mktemp /tmp/bound_XXXXXX.dat.gz)"
+  for BOUND_GZ_URL in \
+    "https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat.gz" \
+    "https://vizier.cds.unistra.fr/ftp/cats/VI/49/bound_20.dat.gz" \
   ; do
-    echo "   ⬇  bound_20.dat from $BOUND_URL"
+    echo "   ⬇  bound_20.dat.gz from $BOUND_GZ_URL"
     if curl --fail --silent --show-error --location \
         --connect-timeout 15 --max-time 120 \
-        --output "$BOUND_TMP" \
-        "$BOUND_URL" 2>/dev/null; then
+        --output "$BOUND_GZ_TMP" \
+        "$BOUND_GZ_URL" 2>/dev/null; then
+      echo "   ✅ Downloaded from $BOUND_GZ_URL"
+      # RA is in degrees — divide by 15 to convert to hours.
+      zcat "$BOUND_GZ_TMP" | awk '
+        /^[[:space:]]*$/ { next }
+        NF >= 3 {
+          ra_h = $1 / 15.0
+          dec  = $2 + 0
+          abbr = $3
+          gsub(/[[:space:]]/, "", abbr)
+          if (length(abbr) > 0) printf "%.6f,%.4f,%s\n", ra_h, dec, toupper(abbr)
+        }
+      ' > "sources/iau/constellation_boundaries.csv"
       BOUND_OK=1
-      echo "   ✅ Downloaded from $BOUND_URL"
       break
     else
-      echo "   ⚠️  Failed: $BOUND_URL"
+      echo "   ⚠️  Failed: $BOUND_GZ_URL"
     fi
   done
+  rm -f "$BOUND_GZ_TMP"
+
+  # ── c2. constbnd.dat (space-separated, RA in hours) ──────────────────────
+  # Format: ra_hours  dec_deg  abbr [abbr2]
+  if [[ $BOUND_OK -eq 0 ]]; then
+    BOUND_TMP="$(mktemp /tmp/constbnd_XXXXXX.dat)"
+    for BOUND_URL in \
+      "https://cdsarc.cds.unistra.fr/ftp/cats/VI/49/constbnd.dat" \
+      "https://vizier.cds.unistra.fr/ftp/cats/VI/49/constbnd.dat" \
+    ; do
+      echo "   ⬇  constbnd.dat from $BOUND_URL"
+      if curl --fail --silent --show-error --location \
+          --connect-timeout 15 --max-time 120 \
+          --output "$BOUND_TMP" \
+          "$BOUND_URL" 2>/dev/null; then
+        echo "   ✅ Downloaded from $BOUND_URL"
+        # RA is already in hours.
+        awk '
+          /^[[:space:]]*$/ { next }
+          NF >= 3 {
+            ra_h = $1 + 0
+            dec  = $2 + 0
+            abbr = $3
+            gsub(/[[:space:]]/, "", abbr)
+            if (length(abbr) > 0) printf "%.6f,%.4f,%s\n", ra_h, dec, toupper(abbr)
+          }
+        ' "$BOUND_TMP" > "sources/iau/constellation_boundaries.csv"
+        BOUND_OK=1
+        break
+      else
+        echo "   ⚠️  Failed: $BOUND_URL"
+      fi
+    done
+    rm -f "$BOUND_TMP"
+  fi
 
   if [[ $BOUND_OK -eq 1 ]]; then
-    # Fixed-width format: cols 1-8 RA (hours), 9-17 Dec (degrees), 18-21 abbr
-    awk '
-      /^[[:space:]]*$/ { next }
-      {
-        ra   = substr($0,  1, 8) + 0
-        dec  = substr($0,  9, 9) + 0
-        abbr = substr($0, 18, 4)
-        gsub(/[[:space:]]/, "", abbr)
-        if (length(abbr) > 0) printf "%.6f,%.4f,%s\n", ra, dec, toupper(abbr)
-      }
-    ' "$BOUND_TMP" > "sources/iau/constellation_boundaries.csv"
     echo "   ✅ Saved → sources/iau/constellation_boundaries.csv"
   else
     # All sources failed — create an empty placeholder so the pipeline
@@ -232,12 +270,11 @@ else
     echo "# ra_hours,dec_deg,abbr" > "sources/iau/constellation_boundaries.csv"
     echo "   ❌ All CDS sources failed — created empty placeholder"
     echo "      Constellation boundary rendering will be disabled."
-    echo "      To fix manually: download bound_20.dat from"
+    echo "      To fix manually: download bound_20.dat.gz from"
     echo "      https://cdsarc.cds.unistra.fr/viz-bin/cat/VI/49"
     echo "      and re-run this script."
   fi
 fi
-rm -f "$BOUND_TMP"
 
 # ── d. Stellarium Chinese skyculture ─────────────────────────────────────────
 # Source: Stellarium GitHub skycultures/chinese/
