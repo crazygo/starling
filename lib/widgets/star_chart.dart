@@ -497,15 +497,6 @@ class _StarPainter extends CustomPainter {
       horizonPaint,
     );
 
-    canvas.drawLine(
-      Offset(0, horizonY),
-      Offset(size.width, horizonY),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.6
-        ..color = const Color(0x22FFE1B8),
-    );
-
     final leftVignette = Rect.fromLTWH(0, 0, size.width * 0.18, size.height);
     canvas.drawRect(
       leftVignette,
