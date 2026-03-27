@@ -448,15 +448,6 @@ class _StarPainter extends CustomPainter {
       return;
     }
 
-    final effectiveDec = _effectiveCenterDecForStyle(
-      viewStyle,
-      viewport.centerDec,
-      gyroOffset?.dy ?? 0,
-    );
-    final horizonY = _mapDomeY(_guideLinearPy(effectiveDec)).clamp(
-      -size.height,
-      size.height * 2,
-    );
     final fullRect = Offset.zero & size;
     canvas.drawRect(
       fullRect,
@@ -464,25 +455,8 @@ class _StarPainter extends CustomPainter {
         ..shader = ui.Gradient.linear(
           const Offset(0, 0),
           Offset(0, size.height),
-          const [Color(0xFF020611), Color(0xFF07152A), Color(0xFF11263D)],
-          const [0.0, 0.58, 1.0],
-        ),
-    );
-
-    final lowerHemisphereTop = horizonY.clamp(0.0, size.height).toDouble();
-    final lowerHemisphereRect = Rect.fromLTWH(
-      0,
-      lowerHemisphereTop,
-      size.width,
-      size.height - lowerHemisphereTop,
-    );
-    canvas.drawRect(
-      lowerHemisphereRect,
-      Paint()
-        ..shader = ui.Gradient.linear(
-          Offset(0, lowerHemisphereRect.top),
-          Offset(0, lowerHemisphereRect.bottom),
-          const [Color(0x121E3658), Color(0x22314658), Color(0x442A3446)],
+          const [Color(0xFF020611), Color(0xFF07152A), Color(0xFF0D1C31)],
+          const [0.0, 0.62, 1.0],
         ),
     );
   }
