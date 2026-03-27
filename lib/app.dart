@@ -34,40 +34,51 @@ class _StarlingAppState extends State<StarlingApp> {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<SettingsService>.value(
       value: _settings,
-      child: MaterialApp(
-        title: '星仔 Starling',
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        localeResolutionCallback: (locale, supportedLocales) {
-          if (locale == null) return const Locale('zh');
-          for (final supported in supportedLocales) {
-            if (supported.languageCode == locale.languageCode) {
-              return supported;
-            }
-          }
-          return const Locale('zh');
+      child: ListenableBuilder(
+        listenable: _settings,
+        builder: (context, _) {
+          final Locale? locale = switch (_settings.languageMode) {
+            LanguageMode.chinese => const Locale('zh'),
+            LanguageMode.english => const Locale('en'),
+            LanguageMode.auto => null,
+          };
+          return MaterialApp(
+            title: '星仔 Starling',
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: locale,
+            localeResolutionCallback: (deviceLocale, supportedLocales) {
+              if (deviceLocale == null) return const Locale('zh');
+              for (final supported in supportedLocales) {
+                if (supported.languageCode == deviceLocale.languageCode) {
+                  return supported;
+                }
+              }
+              return const Locale('zh');
+            },
+            theme: ThemeData(
+              brightness: Brightness.dark,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF1E6EFF),
+                brightness: Brightness.dark,
+              ),
+              scaffoldBackgroundColor: const Color(0xFF05091A),
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Color(0xFF05091A),
+                foregroundColor: Colors.white,
+                elevation: 0,
+              ),
+              bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+                backgroundColor: Color(0xFF0A1020),
+                selectedItemColor: Colors.blueAccent,
+                unselectedItemColor: Colors.white38,
+              ),
+              useMaterial3: true,
+            ),
+            home: const _MainScreen(),
+          );
         },
-        theme: ThemeData(
-          brightness: Brightness.dark,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF1E6EFF),
-            brightness: Brightness.dark,
-          ),
-          scaffoldBackgroundColor: const Color(0xFF05091A),
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Color(0xFF05091A),
-            foregroundColor: Colors.white,
-            elevation: 0,
-          ),
-          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            backgroundColor: Color(0xFF0A1020),
-            selectedItemColor: Colors.blueAccent,
-            unselectedItemColor: Colors.white38,
-          ),
-          useMaterial3: true,
-        ),
-        home: const _MainScreen(),
       ),
     );
   }

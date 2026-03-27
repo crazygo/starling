@@ -13,5 +13,15 @@
   "westernCultureSubtitle": "西方星名与星座",
   "searchHint": "搜索星体…",
   "gyroOn": "陀螺仪开",
-  "gyroOff": "陀螺仪"
+  "gyroOff": "陀螺仪",
+  "languageSettings": "语言",
+  "@languageSettings": {
+    "description": "设置应用内文本语言"
+  },
+  "languageAuto": "自动",
+  "languageAutoSubtitle": "跟随系统语言",
+  "languageChinese": "中文",
+  "languageChineseSubtitle": "简体中文",
+  "languageEnglish": "英文",
+  "languageEnglishSubtitle": "English"
 }

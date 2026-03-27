@@ -36,6 +36,7 @@ class SettingsPage extends StatelessWidget {
         children: [
           const _LocationSettingsSection(),
           const _CultureSettingsSection(),
+          const _LanguageSettingsSection(),
         ],
       ),
     );
@@ -228,6 +229,69 @@ class _CultureSettingsSection extends StatelessWidget {
                 subtitle: l10n.westernCultureSubtitle,
                 selected: settings.cultureMode == CultureMode.western,
                 onTap: () => settings.setCultureMode(CultureMode.western),
+                showDivider: false,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Language Settings section
+// ---------------------------------------------------------------------------
+class _LanguageSettingsSection extends StatelessWidget {
+  const _LanguageSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final settings = context.watch<SettingsService>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            l10n.languageSettings,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0D1B2A),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blueAccent.withAlpha(51)),
+          ),
+          child: Column(
+            children: [
+              _CultureOptionTile(
+                title: l10n.languageAuto,
+                subtitle: l10n.languageAutoSubtitle,
+                selected: settings.languageMode == LanguageMode.auto,
+                onTap: () => settings.setLanguageMode(LanguageMode.auto),
+                showDivider: true,
+              ),
+              _CultureOptionTile(
+                title: l10n.languageChinese,
+                subtitle: l10n.languageChineseSubtitle,
+                selected: settings.languageMode == LanguageMode.chinese,
+                onTap: () => settings.setLanguageMode(LanguageMode.chinese),
+                showDivider: true,
+              ),
+              _CultureOptionTile(
+                title: l10n.languageEnglish,
+                subtitle: l10n.languageEnglishSubtitle,
+                selected: settings.languageMode == LanguageMode.english,
+                onTap: () => settings.setLanguageMode(LanguageMode.english),
                 showDivider: false,
               ),
             ],

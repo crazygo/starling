@@ -13,5 +13,15 @@
   "westernCultureSubtitle": "Western star names and constellations",
   "searchHint": "Search stars…",
   "gyroOn": "Gyro On",
-  "gyroOff": "Gyro"
+  "gyroOff": "Gyro",
+  "languageSettings": "Language",
+  "@languageSettings": {
+    "description": "Set the language of in-app text"
+  },
+  "languageAuto": "Auto",
+  "languageAutoSubtitle": "Follow system language",
+  "languageChinese": "Chinese",
+  "languageChineseSubtitle": "Simplified Chinese",
+  "languageEnglish": "English",
+  "languageEnglishSubtitle": "English"
 }
