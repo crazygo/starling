@@ -12,11 +12,7 @@ const double _domeCapStart = 54.0;
 const double _domeTopSafeFraction = 0.14;
 const double _domeBottomSafeFraction = 0.96;
 const double _domeDefaultCenterDec = 45.0;
-
-double _domeHorizonFractionForDec(double effectiveDec) {
-  final offset = ((effectiveDec - _domeDefaultCenterDec) / 55.0) * 0.52;
-  return (0.74 + offset).clamp(0.12, 0.92).toDouble();
-}
+const double _domeGuideBaseFraction = 0.74;
 
 double _softClampDomeDec(double dec) {
   if (dec > _domeCapStart) {
@@ -220,12 +216,11 @@ class _StarChartState extends State<StarChart> {
   }
 
   double _mapDomeY(double linearPy, Size size) {
-    final normalized = (linearPy / size.height).clamp(0.0, 1.0);
-    final eased = Curves.easeInOutCubic.transform(normalized);
+    final normalized = linearPy / size.height;
     return ui.lerpDouble(
       size.height * _domeTopSafeFraction,
       size.height * _domeBottomSafeFraction,
-      eased,
+      normalized,
     )!;
   }
 
@@ -425,13 +420,23 @@ class _StarPainter extends CustomPainter {
   }
 
   double _mapDomeY(double linearPy) {
-    final normalized = (linearPy / size.height).clamp(0.0, 1.0);
-    final eased = Curves.easeInOutCubic.transform(normalized);
+    final normalized = linearPy / size.height;
     return ui.lerpDouble(
       size.height * _domeTopSafeFraction,
       size.height * _domeBottomSafeFraction,
-      eased,
+      normalized,
     )!;
+  }
+
+  double _guideLinearPy(double effectiveDec) {
+    final halfH = 30.0 / viewport.zoom;
+    const baseLinearFraction =
+        (_domeGuideBaseFraction - _domeTopSafeFraction) /
+        (_domeBottomSafeFraction - _domeTopSafeFraction);
+    final baseLinearPy = size.height * baseLinearFraction;
+    final linearShift =
+        ((effectiveDec - _domeDefaultCenterDec) / halfH) * (size.height / 2);
+    return baseLinearPy + linearShift;
   }
 
   void _drawBackdrop(Canvas canvas, Size size) {
@@ -448,7 +453,10 @@ class _StarPainter extends CustomPainter {
       viewport.centerDec,
       gyroOffset?.dy ?? 0,
     );
-    final horizonY = size.height * _domeHorizonFractionForDec(effectiveDec);
+    final horizonY = _mapDomeY(_guideLinearPy(effectiveDec)).clamp(
+      -size.height,
+      size.height * 2,
+    );
     final fullRect = Offset.zero & size;
     canvas.drawRect(
       fullRect,
@@ -461,19 +469,20 @@ class _StarPainter extends CustomPainter {
         ),
     );
 
-    final groundRect = Rect.fromLTWH(
+    final lowerHemisphereTop = horizonY.clamp(0.0, size.height).toDouble();
+    final lowerHemisphereRect = Rect.fromLTWH(
       0,
-      horizonY,
+      lowerHemisphereTop,
       size.width,
-      size.height - horizonY,
+      size.height - lowerHemisphereTop,
     );
     canvas.drawRect(
-      groundRect,
+      lowerHemisphereRect,
       Paint()
         ..shader = ui.Gradient.linear(
-          Offset(0, groundRect.top),
-          Offset(0, groundRect.bottom),
-          const [Color(0x221E3658), Color(0x66314658), Color(0x992A3446)],
+          Offset(0, lowerHemisphereRect.top),
+          Offset(0, lowerHemisphereRect.bottom),
+          const [Color(0x121E3658), Color(0x22314658), Color(0x442A3446)],
         ),
     );
   }
@@ -484,7 +493,7 @@ class _StarPainter extends CustomPainter {
       viewport.centerDec,
       gyroOffset?.dy ?? 0,
     );
-    final horizonY = size.height * _domeHorizonFractionForDec(effectiveDec);
+    final horizonY = _mapDomeY(_guideLinearPy(effectiveDec));
     final arcRect = Rect.fromCenter(
       center: Offset(size.width / 2, horizonY + size.height * 0.14),
       width: size.width * 1.9,
