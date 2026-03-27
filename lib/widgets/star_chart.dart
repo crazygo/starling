@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'dart:ui' as ui;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';
@@ -38,6 +39,8 @@ class StarChartViewport {
 /// - Pinch-to-zoom
 /// - Drag-to-pan
 /// - Tap-to-select a star
+/// - Trackpad two-finger scroll to pan (desktop/web)
+/// - Trackpad pinch-to-zoom (desktop/web)
 class StarChart extends StatefulWidget {
   final List<Star> stars;
   final List<Constellation> constellations;
@@ -104,6 +107,30 @@ class _StarChartState extends State<StarChart> {
     );
   }
 
+  void _onPointerSignal(PointerSignalEvent event) {
+    if (event is PointerScrollEvent) {
+      // Two-finger trackpad scroll → pan
+      final vp = widget.viewport;
+      final size = context.size ?? const Size(400, 800);
+      final degPerPxH = (120.0 / vp.zoom) / size.width;
+      final degPerPxV = (60.0 / vp.zoom) / size.height;
+
+      double newRa =
+          (vp.centerRa + event.scrollDelta.dx * degPerPxH) % 360.0;
+      if (newRa < 0) newRa += 360.0;
+      final newDec =
+          (vp.centerDec - event.scrollDelta.dy * degPerPxV).clamp(-90.0, 90.0);
+
+      widget.onViewportChanged(
+          vp.copyWith(centerRa: newRa, centerDec: newDec));
+    } else if (event is PointerScaleEvent) {
+      // Two-finger trackpad pinch → zoom
+      final vp = widget.viewport;
+      final newZoom = (vp.zoom * event.scale).clamp(0.3, 10.0);
+      widget.onViewportChanged(vp.copyWith(zoom: newZoom));
+    }
+  }
+
   void _onTapUp(TapUpDetails d) {
     if (widget.onStarTapped == null) return;
     final size = context.size ?? const Size(400, 800);
@@ -150,26 +177,29 @@ class _StarChartState extends State<StarChart> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onScaleStart: _onScaleStart,
-      onScaleUpdate: _onScaleUpdate,
-      onTapUp: _onTapUp,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final size = Size(constraints.maxWidth, constraints.maxHeight);
-          return CustomPaint(
-            painter: _StarPainter(
-              stars: widget.stars,
-              constellations: widget.constellations,
-              chineseConstellations: widget.chineseConstellations,
-              showChineseName: widget.showChineseName,
-              viewport: widget.viewport,
-              gyroOffset: widget.gyroOffset,
+    return Listener(
+      onPointerSignal: _onPointerSignal,
+      child: GestureDetector(
+        onScaleStart: _onScaleStart,
+        onScaleUpdate: _onScaleUpdate,
+        onTapUp: _onTapUp,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final size = Size(constraints.maxWidth, constraints.maxHeight);
+            return CustomPaint(
+              painter: _StarPainter(
+                stars: widget.stars,
+                constellations: widget.constellations,
+                chineseConstellations: widget.chineseConstellations,
+                showChineseName: widget.showChineseName,
+                viewport: widget.viewport,
+                gyroOffset: widget.gyroOffset,
+                size: size,
+              ),
               size: size,
-            ),
-            size: size,
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
