@@ -1,5 +1,10 @@
 {
   "buildCommand": "chmod +x scripts/build_vercel.sh && bash scripts/build_vercel.sh",
   "outputDirectory": "build/web",
-  "framework": null
+  "framework": null,
+  "git": {
+    "deploymentEnabled": {
+      "pr-screenshot-previews": false
+    }
+  }
 }
