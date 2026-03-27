@@ -14,8 +14,8 @@ namespace stargazer;
 
 /// A directed edge connecting two stars, referenced by Hipparcos catalogue ID.
 struct Edge {
-  from_hip : uint16;
-  to_hip   : uint16;
+  from_hip : uint32;
+  to_hip   : uint32;
 }
 
 /// A quantised sky-coordinate point used for constellation boundaries.
