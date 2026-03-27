@@ -161,5 +161,52 @@ void main() {
             reason: '${a.name} has odd edge count ${a.edges.length}');
       }
     });
+
+    // ── Four Advisors (四辅) provenance tests ─────────────────────────────
+    // The asterism whose connections the user observed:
+    //   HIP 51384  ←→  HIP 51502  ←→  HIP 58874
+    //
+    // Raw source: constellationship.fab line 200
+    //   200 2 58874 51502 51502 51384
+    //
+    // See docs/chinese-skyculture-hip-links.md for the full investigation.
+
+    test('Four Advisors (四辅) asterism has correct Chinese and English names', () {
+      final all = reader.readAll();
+      final sifu = all.firstWhere(
+        (a) => a.name == '四辅' || a.nameEn == 'Four Advisors',
+        orElse: () => throw StateError('Four Advisors asterism not found'),
+      );
+      expect(sifu.name,   '四辅',          reason: 'Chinese name should be 四辅');
+      expect(sifu.nameEn, 'Four Advisors', reason: 'English name should be Four Advisors');
+    });
+
+    test('Four Advisors (四辅) asterism contains exactly 2 edge pairs', () {
+      final all = reader.readAll();
+      final sifu = all.firstWhere((a) => a.name == '四辅');
+      // 2 pairs = 4 interleaved uint16 values
+      expect(sifu.edges.length, 4,
+          reason: 'Expected 2 pairs (4 values) in Four Advisors edges');
+    });
+
+    test('Four Advisors (四辅) edge pairs are HIP 58874↔51502 and HIP 51502↔51384', () {
+      final all = reader.readAll();
+      final sifu = all.firstWhere((a) => a.name == '四辅');
+      final edges = sifu.edges;
+      // Raw source line: 200 2 58874 51502 51502 51384
+      // Expected interleaved pairs: [58874, 51502, 51502, 51384]
+      expect(edges[0], 58874, reason: 'edge[0] should be HIP 58874 (from)');
+      expect(edges[1], 51502, reason: 'edge[1] should be HIP 51502 (to)');
+      expect(edges[2], 51502, reason: 'edge[2] should be HIP 51502 (from)');
+      expect(edges[3], 51384, reason: 'edge[3] should be HIP 51384 (to)');
+    });
+
+    test('Four Advisors (四辅) edges contain all three expected HIPs', () {
+      final all = reader.readAll();
+      final sifu = all.firstWhere((a) => a.name == '四辅');
+      final hipSet = sifu.edges.toSet();
+      expect(hipSet, containsAll([51384, 51502, 58874]),
+          reason: 'Four Advisors edges must include HIP 51384, 51502, and 58874');
+    });
   });
 }
