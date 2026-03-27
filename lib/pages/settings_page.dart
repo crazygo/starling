@@ -38,6 +38,7 @@ class SettingsPage extends StatelessWidget {
           _CultureSettingsSection(),
           _LanguageSettingsSection(),
           _ViewStyleSettingsSection(),
+          _VisualGroupingSettingsSection(),
         ],
       ),
     );
@@ -401,6 +402,135 @@ class _CultureOptionTile extends StatelessWidget {
             endIndent: 16,
             color: Color(0xFF1A2C3A),
           ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Visual Grouping section
+// ---------------------------------------------------------------------------
+class _VisualGroupingSettingsSection extends StatelessWidget {
+  const _VisualGroupingSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsService>();
+    final threshold = settings.backgroundStarThreshold;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            '视觉分组',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0D1B2A),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blueAccent.withAlpha(51)),
+          ),
+          child: Column(
+            children: [
+              SwitchListTile(
+                value: settings.showNonConstellationStars,
+                onChanged: settings.setShowNonConstellationStars,
+                title: const Text(
+                  '显示非属于星座/星官的星星',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '默认关闭',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                activeThumbColor: Colors.blueAccent,
+              ),
+              const Divider(
+                height: 1,
+                indent: 16,
+                endIndent: 16,
+                color: Color(0xFF1A2C3A),
+              ),
+              SwitchListTile(
+                value: settings.majorStarsOnlyLabels,
+                onChanged: settings.setMajorStarsOnlyLabels,
+                title: const Text(
+                  '仅对主要星星显示标签',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '默认开启',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                activeThumbColor: Colors.blueAccent,
+              ),
+              const Divider(
+                height: 1,
+                indent: 16,
+                endIndent: 16,
+                color: Color(0xFF1A2C3A),
+              ),
+              RadioListTile<BackgroundStarThreshold>(
+                value: BackgroundStarThreshold.small,
+                groupValue: threshold,
+                onChanged: (value) {
+                  if (value != null) {
+                    settings.setBackgroundStarThreshold(value);
+                  }
+                },
+                title: const Text(
+                  '背景星星阈值：小',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '更容易显示星名',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                activeColor: Colors.blueAccent,
+              ),
+              RadioListTile<BackgroundStarThreshold>(
+                value: BackgroundStarThreshold.medium,
+                groupValue: threshold,
+                onChanged: (value) {
+                  if (value != null) {
+                    settings.setBackgroundStarThreshold(value);
+                  }
+                },
+                title: const Text(
+                  '背景星星阈值：中',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                activeColor: Colors.blueAccent,
+              ),
+              RadioListTile<BackgroundStarThreshold>(
+                value: BackgroundStarThreshold.large,
+                groupValue: threshold,
+                onChanged: (value) {
+                  if (value != null) {
+                    settings.setBackgroundStarThreshold(value);
+                  }
+                },
+                title: const Text(
+                  '背景星星阈值：大',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '只显示更亮星星的星名',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                activeColor: Colors.blueAccent,
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

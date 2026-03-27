@@ -34,6 +34,13 @@ enum ViewStyle {
   classic,
 }
 
+/// Label-threshold presets for non-constellation star labels.
+enum BackgroundStarThreshold {
+  small,
+  medium,
+  large,
+}
+
 /// App-wide settings, backed by [SharedPreferences] for persistence.
 ///
 /// Expose via [ChangeNotifierProvider] so any widget can read or update
@@ -43,11 +50,18 @@ class SettingsService extends ChangeNotifier {
   static const _keyLocation = 'location_mode';
   static const _keyLanguage = 'language_mode';
   static const _keyViewStyle = 'view_style';
+  static const _keyShowNonConstellationStars = 'show_non_constellation_stars';
+  static const _keyMajorStarsOnlyLabels = 'major_stars_only_labels';
+  static const _keyBackgroundStarThreshold = 'background_star_threshold';
 
   CultureMode _cultureMode = CultureMode.chinese;
   LocationMode _locationMode = LocationMode.beijing;
   LanguageMode _languageMode = LanguageMode.auto;
   ViewStyle _viewStyle = ViewStyle.dome;
+  bool _showNonConstellationStars = false;
+  bool _majorStarsOnlyLabels = true;
+  BackgroundStarThreshold _backgroundStarThreshold =
+      BackgroundStarThreshold.medium;
 
   /// The currently selected culture mode.
   CultureMode get cultureMode => _cultureMode;
@@ -63,6 +77,16 @@ class SettingsService extends ChangeNotifier {
 
   /// The currently selected sky view style.
   ViewStyle get viewStyle => _viewStyle;
+
+  /// Whether to render stars that do not belong to constellation/asterism sets.
+  bool get showNonConstellationStars => _showNonConstellationStars;
+
+  /// Whether only major stars should receive labels.
+  bool get majorStarsOnlyLabels => _majorStarsOnlyLabels;
+
+  /// Minimum rendered-radius threshold preset for showing star-name labels.
+  BackgroundStarThreshold get backgroundStarThreshold =>
+      _backgroundStarThreshold;
 
   /// Load persisted settings from [SharedPreferences].
   ///
@@ -99,6 +123,15 @@ class SettingsService extends ChangeNotifier {
     } else {
       _viewStyle = ViewStyle.dome;
     }
+    _showNonConstellationStars =
+        prefs.getBool(_keyShowNonConstellationStars) ?? false;
+    _majorStarsOnlyLabels = prefs.getBool(_keyMajorStarsOnlyLabels) ?? true;
+    final storedThreshold = prefs.getString(_keyBackgroundStarThreshold);
+    _backgroundStarThreshold = switch (storedThreshold) {
+      'small' => BackgroundStarThreshold.small,
+      'large' => BackgroundStarThreshold.large,
+      _ => BackgroundStarThreshold.medium,
+    };
     notifyListeners();
   }
 
@@ -142,5 +175,37 @@ class SettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     if (_viewStyle != style) return;
     await prefs.setString(_keyViewStyle, style.name);
+  }
+
+  /// Update whether non-constellation stars should render and persist.
+  Future<void> setShowNonConstellationStars(bool enabled) async {
+    if (_showNonConstellationStars == enabled) return;
+    _showNonConstellationStars = enabled;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_showNonConstellationStars != enabled) return;
+    await prefs.setBool(_keyShowNonConstellationStars, enabled);
+  }
+
+  /// Update whether labels should only show for major stars and persist.
+  Future<void> setMajorStarsOnlyLabels(bool enabled) async {
+    if (_majorStarsOnlyLabels == enabled) return;
+    _majorStarsOnlyLabels = enabled;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_majorStarsOnlyLabels != enabled) return;
+    await prefs.setBool(_keyMajorStarsOnlyLabels, enabled);
+  }
+
+  /// Update background-star label threshold preset and persist.
+  Future<void> setBackgroundStarThreshold(
+    BackgroundStarThreshold threshold,
+  ) async {
+    if (_backgroundStarThreshold == threshold) return;
+    _backgroundStarThreshold = threshold;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_backgroundStarThreshold != threshold) return;
+    await prefs.setString(_keyBackgroundStarThreshold, threshold.name);
   }
 }

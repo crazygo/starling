@@ -248,6 +248,9 @@ class StarChart extends StatefulWidget {
   final double observerLatitude;
   final double observerLongitude;
   final DateTime observationTimeUtc;
+  final bool showNonConstellationStars;
+  final bool majorStarsOnlyLabels;
+  final BackgroundStarThreshold backgroundStarThreshold;
 
   final StarChartViewport viewport;
   final ValueChanged<StarChartViewport> onViewportChanged;
@@ -267,6 +270,9 @@ class StarChart extends StatefulWidget {
     required this.observerLatitude,
     required this.observerLongitude,
     required this.observationTimeUtc,
+    required this.showNonConstellationStars,
+    required this.majorStarsOnlyLabels,
+    required this.backgroundStarThreshold,
     required this.viewport,
     required this.onViewportChanged,
     this.onStarTapped,
@@ -444,6 +450,9 @@ class _StarChartState extends State<StarChart> {
                 observerLatitude: widget.observerLatitude,
                 observerLongitude: widget.observerLongitude,
                 observationTimeUtc: widget.observationTimeUtc,
+                showNonConstellationStars: widget.showNonConstellationStars,
+                majorStarsOnlyLabels: widget.majorStarsOnlyLabels,
+                backgroundStarThreshold: widget.backgroundStarThreshold,
                 viewport: widget.viewport,
                 gyroOffset: widget.gyroOffset,
                 size: size,
@@ -491,6 +500,9 @@ class _StarPainter extends CustomPainter {
   final double observerLatitude;
   final double observerLongitude;
   final DateTime observationTimeUtc;
+  final bool showNonConstellationStars;
+  final bool majorStarsOnlyLabels;
+  final BackgroundStarThreshold backgroundStarThreshold;
   final StarChartViewport viewport;
   final Offset? gyroOffset;
   final Size size;
@@ -529,6 +541,7 @@ class _StarPainter extends CustomPainter {
   List<_LabelSpec>? _cachedLabelSpecs;
   final Map<String, Offset?> _projectedStarCache = {};
   final Map<String, HorizontalCoords> _horizontalStarCache = {};
+  final Map<String, double> _starRadiusCache = {};
 
   // Star IDs that belong to the drawn constellation lines (always western).
   // Used by _drawStars() to exempt member stars from magnitude culling so
@@ -565,6 +578,9 @@ class _StarPainter extends CustomPainter {
     required this.observerLatitude,
     required this.observerLongitude,
     required this.observationTimeUtc,
+    required this.showNonConstellationStars,
+    required this.majorStarsOnlyLabels,
+    required this.backgroundStarThreshold,
     required this.viewport,
     required this.size,
     this.gyroOffset,
@@ -582,6 +598,9 @@ class _StarPainter extends CustomPainter {
       old.observerLatitude != observerLatitude ||
       old.observerLongitude != observerLongitude ||
       old.observationTimeUtc != observationTimeUtc ||
+      old.showNonConstellationStars != showNonConstellationStars ||
+      old.majorStarsOnlyLabels != majorStarsOnlyLabels ||
+      old.backgroundStarThreshold != backgroundStarThreshold ||
       old.size != size;
 
   Offset? _project(double raDeg, double decDeg) {
@@ -673,6 +692,29 @@ class _StarPainter extends CustomPainter {
       }
       return _project(star.rightAscension, star.declination);
     });
+  }
+
+  bool _isNearVisibleBounds(Offset offset) {
+    const margin = 16.0;
+    return offset.dx >= -margin &&
+        offset.dx <= size.width + margin &&
+        offset.dy >= -margin &&
+        offset.dy <= size.height + margin;
+  }
+
+  double _renderRadiusForStar(Star star) {
+    return _starRadiusCache.putIfAbsent(
+      star.id,
+      () => ((6.5 - star.magnitude) * 0.9 * viewport.zoom).clamp(0.5, 8.0),
+    );
+  }
+
+  double _labelRadiusThreshold() {
+    return switch (backgroundStarThreshold) {
+      BackgroundStarThreshold.small => 0.8,
+      BackgroundStarThreshold.medium => 1.4,
+      BackgroundStarThreshold.large => 2.0,
+    };
   }
 
   @override
@@ -954,20 +996,23 @@ class _StarPainter extends CustomPainter {
     final magThreshold = (2.5 + viewport.zoom * 2.0).clamp(3.0, 6.5);
 
     for (final star in stars) {
+      final isMember = activeMemberStarIds.contains(star.id);
+      if (!showNonConstellationStars && !isMember) {
+        continue;
+      }
+
       // Cull faint non-member stars when zoomed out.
       if (star.magnitude > magThreshold &&
-          !activeMemberStarIds.contains(star.id)) {
+          !isMember) {
         continue;
       }
 
       final pos = _projectStar(star);
       if (pos == null) continue;
+      if (!_isNearVisibleBounds(pos)) continue;
 
       // Radius inversely proportional to magnitude (brighter = larger)
-      final radius = ((6.5 - star.magnitude) * 0.9 * viewport.zoom).clamp(
-        0.5,
-        8.0,
-      );
+      final radius = _renderRadiusForStar(star);
 
       // Opacity scales from 0.5 at the minimum radius (0.5) up to 1.0 at
       // the maximum radius (8.0), so faint/small stars appear translucent.
@@ -1131,6 +1176,8 @@ class _StarPainter extends CustomPainter {
 
     final placedRects = <Rect>[];
     final specs = <_LabelSpec>[];
+    final minLabelRadius = _labelRadiusThreshold();
+    const majorLabelMagnitudeThreshold = 2.5;
 
     // Helper: attempt to place a forced (Group 1 / 2) label and add it.
     void addForced(Offset starPos, String text, double fontSize, Color color) {
@@ -1199,16 +1246,27 @@ class _StarPainter extends CustomPainter {
         // above still render, but individual star names thin out to prevent
         // the label explosion caused by many constellations being on-screen.
         if (star.magnitude > magThreshold) continue;
+        if (majorStarsOnlyLabels &&
+            star.magnitude > majorLabelMagnitudeThreshold) {
+          continue;
+        }
+        if (_renderRadiusForStar(star) < minLabelRadius) continue;
         final label = _starLabel(star);
         if (label == null) continue;
         final pos = _projectStar(star);
         if (pos == null) continue;
+        if (!_isNearVisibleBounds(pos)) continue;
         addForced(pos, label, 10.0, memberStarColor);
         labeledMemberIds.add(id);
       }
     }
 
     // ── Group 3: Competitive stars ────────────────────────────────────────
+    if (majorStarsOnlyLabels) {
+      _cachedLabelSpecs = specs;
+      return specs;
+    }
+
     // Collect stars in the viewport that are not Group-1 or Group-2 members
     // and have a proper name.  Stars list is already sorted by magnitude
     // ascending (brightest first = lowest value first).
@@ -1219,10 +1277,13 @@ class _StarPainter extends CustomPainter {
       if (competitionCount >= _maxCompetitiveLabels) break;
       if (_labelMemberStarIds.contains(star.id)) continue;
       if (importantStarIds.contains(star.id)) continue;
+      if (!showNonConstellationStars) continue;
+      if (_renderRadiusForStar(star) < minLabelRadius) continue;
       final label = _starLabel(star);
       if (label == null) continue;
       final pos = _projectStar(star);
       if (pos == null) continue;
+      if (!_isNearVisibleBounds(pos)) continue;
 
       final w = _textWidth(label, 10.0);
       final result = _tryPlace(

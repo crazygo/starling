@@ -302,9 +302,27 @@ class _ExplorePageState extends State<ExplorePage> {
     final viewStyle = context.select<SettingsService, ViewStyle>(
       (s) => s.viewStyle,
     );
+    final showNonConstellationStars = context.select<SettingsService, bool>(
+      (s) => s.showNonConstellationStars,
+    );
+    final majorStarsOnlyLabels = context.select<SettingsService, bool>(
+      (s) => s.majorStarsOnlyLabels,
+    );
+    final backgroundStarThreshold =
+        context.select<SettingsService, BackgroundStarThreshold>(
+      (s) => s.backgroundStarThreshold,
+    );
     return Scaffold(
       backgroundColor: const Color(0xFF05091A),
-      body: _loading ? _buildLoading() : _buildChart(isChinese, viewStyle),
+      body: _loading
+          ? _buildLoading()
+          : _buildChart(
+              isChinese,
+              viewStyle,
+              showNonConstellationStars,
+              majorStarsOnlyLabels,
+              backgroundStarThreshold,
+            ),
     );
   }
 
@@ -321,7 +339,13 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildChart(bool isChinese, ViewStyle viewStyle) {
+  Widget _buildChart(
+    bool isChinese,
+    ViewStyle viewStyle,
+    bool showNonConstellationStars,
+    bool majorStarsOnlyLabels,
+    BackgroundStarThreshold backgroundStarThreshold,
+  ) {
     final constellations =
         isChinese ? _chineseConstellations : _westernConstellations;
     return Stack(
@@ -337,6 +361,9 @@ class _ExplorePageState extends State<ExplorePage> {
           observerLatitude: _observerLatitude,
           observerLongitude: _observerLongitude,
           observationTimeUtc: _observeDateTime.toUtc(),
+          showNonConstellationStars: showNonConstellationStars,
+          majorStarsOnlyLabels: majorStarsOnlyLabels,
+          backgroundStarThreshold: backgroundStarThreshold,
           onViewportChanged: (vp) => setState(() => _viewport = vp),
           onStarTapped: (star) => setState(() => _selectedStar = star),
           gyroOffset: _gyroEnabled ? _gyroOffset : null,
