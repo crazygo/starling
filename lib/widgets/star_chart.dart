@@ -6,15 +6,16 @@ import '../models/star.dart';
 import '../models/constellation.dart';
 import '../services/settings_service.dart';
 
-const double _domeMinCenterDec = -35.0;
+const double _domeMinCenterDec = -70.0;
 const double _domeMaxCenterDec = 62.0;
 const double _domeCapStart = 54.0;
 const double _domeTopSafeFraction = 0.14;
+const double _domeBottomSafeFraction = 0.96;
 const double _domeDefaultCenterDec = 45.0;
 
 double _domeHorizonFractionForDec(double effectiveDec) {
-  final offset = ((effectiveDec - _domeDefaultCenterDec) / 50.0) * 0.08;
-  return (0.80 + offset).clamp(0.68, 0.84).toDouble();
+  final offset = ((effectiveDec - _domeDefaultCenterDec) / 55.0) * 0.24;
+  return (0.80 + offset).clamp(0.28, 0.86).toDouble();
 }
 
 double _softClampDomeDec(double dec) {
@@ -221,14 +222,9 @@ class _StarChartState extends State<StarChart> {
   double _mapDomeY(double linearPy, Size size) {
     final normalized = (linearPy / size.height).clamp(0.0, 1.0);
     final eased = Curves.easeInOutCubic.transform(normalized);
-    final effectiveDec = _effectiveCenterDecForStyle(
-      widget.viewStyle,
-      widget.viewport.centerDec,
-      widget.gyroOffset?.dy ?? 0,
-    );
     return ui.lerpDouble(
       size.height * _domeTopSafeFraction,
-      size.height * _domeHorizonFractionForDec(effectiveDec),
+      size.height * _domeBottomSafeFraction,
       eased,
     )!;
   }
@@ -431,14 +427,9 @@ class _StarPainter extends CustomPainter {
   double _mapDomeY(double linearPy) {
     final normalized = (linearPy / size.height).clamp(0.0, 1.0);
     final eased = Curves.easeInOutCubic.transform(normalized);
-    final effectiveDec = _effectiveCenterDecForStyle(
-      viewStyle,
-      viewport.centerDec,
-      gyroOffset?.dy ?? 0,
-    );
     return ui.lerpDouble(
       size.height * _domeTopSafeFraction,
-      size.height * _domeHorizonFractionForDec(effectiveDec),
+      size.height * _domeBottomSafeFraction,
       eased,
     )!;
   }
