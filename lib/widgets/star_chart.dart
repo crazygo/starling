@@ -4,6 +4,34 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';
+import '../services/settings_service.dart';
+
+const double _domeMinCenterDec = -35.0;
+const double _domeMaxCenterDec = 62.0;
+const double _domeCapStart = 54.0;
+const double _domeTopSafeFraction = 0.20;
+const double _domeHorizonFraction = 0.90;
+
+double _softClampDomeDec(double dec) {
+  if (dec > _domeCapStart) {
+    final overshoot = dec - _domeCapStart;
+    final damped = overshoot / (1 + overshoot / 8);
+    dec = _domeCapStart + damped;
+  }
+  return dec.clamp(_domeMinCenterDec, _domeMaxCenterDec).toDouble();
+}
+
+double _effectiveCenterDecForStyle(
+  ViewStyle viewStyle,
+  double baseCenterDec,
+  double gyroDec,
+) {
+  final effectiveDec = baseCenterDec + gyroDec;
+  if (viewStyle == ViewStyle.dome) {
+    return _softClampDomeDec(effectiveDec);
+  }
+  return effectiveDec.clamp(-90.0, 90.0).toDouble();
+}
 
 /// The visible viewport state: centre offset and zoom factor.
 class StarChartViewport {
@@ -52,6 +80,7 @@ class StarChart extends StatefulWidget {
   /// When true, label text uses Chinese names and the Chinese asterism system
   /// is used for Group 2 labels.
   final bool showChineseName;
+  final ViewStyle viewStyle;
 
   final StarChartViewport viewport;
   final ValueChanged<StarChartViewport> onViewportChanged;
@@ -67,6 +96,7 @@ class StarChart extends StatefulWidget {
     required this.constellations,
     required this.chineseConstellations,
     required this.showChineseName,
+    required this.viewStyle,
     required this.viewport,
     required this.onViewportChanged,
     this.onStarTapped,
@@ -97,7 +127,10 @@ class _StarChartState extends State<StarChart> {
 
     double newRa = (base.centerRa - delta.dx * degPerPxH) % 360.0;
     if (newRa < 0) newRa += 360.0;
-    double newDec = (base.centerDec + delta.dy * degPerPxV).clamp(-90.0, 90.0);
+    double newDec = base.centerDec + delta.dy * degPerPxV;
+    newDec = widget.viewStyle == ViewStyle.dome
+        ? _softClampDomeDec(newDec)
+        : newDec.clamp(-90.0, 90.0);
 
     // Zoom
     final newZoom = (base.zoom * d.scale).clamp(0.3, 10.0);
@@ -118,8 +151,10 @@ class _StarChartState extends State<StarChart> {
       double newRa =
           (vp.centerRa + event.scrollDelta.dx * degPerPxH) % 360.0;
       if (newRa < 0) newRa += 360.0;
-      final newDec =
-          (vp.centerDec - event.scrollDelta.dy * degPerPxV).clamp(-90.0, 90.0);
+      final rawDec = vp.centerDec - event.scrollDelta.dy * degPerPxV;
+      final newDec = widget.viewStyle == ViewStyle.dome
+          ? _softClampDomeDec(rawDec)
+          : rawDec.clamp(-90.0, 90.0);
 
       widget.onViewportChanged(
           vp.copyWith(centerRa: newRa, centerDec: newDec));
@@ -139,6 +174,10 @@ class _StarChartState extends State<StarChart> {
   }
 
   Star? _hitTest(Offset tapPos, Size size) {
+    if (widget.viewStyle == ViewStyle.dome &&
+        !_domeSkyPath(size).contains(tapPos)) {
+      return null;
+    }
     const hitRadius = 16.0;
     for (final star in widget.stars) {
       final pos = _projectStar(star, size);
@@ -156,8 +195,11 @@ class _StarChartState extends State<StarChart> {
 
     final effectiveRa =
         (vp.centerRa + (gyro?.dx ?? 0)) % 360.0;
-    final effectiveDec =
-        (vp.centerDec + (gyro?.dy ?? 0)).clamp(-90.0, 90.0);
+    final effectiveDec = _effectiveCenterDecForStyle(
+      widget.viewStyle,
+      vp.centerDec,
+      gyro?.dy ?? 0,
+    );
 
     final halfW = (60.0 / vp.zoom);  // degrees
     final halfH = (30.0 / vp.zoom);
@@ -171,8 +213,36 @@ class _StarChartState extends State<StarChart> {
     if (dRa.abs() > halfW || dDec.abs() > halfH) return null;
 
     final px = (size.width / 2) + (dRa / halfW) * (size.width / 2);
-    final py = (size.height / 2) - (dDec / halfH) * (size.height / 2);
-    return Offset(px, py);
+    final linearPy = (size.height / 2) - (dDec / halfH) * (size.height / 2);
+    final projected = widget.viewStyle == ViewStyle.dome
+        ? Offset(px, _mapDomeY(linearPy, size))
+        : Offset(px, linearPy);
+    if (widget.viewStyle == ViewStyle.dome &&
+        !_domeSkyPath(size).contains(projected)) {
+      return null;
+    }
+    return projected;
+  }
+
+  double _mapDomeY(double linearPy, Size size) {
+    final normalized = (linearPy / size.height).clamp(0.0, 1.0);
+    final eased = Curves.easeOutCubic.transform(normalized);
+    return ui.lerpDouble(
+      size.height * _domeTopSafeFraction,
+      size.height * _domeHorizonFraction,
+      eased,
+    )!;
+  }
+
+  Path _domeSkyPath(Size size) {
+    final horizonY = size.height * _domeHorizonFraction;
+    final apexY = size.height * 0.08;
+    final insetX = size.width * 0.05;
+    return Path()
+      ..moveTo(insetX, horizonY)
+      ..quadraticBezierTo(size.width / 2, apexY, size.width - insetX, horizonY)
+      ..lineTo(insetX, horizonY)
+      ..close();
   }
 
   @override
@@ -192,6 +262,7 @@ class _StarChartState extends State<StarChart> {
                 constellations: widget.constellations,
                 chineseConstellations: widget.chineseConstellations,
                 showChineseName: widget.showChineseName,
+                viewStyle: widget.viewStyle,
                 viewport: widget.viewport,
                 gyroOffset: widget.gyroOffset,
                 size: size,
@@ -235,6 +306,7 @@ class _StarPainter extends CustomPainter {
   final List<Constellation> constellations;
   final List<Constellation> chineseConstellations;
   final bool showChineseName;
+  final ViewStyle viewStyle;
   final StarChartViewport viewport;
   final Offset? gyroOffset;
   final Size size;
@@ -296,6 +368,7 @@ class _StarPainter extends CustomPainter {
     required this.constellations,
     required this.chineseConstellations,
     required this.showChineseName,
+    required this.viewStyle,
     required this.viewport,
     required this.size,
     this.gyroOffset,
@@ -309,6 +382,7 @@ class _StarPainter extends CustomPainter {
       old.constellations != constellations ||
       old.chineseConstellations != chineseConstellations ||
       old.showChineseName != showChineseName ||
+      old.viewStyle != viewStyle ||
       old.size != size;
 
   Offset? _project(double raDeg, double decDeg) {
@@ -316,7 +390,11 @@ class _StarPainter extends CustomPainter {
     final gyro = gyroOffset;
 
     final effectiveRa = (vp.centerRa + (gyro?.dx ?? 0)) % 360.0;
-    final effectiveDec = (vp.centerDec + (gyro?.dy ?? 0)).clamp(-90.0, 90.0);
+    final effectiveDec = _effectiveCenterDecForStyle(
+      viewStyle,
+      vp.centerDec,
+      gyro?.dy ?? 0,
+    );
 
     final halfW = 60.0 / vp.zoom;
     final halfH = 30.0 / vp.zoom;
@@ -329,17 +407,32 @@ class _StarPainter extends CustomPainter {
     if (dRa.abs() > halfW * 1.1 || dDec.abs() > halfH * 1.1) return null;
 
     final px = (size.width / 2) + (dRa / halfW) * (size.width / 2);
-    final py = (size.height / 2) - (dDec / halfH) * (size.height / 2);
-    return Offset(px, py);
+    final linearPy = (size.height / 2) - (dDec / halfH) * (size.height / 2);
+    final projected = viewStyle == ViewStyle.dome
+        ? Offset(px, _mapDomeY(linearPy))
+        : Offset(px, linearPy);
+    if (viewStyle == ViewStyle.dome && !_domeSkyPath().contains(projected)) {
+      return null;
+    }
+    return projected;
   }
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Background
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = const Color(0xFF05091A),
-    );
+    _drawBackdrop(canvas, size);
+
+    if (viewStyle == ViewStyle.dome) {
+      final skyPath = _domeSkyPath();
+      canvas.save();
+      canvas.clipPath(skyPath);
+      _drawBackgroundStars(canvas, size);
+      _drawConstellationLines(canvas);
+      _drawStars(canvas, _constellationMemberStarIds);
+      _drawLabels(canvas, size);
+      canvas.restore();
+      _drawDomeForeground(canvas, size, skyPath);
+      return;
+    }
 
     _drawBackgroundStars(canvas, size);
     _drawConstellationLines(canvas);
@@ -347,14 +440,136 @@ class _StarPainter extends CustomPainter {
     _drawLabels(canvas, size);
   }
 
-  void _drawBackgroundStars(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withAlpha(77);
-    for (final pos in _bgStarPositions) {
-      canvas.drawCircle(
-        Offset(pos.dx * size.width, pos.dy * size.height),
-        0.5,
-        paint,
+  double _mapDomeY(double linearPy) {
+    final normalized = (linearPy / size.height).clamp(0.0, 1.0);
+    final eased = Curves.easeOutCubic.transform(normalized);
+    return ui.lerpDouble(
+      size.height * _domeTopSafeFraction,
+      size.height * _domeHorizonFraction,
+      eased,
+    )!;
+  }
+
+  Path _domeSkyPath() {
+    final horizonY = size.height * _domeHorizonFraction;
+    final apexY = size.height * 0.08;
+    final insetX = size.width * 0.05;
+    return Path()
+      ..moveTo(insetX, horizonY)
+      ..quadraticBezierTo(size.width / 2, apexY, size.width - insetX, horizonY)
+      ..lineTo(insetX, horizonY)
+      ..close();
+  }
+
+  void _drawBackdrop(Canvas canvas, Size size) {
+    if (viewStyle == ViewStyle.classic) {
+      canvas.drawRect(
+        Offset.zero & size,
+        Paint()..color = const Color(0xFF05091A),
       );
+      return;
+    }
+
+    final fullRect = Offset.zero & size;
+    canvas.drawRect(
+      fullRect,
+      Paint()
+        ..shader = ui.Gradient.linear(
+          const Offset(0, 0),
+          Offset(0, size.height),
+          const [
+            Color(0xFF020611),
+            Color(0xFF07152A),
+            Color(0xFF11263D),
+          ],
+          const [0.0, 0.58, 1.0],
+        ),
+    );
+
+    final groundRect = Rect.fromLTWH(
+      0,
+      size.height * 0.83,
+      size.width,
+      size.height * 0.17,
+    );
+    canvas.drawRect(
+      groundRect,
+      Paint()
+        ..shader = ui.Gradient.linear(
+          Offset(0, groundRect.top),
+          Offset(0, groundRect.bottom),
+          const [
+            Color(0x221E3658),
+            Color(0x66314658),
+            Color(0x992A3446),
+          ],
+        ),
+    );
+  }
+
+  void _drawDomeForeground(Canvas canvas, Size size, Path skyPath) {
+    final horizonY = size.height * _domeHorizonFraction;
+    final insetX = size.width * 0.05;
+
+    canvas.drawPath(
+      skyPath,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..color = const Color(0x55CFE6FF),
+    );
+
+    canvas.drawLine(
+      Offset(insetX, horizonY),
+      Offset(size.width - insetX, horizonY),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.0
+        ..color = const Color(0x66F3C98B)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
+    );
+    canvas.drawLine(
+      Offset(insetX, horizonY),
+      Offset(size.width - insetX, horizonY),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.0
+        ..color = const Color(0x99FFE1B8),
+    );
+
+    final zenith = Offset(size.width / 2, size.height * _domeTopSafeFraction);
+    canvas.drawCircle(
+      zenith,
+      10,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = const Color(0x55D9EEFF),
+    );
+    canvas.drawCircle(
+      zenith,
+      2,
+      Paint()..color = const Color(0x88D9EEFF),
+    );
+  }
+
+  void _drawBackgroundStars(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = viewStyle == ViewStyle.dome
+          ? Colors.white.withAlpha(56)
+          : Colors.white.withAlpha(77);
+    for (final pos in _bgStarPositions) {
+      final bgOffset = viewStyle == ViewStyle.dome
+          ? Offset(
+              pos.dx * size.width,
+              ui.lerpDouble(
+                size.height * 0.04,
+                size.height * (_domeHorizonFraction - 0.02),
+                pos.dy,
+              )!,
+            )
+          : Offset(pos.dx * size.width, pos.dy * size.height);
+      canvas.drawCircle(bgOffset, 0.5, paint);
     }
   }
 

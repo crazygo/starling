@@ -23,5 +23,10 @@
   "languageChinese": "Chinese",
   "languageChineseSubtitle": "Simplified Chinese",
   "languageEnglish": "English",
-  "languageEnglishSubtitle": "English"
+  "languageEnglishSubtitle": "English",
+  "viewStyleSettings": "View Style",
+  "viewStyleDome": "Dome",
+  "viewStyleDomeSubtitle": "Immersive sky dome with orientation framing",
+  "viewStyleClassic": "Classic",
+  "viewStyleClassicSubtitle": "Flat rectangular chart"
 }

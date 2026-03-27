@@ -37,6 +37,7 @@ class SettingsPage extends StatelessWidget {
           const _LocationSettingsSection(),
           const _CultureSettingsSection(),
           const _LanguageSettingsSection(),
+          const _ViewStyleSettingsSection(),
         ],
       ),
     );
@@ -292,6 +293,62 @@ class _LanguageSettingsSection extends StatelessWidget {
                 subtitle: l10n.languageEnglishSubtitle,
                 selected: settings.languageMode == LanguageMode.english,
                 onTap: () => settings.setLanguageMode(LanguageMode.english),
+                showDivider: false,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// View Style section
+// ---------------------------------------------------------------------------
+class _ViewStyleSettingsSection extends StatelessWidget {
+  const _ViewStyleSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final settings = context.watch<SettingsService>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            l10n.viewStyleSettings,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0D1B2A),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blueAccent.withAlpha(51)),
+          ),
+          child: Column(
+            children: [
+              _CultureOptionTile(
+                title: l10n.viewStyleDome,
+                subtitle: l10n.viewStyleDomeSubtitle,
+                selected: settings.viewStyle == ViewStyle.dome,
+                onTap: () => settings.setViewStyle(ViewStyle.dome),
+                showDivider: true,
+              ),
+              _CultureOptionTile(
+                title: l10n.viewStyleClassic,
+                subtitle: l10n.viewStyleClassicSubtitle,
+                selected: settings.viewStyle == ViewStyle.classic,
+                onTap: () => settings.setViewStyle(ViewStyle.classic),
                 showDivider: false,
               ),
             ],

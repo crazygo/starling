@@ -224,9 +224,11 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     final isChinese = context.select<SettingsService, bool>((s) => s.isChinese);
+    final viewStyle =
+        context.select<SettingsService, ViewStyle>((s) => s.viewStyle);
     return Scaffold(
       backgroundColor: const Color(0xFF05091A),
-      body: _loading ? _buildLoading() : _buildChart(isChinese),
+      body: _loading ? _buildLoading() : _buildChart(isChinese, viewStyle),
     );
   }
 
@@ -244,7 +246,7 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildChart(bool isChinese) {
+  Widget _buildChart(bool isChinese, ViewStyle viewStyle) {
     final constellations =
         isChinese ? _chineseConstellations : _westernConstellations;
     return Stack(
@@ -256,6 +258,7 @@ class _ExplorePageState extends State<ExplorePage> {
           chineseConstellations: _chineseConstellations,
           showChineseName: isChinese,
           viewport: _viewport,
+          viewStyle: viewStyle,
           onViewportChanged: (vp) => setState(() => _viewport = vp),
           onStarTapped: (star) => setState(() => _selectedStar = star),
           gyroOffset: _gyroEnabled ? _gyroOffset : null,
