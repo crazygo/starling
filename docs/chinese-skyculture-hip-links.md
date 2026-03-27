@@ -72,6 +72,14 @@ The relevant entry (condensed):
 }
 ```
 
+**About the `"CON chinese "` prefix**: This prefix is Stellarium's standard ID
+format and is present on **all 318** constellation entries in the Chinese
+sky-culture `index.json` — not just for special cases or missing data.  The
+format is `CON <sky-culture-name> <sequential-number>`.  The bare numeric token
+(e.g. `"200"`) serves as the first field in `constellationship.fab`.  The
+parser strips this prefix when building the name-metadata lookup so that both
+files share the same key space.
+
 The `lines` array in index.json is used only for rendering in Stellarium itself;
 this repo uses the FAB file for edges.
 
@@ -285,18 +293,21 @@ Chinese sky-culture data. Specifically:
 
 ## 7. Reproducible investigation
 
-Run the bundled script (after downloading sources with
-`tool/download_sources.sh`):
+Run the bundled Dart script from the `tool/` directory (source files must have
+been downloaded with `tool/download_sources.sh` first):
 
 ```bash
+cd tool/
+
 # By HIP numbers
-python3 scripts/investigate_chinese_links.py 51384 51502 58874
+dart run bin/investigate_chinese_links.dart 51384 51502 58874
 
-# By asterism name
-python3 scripts/investigate_chinese_links.py "Four Advisors"
+# By asterism name (English or Chinese)
+dart run bin/investigate_chinese_links.dart --name "Four Advisors"
+dart run bin/investigate_chinese_links.dart --name 四辅
 
-# Any HIP in the area
-python3 scripts/investigate_chinese_links.py 47193
+# Any HIP in the area (47193 = 四辅增一, an added star with no edge)
+dart run bin/investigate_chinese_links.dart 47193
 ```
 
 Automated test coverage lives in `test/stargazer_reader_test.dart` in the

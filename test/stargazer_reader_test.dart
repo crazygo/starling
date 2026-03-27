@@ -171,27 +171,28 @@ void main() {
     //
     // See docs/chinese-skyculture-hip-links.md for the full investigation.
 
-    test('Four Advisors (四辅) asterism has correct Chinese and English names', () {
+    late BinChineseAsterism sifu;
+
+    setUpAll(() {
       final all = reader.readAll();
-      final sifu = all.firstWhere(
+      sifu = all.firstWhere(
         (a) => a.name == '四辅' || a.nameEn == 'Four Advisors',
         orElse: () => throw StateError('Four Advisors asterism not found'),
       );
+    });
+
+    test('Four Advisors (四辅) asterism has correct Chinese and English names', () {
       expect(sifu.name,   '四辅',          reason: 'Chinese name should be 四辅');
       expect(sifu.nameEn, 'Four Advisors', reason: 'English name should be Four Advisors');
     });
 
     test('Four Advisors (四辅) asterism contains exactly 2 edge pairs', () {
-      final all = reader.readAll();
-      final sifu = all.firstWhere((a) => a.name == '四辅');
       // 2 pairs = 4 interleaved uint16 values
       expect(sifu.edges.length, 4,
           reason: 'Expected 2 pairs (4 values) in Four Advisors edges');
     });
 
     test('Four Advisors (四辅) edge pairs are HIP 58874↔51502 and HIP 51502↔51384', () {
-      final all = reader.readAll();
-      final sifu = all.firstWhere((a) => a.name == '四辅');
       final edges = sifu.edges;
       // Raw source line: 200 2 58874 51502 51502 51384
       // Expected interleaved pairs: [58874, 51502, 51502, 51384]
@@ -202,8 +203,6 @@ void main() {
     });
 
     test('Four Advisors (四辅) edges contain all three expected HIPs', () {
-      final all = reader.readAll();
-      final sifu = all.firstWhere((a) => a.name == '四辅');
       final hipSet = sifu.edges.toSet();
       expect(hipSet, containsAll([51384, 51502, 58874]),
           reason: 'Four Advisors edges must include HIP 51384, 51502, and 58874');
