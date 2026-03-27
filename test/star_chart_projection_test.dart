@@ -29,4 +29,24 @@ void main() {
       expect(span.dx / 300.0, span.dy / 200.0);
     });
   });
+
+  group('dome star chart projection', () {
+    test('uses fixed angular density at zoom 1', () {
+      expect(domeDegreesPerPixelForZoom(1.0), 0.15);
+    });
+
+    test('wider screens expose more horizontal sky at same zoom', () {
+      final narrowFov = domeHorizontalFovForSize(const Size(400, 800), 1.0);
+      final wideFov = domeHorizontalFovForSize(const Size(800, 800), 1.0);
+
+      expect(wideFov, greaterThan(narrowFov));
+    });
+
+    test('taller screens expose more vertical sky at same zoom', () {
+      final shortFov = domeVerticalFovForSize(const Size(800, 400), 1.0);
+      final tallFov = domeVerticalFovForSize(const Size(800, 800), 1.0);
+
+      expect(tallFov, greaterThan(shortFov));
+    });
+  });
 }
