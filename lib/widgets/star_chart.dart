@@ -14,8 +14,8 @@ const double _domeBottomSafeFraction = 0.96;
 const double _domeDefaultCenterDec = 45.0;
 
 double _domeHorizonFractionForDec(double effectiveDec) {
-  final offset = ((effectiveDec - _domeDefaultCenterDec) / 55.0) * 0.24;
-  return (0.80 + offset).clamp(0.28, 0.86).toDouble();
+  final offset = ((effectiveDec - _domeDefaultCenterDec) / 55.0) * 0.52;
+  return (0.74 + offset).clamp(0.12, 0.92).toDouble();
 }
 
 double _softClampDomeDec(double dec) {
@@ -548,17 +548,6 @@ class _StarPainter extends CustomPainter {
           const [Color(0x00020611), Color(0x66020611)],
         ),
     );
-
-    final zenith = Offset(size.width / 2, size.height * _domeTopSafeFraction);
-    canvas.drawCircle(
-      zenith,
-      10,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1
-        ..color = const Color(0x55D9EEFF),
-    );
-    canvas.drawCircle(zenith, 2, Paint()..color = const Color(0x88D9EEFF));
   }
 
   void _drawBackgroundStars(Canvas canvas, Size size) {
