@@ -9,8 +9,8 @@ import '../services/settings_service.dart';
 const double _domeMinCenterDec = -35.0;
 const double _domeMaxCenterDec = 62.0;
 const double _domeCapStart = 54.0;
-const double _domeTopSafeFraction = 0.20;
-const double _domeHorizonFraction = 0.90;
+const double _domeTopSafeFraction = 0.14;
+const double _domeHorizonFraction = 0.94;
 
 double _softClampDomeDec(double dec) {
   if (dec > _domeCapStart) {
@@ -172,10 +172,6 @@ class _StarChartState extends State<StarChart> {
   }
 
   Star? _hitTest(Offset tapPos, Size size) {
-    if (widget.viewStyle == ViewStyle.dome &&
-        !_domeSkyPath(size).contains(tapPos)) {
-      return null;
-    }
     const hitRadius = 16.0;
     for (final star in widget.stars) {
       final pos = _projectStar(star, size);
@@ -214,32 +210,17 @@ class _StarChartState extends State<StarChart> {
     final projected = widget.viewStyle == ViewStyle.dome
         ? Offset(px, _mapDomeY(linearPy, size))
         : Offset(px, linearPy);
-    if (widget.viewStyle == ViewStyle.dome &&
-        !_domeSkyPath(size).contains(projected)) {
-      return null;
-    }
     return projected;
   }
 
   double _mapDomeY(double linearPy, Size size) {
     final normalized = (linearPy / size.height).clamp(0.0, 1.0);
-    final eased = Curves.easeOutCubic.transform(normalized);
+    final eased = Curves.easeInOutCubic.transform(normalized);
     return ui.lerpDouble(
       size.height * _domeTopSafeFraction,
       size.height * _domeHorizonFraction,
       eased,
     )!;
-  }
-
-  Path _domeSkyPath(Size size) {
-    final horizonY = size.height * _domeHorizonFraction;
-    final apexY = size.height * 0.08;
-    final insetX = size.width * 0.05;
-    return Path()
-      ..moveTo(insetX, horizonY)
-      ..quadraticBezierTo(size.width / 2, apexY, size.width - insetX, horizonY)
-      ..lineTo(insetX, horizonY)
-      ..close();
   }
 
   @override
@@ -415,9 +396,6 @@ class _StarPainter extends CustomPainter {
     final projected = viewStyle == ViewStyle.dome
         ? Offset(px, _mapDomeY(linearPy))
         : Offset(px, linearPy);
-    if (viewStyle == ViewStyle.dome && !_domeSkyPath().contains(projected)) {
-      return null;
-    }
     return projected;
   }
 
@@ -426,15 +404,11 @@ class _StarPainter extends CustomPainter {
     _drawBackdrop(canvas, size);
 
     if (viewStyle == ViewStyle.dome) {
-      final skyPath = _domeSkyPath();
-      canvas.save();
-      canvas.clipPath(skyPath);
       _drawBackgroundStars(canvas, size);
       _drawConstellationLines(canvas);
       _drawStars(canvas, _constellationMemberStarIds);
       _drawLabels(canvas, size);
-      canvas.restore();
-      _drawDomeForeground(canvas, size, skyPath);
+      _drawDomeForeground(canvas, size);
       return;
     }
 
@@ -446,23 +420,12 @@ class _StarPainter extends CustomPainter {
 
   double _mapDomeY(double linearPy) {
     final normalized = (linearPy / size.height).clamp(0.0, 1.0);
-    final eased = Curves.easeOutCubic.transform(normalized);
+    final eased = Curves.easeInOutCubic.transform(normalized);
     return ui.lerpDouble(
       size.height * _domeTopSafeFraction,
       size.height * _domeHorizonFraction,
       eased,
     )!;
-  }
-
-  Path _domeSkyPath() {
-    final horizonY = size.height * _domeHorizonFraction;
-    final apexY = size.height * 0.08;
-    final insetX = size.width * 0.05;
-    return Path()
-      ..moveTo(insetX, horizonY)
-      ..quadraticBezierTo(size.width / 2, apexY, size.width - insetX, horizonY)
-      ..lineTo(insetX, horizonY)
-      ..close();
   }
 
   void _drawBackdrop(Canvas canvas, Size size) {
@@ -503,34 +466,70 @@ class _StarPainter extends CustomPainter {
     );
   }
 
-  void _drawDomeForeground(Canvas canvas, Size size, Path skyPath) {
+  void _drawDomeForeground(Canvas canvas, Size size) {
     final horizonY = size.height * _domeHorizonFraction;
-    final insetX = size.width * 0.05;
-
-    canvas.drawPath(
-      skyPath,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.2
-        ..color = const Color(0x55CFE6FF),
+    final arcRect = Rect.fromCenter(
+      center: Offset(size.width / 2, horizonY + size.height * 0.12),
+      width: size.width * 1.45,
+      height: size.height * 0.62,
+    );
+    final horizonGlow = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5
+      ..color = const Color(0x55F7C78C)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+    final horizonPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0
+      ..color = const Color(0x88FFDDB3);
+    canvas.drawArc(
+      arcRect,
+      pi,
+      pi,
+      false,
+      horizonGlow,
+    );
+    canvas.drawArc(
+      arcRect,
+      pi,
+      pi,
+      false,
+      horizonPaint,
     );
 
     canvas.drawLine(
-      Offset(insetX, horizonY),
-      Offset(size.width - insetX, horizonY),
+      Offset(0, horizonY),
+      Offset(size.width, horizonY),
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 2.0
-        ..color = const Color(0x66F3C98B)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6),
+        ..strokeWidth = 0.6
+        ..color = const Color(0x22FFE1B8),
     );
-    canvas.drawLine(
-      Offset(insetX, horizonY),
-      Offset(size.width - insetX, horizonY),
+
+    final leftVignette = Rect.fromLTWH(0, 0, size.width * 0.18, size.height);
+    canvas.drawRect(
+      leftVignette,
       Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.0
-        ..color = const Color(0x99FFE1B8),
+        ..shader = ui.Gradient.linear(
+          Offset(leftVignette.left, 0),
+          Offset(leftVignette.right, 0),
+          const [Color(0x66020611), Color(0x00020611)],
+        ),
+    );
+    final rightVignette = Rect.fromLTWH(
+      size.width * 0.82,
+      0,
+      size.width * 0.18,
+      size.height,
+    );
+    canvas.drawRect(
+      rightVignette,
+      Paint()
+        ..shader = ui.Gradient.linear(
+          Offset(rightVignette.left, 0),
+          Offset(rightVignette.right, 0),
+          const [Color(0x00020611), Color(0x66020611)],
+        ),
     );
 
     final zenith = Offset(size.width / 2, size.height * _domeTopSafeFraction);
@@ -552,14 +551,7 @@ class _StarPainter extends CustomPainter {
           : Colors.white.withAlpha(77);
     for (final pos in _bgStarPositions) {
       final bgOffset = viewStyle == ViewStyle.dome
-          ? Offset(
-              pos.dx * size.width,
-              ui.lerpDouble(
-                size.height * 0.04,
-                size.height * (_domeHorizonFraction - 0.02),
-                pos.dy,
-              )!,
-            )
+          ? Offset(pos.dx * size.width, pos.dy * size.height)
           : Offset(pos.dx * size.width, pos.dy * size.height);
       canvas.drawCircle(bgOffset, 0.5, paint);
     }
