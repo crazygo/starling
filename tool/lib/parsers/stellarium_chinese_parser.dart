@@ -93,6 +93,13 @@ class StellariumChineseParser {
 
   // ── Private helpers ─────────────────────────────────────────────────────
 
+  /// Stellarium's Chinese sky-culture IDs have the form `"CON chinese NNN"`.
+  /// This prefix is present on **every** entry in index.json — all 318
+  /// asterisms use it.  It is not a fallback or special-case marker; it is
+  /// the standard Stellarium naming convention for constellation IDs
+  /// (`CON <sky-culture-name> <sequential-number>`).
+  static const _indexIdPrefix = 'CON chinese ';
+
   static void _parseIndexJson(
     File file,
     Map<String, Map<String, String>> nameMeta,
@@ -103,10 +110,16 @@ class StellariumChineseParser {
           json['constellations'] as List<dynamic>? ?? const [];
       for (final item in constellations) {
         if (item is! Map<String, dynamic>) continue;
-        final id    = item['id']?.toString() ?? '';
-        final nameZh = item['name']?.toString() ?? id;
+        // Strip the well-known prefix so keys match the bare token used as
+        // the first field in constellationship.fab.
+        var id = item['id']?.toString() ?? '';
+        if (id.startsWith(_indexIdPrefix)) id = id.substring(_indexIdPrefix.length);
+        final nameZh = item['common_name']?['native']?.toString() ??
+            item['name']?.toString() ??
+            id;
         final nameEn = item['common_name']?['english']?.toString() ??
             item['common_name']?['transliteration']?.toString() ??
+            item['name']?.toString() ??
             id;
         if (id.isNotEmpty) nameMeta[id] = {'zh': nameZh, 'en': nameEn};
       }

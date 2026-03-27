@@ -59,7 +59,8 @@ tool/
 │       ├── western_builder.dart     ← culture_western.bin
 │       └── chinese_builder.dart     ← culture_chinese.bin
 ├── bin/
-│   └── pipeline.dart          ← entry point
+│   ├── pipeline.dart          ← entry point
+│   └── investigate_chinese_links.dart  ← provenance investigation tool
 └── sources/                   ← raw data (not Flutter-bundled)
     ├── hipparcos/
     │   └── hip_main.csv        ← download from ESA/CDS (see below)
