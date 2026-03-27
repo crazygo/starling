@@ -7,6 +7,18 @@ enum CultureMode {
   western,
 }
 
+/// Available language modes for the app UI.
+enum LanguageMode {
+  /// Follow the device's system locale.
+  auto,
+
+  /// Always show Chinese (Simplified).
+  chinese,
+
+  /// Always show English.
+  english,
+}
+
 /// Available location modes for determining the observer's position.
 enum LocationMode {
   /// Default: Beijing (lat 39.9042°N, lon 116.4074°E).
@@ -23,9 +35,11 @@ enum LocationMode {
 class SettingsService extends ChangeNotifier {
   static const _keyCulture = 'culture_mode';
   static const _keyLocation = 'location_mode';
+  static const _keyLanguage = 'language_mode';
 
   CultureMode _cultureMode = CultureMode.chinese;
   LocationMode _locationMode = LocationMode.beijing;
+  LanguageMode _languageMode = LanguageMode.auto;
 
   /// The currently selected culture mode.
   CultureMode get cultureMode => _cultureMode;
@@ -35,6 +49,9 @@ class SettingsService extends ChangeNotifier {
 
   /// The currently selected location mode.
   LocationMode get locationMode => _locationMode;
+
+  /// The currently selected language mode.
+  LanguageMode get languageMode => _languageMode;
 
   /// Load persisted settings from [SharedPreferences].
   ///
@@ -56,6 +73,14 @@ class SettingsService extends ChangeNotifier {
       _locationMode = LocationMode.gps;
     } else {
       _locationMode = LocationMode.beijing;
+    }
+    final storedLanguage = prefs.getString(_keyLanguage);
+    if (storedLanguage == LanguageMode.chinese.name) {
+      _languageMode = LanguageMode.chinese;
+    } else if (storedLanguage == LanguageMode.english.name) {
+      _languageMode = LanguageMode.english;
+    } else {
+      _languageMode = LanguageMode.auto;
     }
     notifyListeners();
   }
@@ -80,5 +105,15 @@ class SettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     if (_locationMode != mode) return;
     await prefs.setString(_keyLocation, mode.name);
+  }
+
+  /// Update the language mode and persist the change.
+  Future<void> setLanguageMode(LanguageMode mode) async {
+    if (_languageMode == mode) return;
+    _languageMode = mode;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_languageMode != mode) return;
+    await prefs.setString(_keyLanguage, mode.name);
   }
 }
