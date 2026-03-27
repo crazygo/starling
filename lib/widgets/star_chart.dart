@@ -368,7 +368,11 @@ class _StarPainter extends CustomPainter {
 
       // Radius inversely proportional to magnitude (brighter = larger)
       final radius = ((6.5 - star.magnitude) * 0.9 * viewport.zoom)
-          .clamp(1.5, 8.0);
+          .clamp(0.5, 8.0);
+
+      // Opacity scales from 0.5 at the minimum radius (0.5) up to 1.0 at
+      // the maximum radius (8.0), so faint/small stars appear translucent.
+      final opacity = (0.5 + (radius - 0.5) / 15.0).clamp(0.5, 1.0);
 
       final color = _colorFromBV(star.colorIdx ?? 0.6);
 
@@ -377,12 +381,13 @@ class _StarPainter extends CustomPainter {
         pos,
         radius * 2.2,
         Paint()
-          ..color = color.withAlpha(40)
+          ..color = color.withAlpha((40 * opacity).round())
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
       );
 
       // Core
-      canvas.drawCircle(pos, radius, Paint()..color = color);
+      canvas.drawCircle(
+          pos, radius, Paint()..color = color.withOpacity(opacity));
     }
   }
 
