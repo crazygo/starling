@@ -131,7 +131,7 @@ cd tool/
 # Output lands in ../assets/bin/
 #   catalog_base.bin    ~178 KB  (~9,096 stars)
 #   culture_western.bin  ~80 KB  (88 IAU constellations)
-#   culture_chinese.bin  ~15 KB  (~283 asterisms)
+#   culture_chinese.bin  ~25 KB  (~318 asterisms)
 ```
 
 ### Manual steps
@@ -166,7 +166,7 @@ dart run bin/pipeline.dart --mag 6.5 --output ../assets/bin
 📥 Phase 1: Parsing sources…
    ✅ Stars: 9096 (mag ≤ 6.5)
    ✅ Western constellations: 88
-   ✅ Chinese asterisms: 283
+   ✅ Chinese asterisms: 318
 🔍 Phase 2: Validating integrity…
    ✅ Integrity checks passed
 📦 Phase 3: Building .bin files…

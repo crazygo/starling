@@ -161,5 +161,55 @@ void main() {
             reason: '${a.name} has odd edge count ${a.edges.length}');
       }
     });
+
+    // ── Regression tests for 四辅 (Stellarium ID "200") ─────────────────────
+    // These assertions guard against the name-lookup bug fixed in
+    // tool/lib/parsers/stellarium_chinese_parser.dart where _parseIndexJson
+    // stored keys as "CON chinese NNN" but _parseConstellationship looked up
+    // the short "NNN" form, causing every asterism to fall back to its raw
+    // numeric Stellarium ID as its display name.
+
+    test('四辅 (Four Advisors) has correct Chinese name', () {
+      final all = reader.readAll();
+      final sifuList = all.where((a) => a.nameEn == 'Four Advisors').toList();
+      expect(sifuList, hasLength(1),
+          reason: 'Four Advisors asterism not found — '
+              'did the index.json name lookup regress?');
+      expect(sifuList.first.name, '四辅',
+          reason: 'Chinese name should be 四辅, not a raw numeric ID like "200"');
+    });
+
+    test('四辅 (Four Advisors) has exactly two edge pairs', () {
+      final all = reader.readAll();
+      final sifuList = all.where((a) => a.nameEn == 'Four Advisors').toList();
+      if (sifuList.isEmpty) return; // guard handled by the previous test
+      // edges is a flat list [fromHip0, toHip0, fromHip1, toHip1, …]
+      expect(sifuList.first.edges.length, 4,
+          reason: 'Four Advisors should have 2 edges (4 uint16 values)');
+    });
+
+    test('四辅 (Four Advisors) connects HIP 58874, 51502, 51384', () {
+      final all = reader.readAll();
+      final sifuList = all.where((a) => a.nameEn == 'Four Advisors').toList();
+      if (sifuList.isEmpty) return;
+      final hipSet = sifuList.first.edges.toSet();
+      expect(hipSet, containsAll([58874, 51502, 51384]),
+          reason: 'Four Advisors should include HIPs 58874 (四辅四?), '
+              '51502 (四辅三), 51384 (四辅二)');
+    });
+
+    test('no asterism has a purely numeric name (index.json lookup regression)',
+        () {
+      final all = reader.readAll();
+      for (final a in all) {
+        final isNumericOnly = RegExp(r'^\d+$').hasMatch(a.name);
+        expect(isNumericOnly, isFalse,
+            reason:
+                'Asterism "${a.name}" has a purely numeric name — '
+                'this indicates the index.json name lookup failed and '
+                'the asterism fell back to its raw Stellarium numeric ID. '
+                'Re-run tool/rebuild_chinese_bin.py after ./download_sources.sh.');
+      }
+    });
   });
 }

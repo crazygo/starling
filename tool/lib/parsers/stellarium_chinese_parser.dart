@@ -103,8 +103,20 @@ class StellariumChineseParser {
           json['constellations'] as List<dynamic>? ?? const [];
       for (final item in constellations) {
         if (item is! Map<String, dynamic>) continue;
-        final id    = item['id']?.toString() ?? '';
-        final nameZh = item['name']?.toString() ?? id;
+        final fullId = item['id']?.toString() ?? '';
+
+        // Stellarium index.json uses "CON chinese NNN" as the constellation
+        // id while constellationship.fab uses only the short "NNN" token.
+        // Strip the "CON chinese " prefix so the lookup keys match.
+        final id = fullId.startsWith('CON chinese ')
+            ? fullId.substring('CON chinese '.length)
+            : fullId;
+
+        // Chinese name lives under common_name.native (not a top-level 'name').
+        final nameZh =
+            (item['common_name'] as Map<String, dynamic>?)?['native']
+                    ?.toString() ??
+                id;
         final nameEn = item['common_name']?['english']?.toString() ??
             item['common_name']?['transliteration']?.toString() ??
             id;
