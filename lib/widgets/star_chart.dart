@@ -4,6 +4,36 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';
+import '../services/settings_service.dart';
+
+const double _domeMinCenterDec = -70.0;
+const double _domeMaxCenterDec = 62.0;
+const double _domeCapStart = 54.0;
+const double _domeTopSafeFraction = 0.14;
+const double _domeBottomSafeFraction = 0.96;
+const double _domeDefaultCenterDec = 45.0;
+const double _domeGuideBaseFraction = 0.74;
+
+double _softClampDomeDec(double dec) {
+  if (dec > _domeCapStart) {
+    final overshoot = dec - _domeCapStart;
+    final damped = overshoot / (1 + overshoot / 8);
+    dec = _domeCapStart + damped;
+  }
+  return dec.clamp(_domeMinCenterDec, _domeMaxCenterDec).toDouble();
+}
+
+double _effectiveCenterDecForStyle(
+  ViewStyle viewStyle,
+  double baseCenterDec,
+  double gyroDec,
+) {
+  final effectiveDec = baseCenterDec + gyroDec;
+  if (viewStyle == ViewStyle.dome) {
+    return _softClampDomeDec(effectiveDec);
+  }
+  return effectiveDec.clamp(-90.0, 90.0).toDouble();
+}
 
 /// The visible viewport state: centre offset and zoom factor.
 class StarChartViewport {
@@ -52,6 +82,7 @@ class StarChart extends StatefulWidget {
   /// When true, label text uses Chinese names and the Chinese asterism system
   /// is used for Group 2 labels.
   final bool showChineseName;
+  final ViewStyle viewStyle;
 
   final StarChartViewport viewport;
   final ValueChanged<StarChartViewport> onViewportChanged;
@@ -67,6 +98,7 @@ class StarChart extends StatefulWidget {
     required this.constellations,
     required this.chineseConstellations,
     required this.showChineseName,
+    required this.viewStyle,
     required this.viewport,
     required this.onViewportChanged,
     this.onStarTapped,
@@ -97,7 +129,10 @@ class _StarChartState extends State<StarChart> {
 
     double newRa = (base.centerRa - delta.dx * degPerPxH) % 360.0;
     if (newRa < 0) newRa += 360.0;
-    double newDec = (base.centerDec + delta.dy * degPerPxV).clamp(-90.0, 90.0);
+    double newDec = base.centerDec + delta.dy * degPerPxV;
+    newDec = widget.viewStyle == ViewStyle.dome
+        ? _softClampDomeDec(newDec)
+        : newDec.clamp(-90.0, 90.0);
 
     // Zoom
     final newZoom = (base.zoom * d.scale).clamp(0.3, 10.0);
@@ -115,14 +150,14 @@ class _StarChartState extends State<StarChart> {
       final degPerPxH = (120.0 / vp.zoom) / size.width;
       final degPerPxV = (60.0 / vp.zoom) / size.height;
 
-      double newRa =
-          (vp.centerRa + event.scrollDelta.dx * degPerPxH) % 360.0;
+      double newRa = (vp.centerRa + event.scrollDelta.dx * degPerPxH) % 360.0;
       if (newRa < 0) newRa += 360.0;
-      final newDec =
-          (vp.centerDec - event.scrollDelta.dy * degPerPxV).clamp(-90.0, 90.0);
+      final rawDec = vp.centerDec - event.scrollDelta.dy * degPerPxV;
+      final newDec = widget.viewStyle == ViewStyle.dome
+          ? _softClampDomeDec(rawDec)
+          : rawDec.clamp(-90.0, 90.0);
 
-      widget.onViewportChanged(
-          vp.copyWith(centerRa: newRa, centerDec: newDec));
+      widget.onViewportChanged(vp.copyWith(centerRa: newRa, centerDec: newDec));
     } else if (event is PointerScaleEvent) {
       // Two-finger trackpad pinch → zoom
       final vp = widget.viewport;
@@ -154,12 +189,14 @@ class _StarChartState extends State<StarChart> {
     final vp = widget.viewport;
     final gyro = widget.gyroOffset;
 
-    final effectiveRa =
-        (vp.centerRa + (gyro?.dx ?? 0)) % 360.0;
-    final effectiveDec =
-        (vp.centerDec + (gyro?.dy ?? 0)).clamp(-90.0, 90.0);
+    final effectiveRa = (vp.centerRa + (gyro?.dx ?? 0)) % 360.0;
+    final effectiveDec = _effectiveCenterDecForStyle(
+      widget.viewStyle,
+      vp.centerDec,
+      gyro?.dy ?? 0,
+    );
 
-    final halfW = (60.0 / vp.zoom);  // degrees
+    final halfW = (60.0 / vp.zoom); // degrees
     final halfH = (30.0 / vp.zoom);
 
     double dRa = star.rightAscension - effectiveRa;
@@ -171,8 +208,20 @@ class _StarChartState extends State<StarChart> {
     if (dRa.abs() > halfW || dDec.abs() > halfH) return null;
 
     final px = (size.width / 2) + (dRa / halfW) * (size.width / 2);
-    final py = (size.height / 2) - (dDec / halfH) * (size.height / 2);
-    return Offset(px, py);
+    final linearPy = (size.height / 2) - (dDec / halfH) * (size.height / 2);
+    final projected = widget.viewStyle == ViewStyle.dome
+        ? Offset(px, _mapDomeY(linearPy, size))
+        : Offset(px, linearPy);
+    return projected;
+  }
+
+  double _mapDomeY(double linearPy, Size size) {
+    final normalized = linearPy / size.height;
+    return ui.lerpDouble(
+      size.height * _domeTopSafeFraction,
+      size.height * _domeBottomSafeFraction,
+      normalized,
+    )!;
   }
 
   @override
@@ -192,6 +241,7 @@ class _StarChartState extends State<StarChart> {
                 constellations: widget.constellations,
                 chineseConstellations: widget.chineseConstellations,
                 showChineseName: widget.showChineseName,
+                viewStyle: widget.viewStyle,
                 viewport: widget.viewport,
                 gyroOffset: widget.gyroOffset,
                 size: size,
@@ -235,6 +285,7 @@ class _StarPainter extends CustomPainter {
   final List<Constellation> constellations;
   final List<Constellation> chineseConstellations;
   final bool showChineseName;
+  final ViewStyle viewStyle;
   final StarChartViewport viewport;
   final Offset? gyroOffset;
   final Size size;
@@ -245,8 +296,15 @@ class _StarPainter extends CustomPainter {
 
   // Important celestial objects whitelist (matched against star.name).
   static const _importantNames = {
-    'Sun', 'Moon', 'Mercury', 'Venus', 'Mars',
-    'Jupiter', 'Saturn', 'Uranus', 'Neptune',
+    'Sun',
+    'Moon',
+    'Mercury',
+    'Venus',
+    'Mars',
+    'Jupiter',
+    'Saturn',
+    'Uranus',
+    'Neptune',
   };
 
   // Pattern for auto-generated HIP identifiers that have no real proper name.
@@ -296,6 +354,7 @@ class _StarPainter extends CustomPainter {
     required this.constellations,
     required this.chineseConstellations,
     required this.showChineseName,
+    required this.viewStyle,
     required this.viewport,
     required this.size,
     this.gyroOffset,
@@ -309,6 +368,7 @@ class _StarPainter extends CustomPainter {
       old.constellations != constellations ||
       old.chineseConstellations != chineseConstellations ||
       old.showChineseName != showChineseName ||
+      old.viewStyle != viewStyle ||
       old.size != size;
 
   Offset? _project(double raDeg, double decDeg) {
@@ -316,7 +376,11 @@ class _StarPainter extends CustomPainter {
     final gyro = gyroOffset;
 
     final effectiveRa = (vp.centerRa + (gyro?.dx ?? 0)) % 360.0;
-    final effectiveDec = (vp.centerDec + (gyro?.dy ?? 0)).clamp(-90.0, 90.0);
+    final effectiveDec = _effectiveCenterDecForStyle(
+      viewStyle,
+      vp.centerDec,
+      gyro?.dy ?? 0,
+    );
 
     final halfW = 60.0 / vp.zoom;
     final halfH = 30.0 / vp.zoom;
@@ -329,17 +393,25 @@ class _StarPainter extends CustomPainter {
     if (dRa.abs() > halfW * 1.1 || dDec.abs() > halfH * 1.1) return null;
 
     final px = (size.width / 2) + (dRa / halfW) * (size.width / 2);
-    final py = (size.height / 2) - (dDec / halfH) * (size.height / 2);
-    return Offset(px, py);
+    final linearPy = (size.height / 2) - (dDec / halfH) * (size.height / 2);
+    final projected = viewStyle == ViewStyle.dome
+        ? Offset(px, _mapDomeY(linearPy))
+        : Offset(px, linearPy);
+    return projected;
   }
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Background
-    canvas.drawRect(
-      Offset.zero & size,
-      Paint()..color = const Color(0xFF05091A),
-    );
+    _drawBackdrop(canvas, size);
+
+    if (viewStyle == ViewStyle.dome) {
+      _drawBackgroundStars(canvas, size);
+      _drawConstellationLines(canvas);
+      _drawStars(canvas, _constellationMemberStarIds);
+      _drawLabels(canvas, size);
+      _drawDomeForeground(canvas, size);
+      return;
+    }
 
     _drawBackgroundStars(canvas, size);
     _drawConstellationLines(canvas);
@@ -347,14 +419,119 @@ class _StarPainter extends CustomPainter {
     _drawLabels(canvas, size);
   }
 
-  void _drawBackgroundStars(Canvas canvas, Size size) {
-    final paint = Paint()..color = Colors.white.withAlpha(77);
-    for (final pos in _bgStarPositions) {
-      canvas.drawCircle(
-        Offset(pos.dx * size.width, pos.dy * size.height),
-        0.5,
-        paint,
+  double _mapDomeY(double linearPy) {
+    final normalized = linearPy / size.height;
+    return ui.lerpDouble(
+      size.height * _domeTopSafeFraction,
+      size.height * _domeBottomSafeFraction,
+      normalized,
+    )!;
+  }
+
+  double _guideLinearPy(double effectiveDec) {
+    final halfH = 30.0 / viewport.zoom;
+    const baseLinearFraction =
+        (_domeGuideBaseFraction - _domeTopSafeFraction) /
+        (_domeBottomSafeFraction - _domeTopSafeFraction);
+    final baseLinearPy = size.height * baseLinearFraction;
+    final linearShift =
+        ((effectiveDec - _domeDefaultCenterDec) / halfH) * (size.height / 2);
+    return baseLinearPy + linearShift;
+  }
+
+  void _drawBackdrop(Canvas canvas, Size size) {
+    if (viewStyle == ViewStyle.classic) {
+      canvas.drawRect(
+        Offset.zero & size,
+        Paint()..color = const Color(0xFF05091A),
       );
+      return;
+    }
+
+    final fullRect = Offset.zero & size;
+    canvas.drawRect(
+      fullRect,
+      Paint()
+        ..shader = ui.Gradient.linear(
+          const Offset(0, 0),
+          Offset(0, size.height),
+          const [Color(0xFF020611), Color(0xFF07152A), Color(0xFF0D1C31)],
+          const [0.0, 0.62, 1.0],
+        ),
+    );
+  }
+
+  void _drawDomeForeground(Canvas canvas, Size size) {
+    final effectiveDec = _effectiveCenterDecForStyle(
+      viewStyle,
+      viewport.centerDec,
+      gyroOffset?.dy ?? 0,
+    );
+    final horizonY = _mapDomeY(_guideLinearPy(effectiveDec));
+    final arcRect = Rect.fromCenter(
+      center: Offset(size.width / 2, horizonY + size.height * 0.14),
+      width: size.width * 1.9,
+      height: size.height * 0.16,
+    );
+    final horizonGlow = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.0
+      ..color = const Color(0x33F7C78C)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
+    final horizonPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8
+      ..color = const Color(0x55FFDDB3);
+    canvas.drawArc(
+      arcRect,
+      pi,
+      pi,
+      false,
+      horizonGlow,
+    );
+    canvas.drawArc(
+      arcRect,
+      pi,
+      pi,
+      false,
+      horizonPaint,
+    );
+
+    final leftVignette = Rect.fromLTWH(0, 0, size.width * 0.18, size.height);
+    canvas.drawRect(
+      leftVignette,
+      Paint()
+        ..shader = ui.Gradient.linear(
+          Offset(leftVignette.left, 0),
+          Offset(leftVignette.right, 0),
+          const [Color(0x66020611), Color(0x00020611)],
+        ),
+    );
+    final rightVignette = Rect.fromLTWH(
+      size.width * 0.82,
+      0,
+      size.width * 0.18,
+      size.height,
+    );
+    canvas.drawRect(
+      rightVignette,
+      Paint()
+        ..shader = ui.Gradient.linear(
+          Offset(rightVignette.left, 0),
+          Offset(rightVignette.right, 0),
+          const [Color(0x00020611), Color(0x66020611)],
+        ),
+    );
+  }
+
+  void _drawBackgroundStars(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = viewStyle == ViewStyle.dome
+          ? Colors.white.withAlpha(56)
+          : Colors.white.withAlpha(77);
+    for (final pos in _bgStarPositions) {
+      final bgOffset = Offset(pos.dx * size.width, pos.dy * size.height);
+      canvas.drawCircle(bgOffset, 0.5, paint);
     }
   }
 
@@ -383,8 +560,7 @@ class _StarPainter extends CustomPainter {
     // are shown. Formula yields ~4.5 at zoom=1.0, ~6.5 (full catalogue) at
     // zoom>=2.0, and floors at 3.0 when very zoomed out. Member stars of the
     // active constellations are always shown so constellation lines stay intact.
-    final magThreshold =
-        (2.5 + viewport.zoom * 2.0).clamp(3.0, 6.5);
+    final magThreshold = (2.5 + viewport.zoom * 2.0).clamp(3.0, 6.5);
 
     for (final star in stars) {
       // Cull faint non-member stars when zoomed out.
@@ -397,8 +573,10 @@ class _StarPainter extends CustomPainter {
       if (pos == null) continue;
 
       // Radius inversely proportional to magnitude (brighter = larger)
-      final radius = ((6.5 - star.magnitude) * 0.9 * viewport.zoom)
-          .clamp(0.5, 8.0);
+      final radius = ((6.5 - star.magnitude) * 0.9 * viewport.zoom).clamp(
+        0.5,
+        8.0,
+      );
 
       // Opacity scales from 0.5 at the minimum radius (0.5) up to 1.0 at
       // the maximum radius (8.0), so faint/small stars appear translucent.
@@ -417,7 +595,10 @@ class _StarPainter extends CustomPainter {
 
       // Core
       canvas.drawCircle(
-          pos, radius, Paint()..color = color.withOpacity(opacity));
+        pos,
+        radius,
+        Paint()..color = color.withValues(alpha: opacity),
+      );
     }
   }
 
@@ -439,7 +620,10 @@ class _StarPainter extends CustomPainter {
   /// Measures the layout width of [text] at [fontSize].
   double _textWidth(String text, double fontSize) {
     final tp = TextPainter(
-      text: TextSpan(text: text, style: TextStyle(fontSize: fontSize)),
+      text: TextSpan(
+        text: text,
+        style: TextStyle(fontSize: fontSize),
+      ),
       textDirection: TextDirection.ltr,
     )..layout();
     return tp.width;
@@ -448,8 +632,7 @@ class _StarPainter extends CustomPainter {
   /// Resolves the display name for [star] based on [showChineseName].
   /// Returns `null` if the resolved name is a raw HIP identifier.
   String? _starLabel(Star star) {
-    final label =
-        showChineseName ? (star.chineseName ?? star.name) : star.name;
+    final label = showChineseName ? (star.chineseName ?? star.name) : star.name;
     if (_hipRegex.hasMatch(label)) return null;
     return label;
   }
@@ -473,19 +656,31 @@ class _StarPainter extends CustomPainter {
 
     // 4 candidate text top-left positions
     final candidates = [
-      Offset(starPos.dx + _labelHorizontalOffset,
-          starPos.dy - fontSize - _labelVerticalOffset), // right-upper
-      Offset(starPos.dx - textWidth - _labelHorizontalOffset,
-          starPos.dy - fontSize - _labelVerticalOffset), // left-upper
-      Offset(starPos.dx + _labelHorizontalOffset,
-          starPos.dy + _labelVerticalOffset), // right-lower
-      Offset(starPos.dx - textWidth - _labelHorizontalOffset,
-          starPos.dy + _labelVerticalOffset), // left-lower
+      Offset(
+        starPos.dx + _labelHorizontalOffset,
+        starPos.dy - fontSize - _labelVerticalOffset,
+      ), // right-upper
+      Offset(
+        starPos.dx - textWidth - _labelHorizontalOffset,
+        starPos.dy - fontSize - _labelVerticalOffset,
+      ), // left-upper
+      Offset(
+        starPos.dx + _labelHorizontalOffset,
+        starPos.dy + _labelVerticalOffset,
+      ), // right-lower
+      Offset(
+        starPos.dx - textWidth - _labelHorizontalOffset,
+        starPos.dy + _labelVerticalOffset,
+      ), // left-lower
     ];
 
     for (final tl in candidates) {
       final rect = Rect.fromLTWH(
-          tl.dx - _labelPadding, tl.dy - _labelPadding, rectW, rectH);
+        tl.dx - _labelPadding,
+        tl.dy - _labelPadding,
+        rectW,
+        rectH,
+      );
       if (!placedRects.any((r) => r.overlaps(rect))) {
         return (tl, rect);
       }
@@ -496,7 +691,11 @@ class _StarPainter extends CustomPainter {
       // Use position 1 (right-upper) as last-resort fallback
       final tl = candidates[0];
       final rect = Rect.fromLTWH(
-          tl.dx - _labelPadding, tl.dy - _labelPadding, rectW, rectH);
+        tl.dx - _labelPadding,
+        tl.dy - _labelPadding,
+        rectW,
+        rectH,
+      );
       return (tl, rect);
     }
     return null; // Group 3: skip
@@ -505,7 +704,9 @@ class _StarPainter extends CustomPainter {
   /// Computes the average screen position of the visible member stars of
   /// [constellation]. Returns `null` if no member star is in the viewport.
   Offset? _constellationCenter(
-      Constellation constellation, Map<String, Star> starMap) {
+    Constellation constellation,
+    Map<String, Star> starMap,
+  ) {
     double sumX = 0, sumY = 0;
     int count = 0;
     for (final id in constellation.starIds) {
@@ -541,8 +742,7 @@ class _StarPainter extends CustomPainter {
     final specs = <_LabelSpec>[];
 
     // Helper: attempt to place a forced (Group 1 / 2) label and add it.
-    void addForced(
-        Offset starPos, String text, double fontSize, Color color) {
+    void addForced(Offset starPos, String text, double fontSize, Color color) {
       final w = _textWidth(text, fontSize);
       final result = _tryPlace(
         starPos: starPos,
@@ -554,8 +754,15 @@ class _StarPainter extends CustomPainter {
       if (result != null) {
         final (tl, rect) = result;
         placedRects.add(rect);
-        specs.add(_LabelSpec(
-            textPos: tl, rect: rect, text: text, fontSize: fontSize, color: color));
+        specs.add(
+          _LabelSpec(
+            textPos: tl,
+            rect: rect,
+            text: text,
+            fontSize: fontSize,
+            color: color,
+          ),
+        );
       }
     }
 
@@ -574,8 +781,7 @@ class _StarPainter extends CustomPainter {
     }
 
     // ── Group 2: Constellation / asterism names + member star names ───────
-    final constellationColor =
-        Colors.blueGrey.shade200.withAlpha(200);
+    final constellationColor = Colors.blueGrey.shade200.withAlpha(200);
     final memberStarColor = Colors.white.withAlpha(180);
 
     // Track which member stars have already been labeled to avoid duplicates
@@ -638,12 +844,15 @@ class _StarPainter extends CustomPainter {
       if (result != null) {
         final (tl, rect) = result;
         placedRects.add(rect);
-        specs.add(_LabelSpec(
+        specs.add(
+          _LabelSpec(
             textPos: tl,
             rect: rect,
             text: label,
             fontSize: 10.0,
-            color: competitionColor));
+            color: competitionColor,
+          ),
+        );
         competitionCount++;
       }
     }
@@ -663,15 +872,13 @@ class _StarPainter extends CustomPainter {
           ellipsis: '…',
         ),
       )
-        ..pushStyle(ui.TextStyle(
-          color: spec.color,
-          fontSize: spec.fontSize,
-        ))
+        ..pushStyle(
+          ui.TextStyle(color: spec.color, fontSize: spec.fontSize),
+        )
         ..addText(spec.text);
 
       final paragraph = pb.build()
-        ..layout(ui.ParagraphConstraints(
-            width: spec.rect.width));
+        ..layout(ui.ParagraphConstraints(width: spec.rect.width));
       canvas.drawParagraph(paragraph, spec.textPos);
     }
   }

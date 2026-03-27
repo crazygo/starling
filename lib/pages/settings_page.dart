@@ -33,10 +33,11 @@ class SettingsPage extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        children: [
-          const _LocationSettingsSection(),
-          const _CultureSettingsSection(),
-          const _LanguageSettingsSection(),
+        children: const [
+          _LocationSettingsSection(),
+          _CultureSettingsSection(),
+          _LanguageSettingsSection(),
+          _ViewStyleSettingsSection(),
         ],
       ),
     );
@@ -76,17 +77,15 @@ class _LocationSettingsSectionState extends State<_LocationSettingsSection> {
       await _locationService.start();
       // Wait up to 10 s for the first fix.
       LocationData? fix = _locationService.lastKnown;
-      if (fix == null) {
-        fix = await _locationService.locationStream
-            .timeout(const Duration(seconds: 10))
-            .first;
-      }
+      fix ??= await _locationService.locationStream
+          .timeout(const Duration(seconds: 10))
+          .first;
       if (!mounted) return;
       final lat = fix.latitude?.toStringAsFixed(4) ?? '?';
       final lon = fix.longitude?.toStringAsFixed(4) ?? '?';
       setState(() {
         _fetchingGps = false;
-        _gpsLabel = '已定位  ${lat}°N, ${lon}°E';
+        _gpsLabel = '已定位  $lat°N, $lon°E';
       });
     } catch (_) {
       if (!mounted) return;
@@ -165,15 +164,19 @@ class _LocationSettingsSectionState extends State<_LocationSettingsSection> {
                       child: Text(
                         gpsSubtitle,
                         style: const TextStyle(
-                            color: Colors.white38, fontSize: 12),
+                          color: Colors.white38,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 trailing: isGps
                     ? const Icon(Icons.check_circle, color: Colors.blueAccent)
-                    : const Icon(Icons.radio_button_unchecked,
-                        color: Colors.white30),
+                    : const Icon(
+                        Icons.radio_button_unchecked,
+                        color: Colors.white30,
+                      ),
               ),
             ],
           ),
@@ -302,6 +305,62 @@ class _LanguageSettingsSection extends StatelessWidget {
   }
 }
 
+// ---------------------------------------------------------------------------
+// View Style section
+// ---------------------------------------------------------------------------
+class _ViewStyleSettingsSection extends StatelessWidget {
+  const _ViewStyleSettingsSection();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final settings = context.watch<SettingsService>();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            l10n.viewStyleSettings,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0D1B2A),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blueAccent.withAlpha(51)),
+          ),
+          child: Column(
+            children: [
+              _CultureOptionTile(
+                title: l10n.viewStyleDome,
+                subtitle: l10n.viewStyleDomeSubtitle,
+                selected: settings.viewStyle == ViewStyle.dome,
+                onTap: () => settings.setViewStyle(ViewStyle.dome),
+                showDivider: true,
+              ),
+              _CultureOptionTile(
+                title: l10n.viewStyleClassic,
+                subtitle: l10n.viewStyleClassicSubtitle,
+                selected: settings.viewStyle == ViewStyle.classic,
+                onTap: () => settings.setViewStyle(ViewStyle.classic),
+                showDivider: false,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _CultureOptionTile extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -333,8 +392,7 @@ class _CultureOptionTile extends StatelessWidget {
           ),
           trailing: selected
               ? const Icon(Icons.check_circle, color: Colors.blueAccent)
-              : const Icon(Icons.radio_button_unchecked,
-                  color: Colors.white30),
+              : const Icon(Icons.radio_button_unchecked, color: Colors.white30),
         ),
         if (showDivider)
           const Divider(

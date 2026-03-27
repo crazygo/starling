@@ -2,10 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Available culture modes for star names and constellation data.
-enum CultureMode {
-  chinese,
-  western,
-}
+enum CultureMode { chinese, western }
 
 /// Available language modes for the app UI.
 enum LanguageMode {
@@ -28,6 +25,15 @@ enum LocationMode {
   gps,
 }
 
+/// Available rendering styles for the Voyage sky view.
+enum ViewStyle {
+  /// Immersive dome-style sky view with orientation framing.
+  dome,
+
+  /// Current flat rectangular chart.
+  classic,
+}
+
 /// App-wide settings, backed by [SharedPreferences] for persistence.
 ///
 /// Expose via [ChangeNotifierProvider] so any widget can read or update
@@ -36,10 +42,12 @@ class SettingsService extends ChangeNotifier {
   static const _keyCulture = 'culture_mode';
   static const _keyLocation = 'location_mode';
   static const _keyLanguage = 'language_mode';
+  static const _keyViewStyle = 'view_style';
 
   CultureMode _cultureMode = CultureMode.chinese;
   LocationMode _locationMode = LocationMode.beijing;
   LanguageMode _languageMode = LanguageMode.auto;
+  ViewStyle _viewStyle = ViewStyle.dome;
 
   /// The currently selected culture mode.
   CultureMode get cultureMode => _cultureMode;
@@ -52,6 +60,9 @@ class SettingsService extends ChangeNotifier {
 
   /// The currently selected language mode.
   LanguageMode get languageMode => _languageMode;
+
+  /// The currently selected sky view style.
+  ViewStyle get viewStyle => _viewStyle;
 
   /// Load persisted settings from [SharedPreferences].
   ///
@@ -81,6 +92,12 @@ class SettingsService extends ChangeNotifier {
       _languageMode = LanguageMode.english;
     } else {
       _languageMode = LanguageMode.auto;
+    }
+    final storedViewStyle = prefs.getString(_keyViewStyle);
+    if (storedViewStyle == ViewStyle.classic.name) {
+      _viewStyle = ViewStyle.classic;
+    } else {
+      _viewStyle = ViewStyle.dome;
     }
     notifyListeners();
   }
@@ -115,5 +132,15 @@ class SettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     if (_languageMode != mode) return;
     await prefs.setString(_keyLanguage, mode.name);
+  }
+
+  /// Update the view style and persist the change.
+  Future<void> setViewStyle(ViewStyle style) async {
+    if (_viewStyle == style) return;
+    _viewStyle = style;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_viewStyle != style) return;
+    await prefs.setString(_keyViewStyle, style.name);
   }
 }

@@ -23,5 +23,10 @@
   "languageChinese": "中文",
   "languageChineseSubtitle": "简体中文",
   "languageEnglish": "英文",
-  "languageEnglishSubtitle": "English"
+  "languageEnglishSubtitle": "English",
+  "viewStyleSettings": "视图样式",
+  "viewStyleDome": "穹顶",
+  "viewStyleDomeSubtitle": "带方向参照的沉浸式天空视图",
+  "viewStyleClassic": "传统",
+  "viewStyleClassicSubtitle": "平面矩形星图"
 }
