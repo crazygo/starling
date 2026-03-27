@@ -22,6 +22,8 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+FORCE_WESTERN_REFRESH="${FORCE_WESTERN_REFRESH:-0}"
+
 echo "📡 Downloading astronomy data sources…"
 echo ""
 
@@ -139,6 +141,11 @@ fi
 echo ""
 echo "⭐ IAU constellation lines (Stellarium modern skyculture)…"
 FAB_TMP="$(mktemp /tmp/constellationship_XXXXXX.fab)"
+
+if [[ "$FORCE_WESTERN_REFRESH" == "1" && -f "sources/iau/constellation_lines.csv" ]]; then
+  echo "   ♻️  Removing cached constellation_lines.csv (FORCE_WESTERN_REFRESH=1)"
+  rm -f "sources/iau/constellation_lines.csv"
+fi
 
 if [[ -f "sources/iau/constellation_lines.csv" ]]; then
   echo "   ⏭  constellation_lines.csv already exists, skipping"
@@ -355,4 +362,3 @@ download_chinese_file "index.json"
 echo ""
 echo "🎉 All sources downloaded successfully!"
 echo "   Run ./generate_bins.sh (or dart run bin/pipeline.dart) to build .bin files."
-

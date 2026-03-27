@@ -18,57 +18,57 @@ import 'package:flat_buffers/flat_buffers.dart' as fb;
 
 /// IAU constellation family.
 class ConstellationFamily {
-  static const int zodiac   = 0;
-  static const int ursa     = 1;
-  static const int perseus  = 2;
+  static const int zodiac = 0;
+  static const int ursa = 1;
+  static const int perseus = 2;
   static const int hercules = 3;
-  static const int orion    = 4;
+  static const int orion = 4;
   static const int heavenly = 5;
-  static const int bayer    = 6;
+  static const int bayer = 6;
   static const int laCaille = 7;
-  static const int other    = 8;
+  static const int other = 8;
 }
 
 /// Chinese sky quadrant (cardinal palace / Three Enclosures).
 class Quadrant {
-  static const int eastAzure    = 0;
-  static const int northBlack   = 1;
-  static const int westWhite    = 2;
+  static const int eastAzure = 0;
+  static const int northBlack = 1;
+  static const int westWhite = 2;
   static const int southScarlet = 3;
-  static const int central      = 4;
+  static const int central = 4;
 }
 
 /// 28 lunar mansions; 0 = None (Three Enclosures).
 class Mansion {
-  static const int none        = 0;
-  static const int horn        = 1;
-  static const int neck        = 2;
-  static const int root        = 3;
-  static const int room        = 4;
-  static const int heart       = 5;
-  static const int tail        = 6;
-  static const int winnowing   = 7;
-  static const int dipper      = 8;
-  static const int ox          = 9;
-  static const int girl        = 10;
-  static const int emptiness   = 11;
-  static const int rooftop     = 12;
-  static const int encampment  = 13;
-  static const int wall        = 14;
-  static const int stride      = 15;
-  static const int bond        = 16;
-  static const int stomach     = 17;
-  static const int hairy       = 18;
-  static const int net         = 19;
-  static const int turtle      = 20;
-  static const int three       = 21;
-  static const int well        = 22;
-  static const int ghost       = 23;
-  static const int willow      = 24;
-  static const int star        = 25;
-  static const int extended    = 26;
-  static const int wings       = 27;
-  static const int chariot     = 28;
+  static const int none = 0;
+  static const int horn = 1;
+  static const int neck = 2;
+  static const int root = 3;
+  static const int room = 4;
+  static const int heart = 5;
+  static const int tail = 6;
+  static const int winnowing = 7;
+  static const int dipper = 8;
+  static const int ox = 9;
+  static const int girl = 10;
+  static const int emptiness = 11;
+  static const int rooftop = 12;
+  static const int encampment = 13;
+  static const int wall = 14;
+  static const int stride = 15;
+  static const int bond = 16;
+  static const int stomach = 17;
+  static const int hairy = 18;
+  static const int net = 19;
+  static const int turtle = 20;
+  static const int three = 21;
+  static const int well = 22;
+  static const int ghost = 23;
+  static const int willow = 24;
+  static const int star = 25;
+  static const int extended = 26;
+  static const int wings = 27;
+  static const int chariot = 28;
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -77,7 +77,7 @@ class Mansion {
 
 /// A directed edge connecting two stars by Hipparcos catalogue ID.
 ///
-/// Serialised as two consecutive uint16 values inside a [uint16] vector:
+/// Serialised as two consecutive uint32 values inside a [uint32] vector:
 ///   [fromHip₀, toHip₀, fromHip₁, toHip₁, …]
 class Edge {
   final int fromHip;
@@ -97,7 +97,7 @@ class BoundaryPoint {
   /// Quantise floating-point sky coordinates to uint16 range.
   factory BoundaryPoint.quantize(double ra, double dec) {
     return BoundaryPoint(
-      raQ:  (ra  / 360.0       * 65535.0).round().clamp(0, 65535),
+      raQ: (ra / 360.0 * 65535.0).round().clamp(0, 65535),
       decQ: ((dec + 90.0) / 180.0 * 65535.0).round().clamp(0, 65535),
     );
   }
@@ -109,7 +109,7 @@ class BoundaryPoint {
 
 /// ObjectBuilder for the `Star` table.
 class StarObjectBuilder extends fb.ObjectBuilder {
-  final int    hip;
+  final int hip;
   final double ra;
   final double dec;
   final double mag;
@@ -185,7 +185,7 @@ class WesternConstellationObjectBuilder extends fb.ObjectBuilder {
   final String abbr;
   final String nameEn;
   final String nameZh;
-  final int    family;   // ConstellationFamily constant
+  final int family; // ConstellationFamily constant
   final List<Edge> edges;
   final List<BoundaryPoint> boundary;
 
@@ -201,21 +201,25 @@ class WesternConstellationObjectBuilder extends fb.ObjectBuilder {
   @override
   int finish(fb.Builder fbBuilder) {
     // Strings must be written before startTable.
-    final abbrOffset   = fbBuilder.writeString(abbr);
+    final abbrOffset = fbBuilder.writeString(abbr);
     final nameEnOffset = fbBuilder.writeString(nameEn);
     final nameZhOffset = fbBuilder.writeString(nameZh);
 
-    // Edge vector: interleaved uint16 pairs [fromHip, toHip, …].
+    // Edge vector: interleaved uint32 pairs [fromHip, toHip, …].
     final edgeData = <int>[];
     for (final e in edges) {
-      edgeData..add(e.fromHip)..add(e.toHip);
+      edgeData
+        ..add(e.fromHip)
+        ..add(e.toHip);
     }
-    final edgesOffset = fbBuilder.writeListUint16(edgeData);
+    final edgesOffset = fbBuilder.writeListUint32(edgeData);
 
     // Boundary vector: interleaved uint16 pairs [raQ, decQ, …].
     final bpData = <int>[];
     for (final bp in boundary) {
-      bpData..add(bp.raQ)..add(bp.decQ);
+      bpData
+        ..add(bp.raQ)
+        ..add(bp.decQ);
     }
     final boundaryOffset = fbBuilder.writeListUint16(bpData);
 
@@ -245,9 +249,8 @@ class WesternCultureObjectBuilder extends fb.ObjectBuilder {
 
   @override
   int finish(fb.Builder fbBuilder) {
-    final offsets = constellations
-        .map((c) => c.finish(fbBuilder))
-        .toList(growable: false);
+    final offsets =
+        constellations.map((c) => c.finish(fbBuilder)).toList(growable: false);
     final consOffset = fbBuilder.writeList(offsets);
     fbBuilder.startTable(1);
     fbBuilder.addOffset(0, consOffset);
@@ -268,10 +271,10 @@ class WesternCultureObjectBuilder extends fb.ObjectBuilder {
 
 /// ObjectBuilder for the `ChineseAsterism` table.
 class ChineseAsterismObjectBuilder extends fb.ObjectBuilder {
-  final String    name;
-  final String    nameEn;
-  final int       quadrant;  // Quadrant constant
-  final int       mansion;   // Mansion constant
+  final String name;
+  final String nameEn;
+  final int quadrant; // Quadrant constant
+  final int mansion; // Mansion constant
   final List<Edge> edges;
 
   ChineseAsterismObjectBuilder({
@@ -284,14 +287,16 @@ class ChineseAsterismObjectBuilder extends fb.ObjectBuilder {
 
   @override
   int finish(fb.Builder fbBuilder) {
-    final nameOffset   = fbBuilder.writeString(name);
+    final nameOffset = fbBuilder.writeString(name);
     final nameEnOffset = fbBuilder.writeString(nameEn);
 
     final edgeData = <int>[];
     for (final e in edges) {
-      edgeData..add(e.fromHip)..add(e.toHip);
+      edgeData
+        ..add(e.fromHip)
+        ..add(e.toHip);
     }
-    final edgesOffset = fbBuilder.writeListUint16(edgeData);
+    final edgesOffset = fbBuilder.writeListUint32(edgeData);
 
     fbBuilder.startTable(5);
     fbBuilder.addOffset(0, nameOffset);
@@ -318,9 +323,8 @@ class ChineseCultureObjectBuilder extends fb.ObjectBuilder {
 
   @override
   int finish(fb.Builder fbBuilder) {
-    final offsets = asterisms
-        .map((a) => a.finish(fbBuilder))
-        .toList(growable: false);
+    final offsets =
+        asterisms.map((a) => a.finish(fbBuilder)).toList(growable: false);
     final asterismsOffset = fbBuilder.writeList(offsets);
     fbBuilder.startTable(1);
     fbBuilder.addOffset(0, asterismsOffset);

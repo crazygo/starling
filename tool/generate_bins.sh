@@ -10,6 +10,7 @@
 # Optional environment variables:
 #   MAX_MAG   Maximum visual magnitude to include (default: 6.5)
 #   OUTPUT    Output directory for .bin files (default: ../assets/bin)
+#   FORCE_WESTERN_REFRESH  Force re-download of western line source (0/1)
 
 set -euo pipefail
 
@@ -18,6 +19,7 @@ cd "$SCRIPT_DIR"
 
 MAX_MAG="${MAX_MAG:-6.5}"
 OUTPUT="${OUTPUT:-../assets/bin}"
+FORCE_WESTERN_REFRESH="${FORCE_WESTERN_REFRESH:-0}"
 
 require_cmd() {
   if ! command -v "$1" &>/dev/null; then
@@ -34,7 +36,7 @@ echo "════════════════════════�
 echo " Step 1: Downloading data sources…"
 echo "═══════════════════════════════════════"
 chmod +x download_sources.sh
-./download_sources.sh
+FORCE_WESTERN_REFRESH="$FORCE_WESTERN_REFRESH" ./download_sources.sh
 
 # ── Step 2: Install Dart dependencies ────────────────────────────────────────
 echo ""

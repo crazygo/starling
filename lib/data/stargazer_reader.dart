@@ -95,15 +95,15 @@ String? _tableString(ByteData buf, int tableOffset, int fieldIndex) {
   return _readString(buf, absPos);
 }
 
-/// Read a uint16 vector field. Returns empty list if absent.
-/// The vector stores count:uint32 followed by count × uint16 values.
-List<int> _tableUint16Vector(ByteData buf, int tableOffset, int fieldIndex) {
+/// Read a uint32 vector field. Returns empty list if absent.
+/// The vector stores count:uint32 followed by count × uint32 values.
+List<int> _tableUint32Vector(ByteData buf, int tableOffset, int fieldIndex) {
   final vecPos = _tableOffsetField(buf, tableOffset, fieldIndex);
   if (vecPos == null) return const [];
   final count = _readUint32(buf, vecPos);
   final result = List<int>.filled(count, 0);
   for (int i = 0; i < count; i++) {
-    result[i] = _readUint16(buf, vecPos + 4 + i * 2);
+    result[i] = _readUint32(buf, vecPos + 4 + i * 4);
   }
   return result;
 }
@@ -191,7 +191,8 @@ class BinWesternConstellation {
   final String nameEn;
   final String nameZh;
   final int family;
-  /// Interleaved [fromHip, toHip, fromHip, toHip, …] uint16 pairs.
+
+  /// Interleaved [fromHip, toHip, fromHip, toHip, …] uint32 pairs.
   final List<int> edges;
 
   const BinWesternConstellation({
@@ -225,7 +226,7 @@ class WesternCultureReader {
       nameEn: _tableString(_buf, tableOffset, 1) ?? '',
       nameZh: _tableString(_buf, tableOffset, 2) ?? '',
       family: _tableUint8(_buf, tableOffset, 3),
-      edges: _tableUint16Vector(_buf, tableOffset, 4),
+      edges: _tableUint32Vector(_buf, tableOffset, 4),
     );
   }
 
@@ -245,7 +246,8 @@ class BinChineseAsterism {
   final String nameEn;
   final int quadrant;
   final int mansion;
-  /// Interleaved [fromHip, toHip, fromHip, toHip, …] uint16 pairs.
+
+  /// Interleaved [fromHip, toHip, fromHip, toHip, …] uint32 pairs.
   final List<int> edges;
 
   const BinChineseAsterism({
@@ -279,7 +281,7 @@ class ChineseCultureReader {
       nameEn: _tableString(_buf, tableOffset, 1) ?? '',
       quadrant: _tableUint8(_buf, tableOffset, 2),
       mansion: _tableUint8(_buf, tableOffset, 3),
-      edges: _tableUint16Vector(_buf, tableOffset, 4),
+      edges: _tableUint32Vector(_buf, tableOffset, 4),
     );
   }
 
