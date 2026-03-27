@@ -8,6 +8,22 @@ import '../services/settings_service.dart';
 import '../utils/astronomy.dart';
 import '../utils/voyage_dome.dart';
 
+const double _classicDegreesPerPixelAtZoom1 = 0.15;
+
+@visibleForTesting
+double classicDegreesPerPixelForZoom(double zoom) {
+  return _classicDegreesPerPixelAtZoom1 / zoom;
+}
+
+@visibleForTesting
+Offset classicHalfSpanForSize(Size size, double zoom) {
+  final degPerPixel = classicDegreesPerPixelForZoom(zoom);
+  return Offset(
+    (size.width / 2) * degPerPixel,
+    (size.height / 2) * degPerPixel,
+  );
+}
+
 double _effectiveCenterDecForStyle(
   ViewStyle viewStyle,
   double baseCenterDec,
@@ -262,10 +278,10 @@ class _StarChartState extends State<StarChart> {
     final delta = d.localFocalPoint - _panStart!;
     final degPerPxH = widget.viewStyle == ViewStyle.dome
         ? _domeHorizontalFovForZoom(base.zoom) / size.width
-        : (120.0 / base.zoom) / size.width;
+        : classicDegreesPerPixelForZoom(base.zoom);
     final degPerPxV = widget.viewStyle == ViewStyle.dome
         ? _domeVerticalFovForSize(size, base.zoom) / size.height
-        : (60.0 / base.zoom) / size.height;
+        : classicDegreesPerPixelForZoom(base.zoom);
 
     double newRa = _effectiveCenterRaForStyle(
       widget.viewStyle,
@@ -291,10 +307,10 @@ class _StarChartState extends State<StarChart> {
       final size = context.size ?? const Size(400, 800);
       final degPerPxH = widget.viewStyle == ViewStyle.dome
           ? _domeHorizontalFovForZoom(vp.zoom) / size.width
-          : (120.0 / vp.zoom) / size.width;
+          : classicDegreesPerPixelForZoom(vp.zoom);
       final degPerPxV = widget.viewStyle == ViewStyle.dome
           ? _domeVerticalFovForSize(size, vp.zoom) / size.height
-          : (60.0 / vp.zoom) / size.height;
+          : classicDegreesPerPixelForZoom(vp.zoom);
 
       final newRa = _effectiveCenterRaForStyle(
         widget.viewStyle,
@@ -377,8 +393,9 @@ class _StarChartState extends State<StarChart> {
       widget.gyroOffset?.dy ?? 0,
     );
 
-    final halfW = 60.0 / vp.zoom;
-    final halfH = 30.0 / vp.zoom;
+    final halfSpan = classicHalfSpanForSize(size, vp.zoom);
+    final halfW = halfSpan.dx;
+    final halfH = halfSpan.dy;
 
     double dRa = star.rightAscension - effectiveRa;
     if (dRa > 180) dRa -= 360;
@@ -584,8 +601,9 @@ class _StarPainter extends CustomPainter {
       gyroOffset?.dy ?? 0,
     );
 
-    final halfW = 60.0 / vp.zoom;
-    final halfH = 30.0 / vp.zoom;
+    final halfSpan = classicHalfSpanForSize(size, vp.zoom);
+    final halfW = halfSpan.dx;
+    final halfH = halfSpan.dy;
 
     double dRa = raDeg - effectiveRa;
     if (dRa > 180) dRa -= 360;
