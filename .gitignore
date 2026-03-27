@@ -5,6 +5,9 @@
 .pub-cache/
 .pub/
 build/
+pubspec.lock
+.tooling/
+screenshots/
 
 # Android
 android/.gradle/
@@ -12,11 +15,16 @@ android/local.properties
 android/key.properties
 android/app/debug.keystore
 android/app/release.keystore
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
 
 # iOS
 ios/.symlinks/
 ios/Pods/
 ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Generated.xcconfig
+ios/Flutter/ephemeral/
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m
 
 # IDE
 .idea/
