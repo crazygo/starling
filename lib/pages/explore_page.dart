@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:starling/l10n/generated/app_localizations.dart';
 import 'package:sensors_plus/sensors_plus.dart';
@@ -10,6 +11,8 @@ import '../services/gyro_service.dart';
 import '../services/location_service.dart';
 import '../services/settings_service.dart';
 import '../services/star_data_service.dart';
+import '../utils/astronomy.dart';
+import '../utils/voyage_dome.dart';
 import '../widgets/star_chart.dart';
 import '../widgets/star_info_popup.dart';
 
@@ -42,6 +45,7 @@ class _ExplorePageState extends State<ExplorePage> {
   final GyroService _gyroService = GyroService();
   final LocationService _locationService = LocationService();
   StreamSubscription<GyroscopeEvent>? _gyroSub;
+  StreamSubscription<LocationData>? _locationSub;
 
   bool _gyroEnabled = false;
   Offset _gyroOffset = Offset.zero;
@@ -49,6 +53,7 @@ class _ExplorePageState extends State<ExplorePage> {
 
   // Settings listener
   SettingsService? _settingsService;
+  ViewStyle? _lastViewStyle;
 
   // Search
   final TextEditingController _searchController = TextEditingController();
@@ -72,6 +77,7 @@ class _ExplorePageState extends State<ExplorePage> {
       _settingsService?.removeListener(_onSettingsChanged);
       _settingsService = newSettings;
       _settingsService!.addListener(_onSettingsChanged);
+      _lastViewStyle = newSettings.viewStyle;
       _syncLocationMode(newSettings.locationMode);
     }
   }
@@ -79,12 +85,23 @@ class _ExplorePageState extends State<ExplorePage> {
   void _onSettingsChanged() {
     if (!mounted || _settingsService == null) return;
     _syncLocationMode(_settingsService!.locationMode);
+    final nextViewStyle = _settingsService!.viewStyle;
+    if (_lastViewStyle != nextViewStyle) {
+      _viewport = nextViewStyle == ViewStyle.dome
+          ? _defaultDomeViewport
+          : _seasonalViewport(_observeDateTime);
+      _lastViewStyle = nextViewStyle;
+    }
     setState(() {});
   }
 
   void _syncLocationMode(LocationMode mode) {
     if (mode == LocationMode.gps) {
       _locationService.start();
+      _locationSub ??= _locationService.locationStream.listen((_) {
+        if (!mounted) return;
+        setState(() {});
+      });
     } else {
       _locationService.stop();
     }
@@ -99,9 +116,49 @@ class _ExplorePageState extends State<ExplorePage> {
         _westernConstellations = service.constellations;
         _chineseConstellations = service.chineseConstellations;
         _loading = false;
-        _viewport = _seasonalViewport(DateTime.now());
+        _viewport = context.read<SettingsService>().viewStyle == ViewStyle.dome
+            ? _defaultDomeViewport
+            : _seasonalViewport(_observeDateTime);
       });
     }
+  }
+
+  StarChartViewport get _defaultDomeViewport {
+    final camera = seasonalDomeCamera(
+      localDateTime: _observeDateTime,
+      latitudeDeg: _observerLatitude,
+    );
+    return StarChartViewport(
+      centerRa: camera.azimuthDeg,
+      centerDec: camera.altitudeDeg,
+      zoom: camera.zoom,
+    );
+  }
+
+  DateTime get _observeDateTime => DateTime(
+        _observeDate.year,
+        _observeDate.month,
+        _observeDate.day,
+        _observeTime.hour,
+        _observeTime.minute,
+      );
+
+  double get _observerLatitude {
+    final locationMode = _settingsService?.locationMode ?? LocationMode.beijing;
+    final lastKnown = _locationService.lastKnown;
+    if (locationMode == LocationMode.gps && lastKnown?.latitude != null) {
+      return lastKnown!.latitude!;
+    }
+    return kBeijingLatitude;
+  }
+
+  double get _observerLongitude {
+    final locationMode = _settingsService?.locationMode ?? LocationMode.beijing;
+    final lastKnown = _locationService.lastKnown;
+    if (locationMode == LocationMode.gps && lastKnown?.longitude != null) {
+      return lastKnown!.longitude!;
+    }
+    return kBeijingLongitude;
   }
 
   /// Returns a [StarChartViewport] centred on the season's representative
@@ -198,12 +255,29 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   void _focusStar(Star star) {
+    final viewStyle = _settingsService?.viewStyle ?? ViewStyle.dome;
+    final focusedViewport = viewStyle == ViewStyle.dome
+        ? (() {
+            final horizontal = AstronomyUtils.equatorialToHorizontal(
+              raDeg: star.rightAscension,
+              decDeg: star.declination,
+              latDeg: _observerLatitude,
+              lonDeg: _observerLongitude,
+              utc: _observeDateTime.toUtc(),
+            );
+            return _viewport.copyWith(
+              centerRa: horizontal.azimuth,
+              centerDec: horizontal.altitude,
+              zoom: 2.5,
+            );
+          })()
+        : _viewport.copyWith(
+            centerRa: star.rightAscension,
+            centerDec: star.declination,
+            zoom: 2.5,
+          );
     setState(() {
-      _viewport = _viewport.copyWith(
-        centerRa: star.rightAscension,
-        centerDec: star.declination,
-        zoom: 2.5,
-      );
+      _viewport = focusedViewport;
       _selectedStar = star;
       _searchVisible = false;
       _searchController.clear();
@@ -216,6 +290,7 @@ class _ExplorePageState extends State<ExplorePage> {
     _settingsService?.removeListener(_onSettingsChanged);
     _gyroService.dispose();
     _gyroSub?.cancel();
+    _locationSub?.cancel();
     _locationService.dispose();
     _searchController.dispose();
     super.dispose();
@@ -247,9 +322,8 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   Widget _buildChart(bool isChinese, ViewStyle viewStyle) {
-    final constellations = isChinese
-        ? _chineseConstellations
-        : _westernConstellations;
+    final constellations =
+        isChinese ? _chineseConstellations : _westernConstellations;
     return Stack(
       children: [
         // Star chart
@@ -260,6 +334,9 @@ class _ExplorePageState extends State<ExplorePage> {
           showChineseName: isChinese,
           viewport: _viewport,
           viewStyle: viewStyle,
+          observerLatitude: _observerLatitude,
+          observerLongitude: _observerLongitude,
+          observationTimeUtc: _observeDateTime.toUtc(),
           onViewportChanged: (vp) => setState(() => _viewport = vp),
           onStarTapped: (star) => setState(() => _selectedStar = star),
           gyroOffset: _gyroEnabled ? _gyroOffset : null,

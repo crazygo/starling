@@ -5,23 +5,8 @@ import 'package:flutter/material.dart';
 import '../models/star.dart';
 import '../models/constellation.dart';
 import '../services/settings_service.dart';
-
-const double _domeMinCenterDec = -70.0;
-const double _domeMaxCenterDec = 62.0;
-const double _domeCapStart = 54.0;
-const double _domeTopSafeFraction = 0.14;
-const double _domeBottomSafeFraction = 0.96;
-const double _domeDefaultCenterDec = 45.0;
-const double _domeGuideBaseFraction = 0.74;
-
-double _softClampDomeDec(double dec) {
-  if (dec > _domeCapStart) {
-    final overshoot = dec - _domeCapStart;
-    final damped = overshoot / (1 + overshoot / 8);
-    dec = _domeCapStart + damped;
-  }
-  return dec.clamp(_domeMinCenterDec, _domeMaxCenterDec).toDouble();
-}
+import '../utils/astronomy.dart';
+import '../utils/voyage_dome.dart';
 
 double _effectiveCenterDecForStyle(
   ViewStyle viewStyle,
@@ -30,9 +15,155 @@ double _effectiveCenterDecForStyle(
 ) {
   final effectiveDec = baseCenterDec + gyroDec;
   if (viewStyle == ViewStyle.dome) {
-    return _softClampDomeDec(effectiveDec);
+    return clampDomeAltitude(effectiveDec);
   }
   return effectiveDec.clamp(-90.0, 90.0).toDouble();
+}
+
+double _effectiveCenterRaForStyle(
+  ViewStyle viewStyle,
+  double baseCenterRa,
+  double gyroRa,
+) {
+  final effectiveRa = baseCenterRa + gyroRa;
+  if (viewStyle == ViewStyle.dome) {
+    return wrapDegrees360(effectiveRa);
+  }
+  var wrapped = effectiveRa % 360.0;
+  if (wrapped < 0) wrapped += 360.0;
+  return wrapped;
+}
+
+double _domeHorizontalFovForZoom(double zoom) {
+  return (110.0 / zoom).clamp(24.0, 140.0).toDouble();
+}
+
+double _domeVerticalFovForSize(Size size, double zoom) {
+  final horizontalFov = _domeHorizontalFovForZoom(zoom);
+  final aspect = size.height / size.width;
+  return (horizontalFov * aspect).clamp(24.0, 140.0).toDouble();
+}
+
+class _Vec3 {
+  final double x;
+  final double y;
+  final double z;
+
+  const _Vec3(this.x, this.y, this.z);
+
+  double dot(_Vec3 other) => x * other.x + y * other.y + z * other.z;
+}
+
+_Vec3 _horizontalVector(double azimuthDeg, double altitudeDeg) {
+  final az = AstronomyUtils.toRad(azimuthDeg);
+  final alt = AstronomyUtils.toRad(altitudeDeg);
+  final cosAlt = cos(alt);
+  return _Vec3(
+    cosAlt * sin(az),
+    cosAlt * cos(az),
+    sin(alt),
+  );
+}
+
+class _ProjectedPoint {
+  final Offset screenOffset;
+  final double cameraX;
+  final double cameraY;
+  final double cameraZ;
+
+  const _ProjectedPoint({
+    required this.screenOffset,
+    required this.cameraX,
+    required this.cameraY,
+    required this.cameraZ,
+  });
+}
+
+class _DomeProjection {
+  final Size size;
+  final double centerAzimuthDeg;
+  final double centerAltitudeDeg;
+  final double zoom;
+
+  late final _Vec3 _forward = _horizontalVector(
+    centerAzimuthDeg,
+    centerAltitudeDeg,
+  );
+  late final _Vec3 _right = _Vec3(
+    cos(AstronomyUtils.toRad(centerAzimuthDeg)),
+    -sin(AstronomyUtils.toRad(centerAzimuthDeg)),
+    0,
+  );
+  late final _Vec3 _up = _Vec3(
+    _right.y * _forward.z - _right.z * _forward.y,
+    _right.z * _forward.x - _right.x * _forward.z,
+    _right.x * _forward.y - _right.y * _forward.x,
+  );
+  late final double _focalLength = (size.width / 2) /
+      tan(AstronomyUtils.toRad(_domeHorizontalFovForZoom(zoom)) / 2);
+
+  _DomeProjection({
+    required this.size,
+    required this.centerAzimuthDeg,
+    required this.centerAltitudeDeg,
+    required this.zoom,
+  });
+
+  _ProjectedPoint? projectHorizontal(
+    double azimuthDeg,
+    double altitudeDeg, {
+    double minDepth = 0.02,
+  }) {
+    final vector = _horizontalVector(azimuthDeg, altitudeDeg);
+    final cameraX = vector.dot(_right);
+    final cameraY = vector.dot(_up);
+    final cameraZ = vector.dot(_forward);
+    if (cameraZ <= minDepth) return null;
+
+    final projected = Offset(
+      size.width / 2 + (cameraX / cameraZ) * _focalLength,
+      size.height / 2 - (cameraY / cameraZ) * _focalLength,
+    );
+    return _ProjectedPoint(
+      screenOffset: projected,
+      cameraX: cameraX,
+      cameraY: cameraY,
+      cameraZ: cameraZ,
+    );
+  }
+
+  Offset pinToEdgeForHorizontal(double azimuthDeg, double altitudeDeg) {
+    final vector = _horizontalVector(azimuthDeg, altitudeDeg);
+    var dx = vector.dot(_right);
+    var dy = -vector.dot(_up);
+    if (vector.dot(_forward) < 0) {
+      dx = -dx;
+      dy = -dy;
+    }
+    final direction = Offset(dx, dy);
+    if (direction.distance < 1e-6) {
+      return Offset(size.width / 2, size.height / 2);
+    }
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final normalized = direction / direction.distance;
+    final scaleX = normalized.dx.abs() > 1e-6
+        ? (normalized.dx > 0
+            ? (size.width - center.dx) / normalized.dx
+            : -center.dx / normalized.dx)
+        : double.infinity;
+    final scaleY = normalized.dy.abs() > 1e-6
+        ? (normalized.dy > 0
+            ? (size.height - center.dy) / normalized.dy
+            : -center.dy / normalized.dy)
+        : double.infinity;
+    final scale = min(scaleX.abs(), scaleY.abs());
+    final pinned = center + normalized * scale;
+    return Offset(
+      pinned.dx.clamp(18.0, size.width - 18.0),
+      pinned.dy.clamp(18.0, size.height - 18.0),
+    );
+  }
 }
 
 /// The visible viewport state: centre offset and zoom factor.
@@ -83,6 +214,9 @@ class StarChart extends StatefulWidget {
   /// is used for Group 2 labels.
   final bool showChineseName;
   final ViewStyle viewStyle;
+  final double observerLatitude;
+  final double observerLongitude;
+  final DateTime observationTimeUtc;
 
   final StarChartViewport viewport;
   final ValueChanged<StarChartViewport> onViewportChanged;
@@ -99,6 +233,9 @@ class StarChart extends StatefulWidget {
     required this.chineseConstellations,
     required this.showChineseName,
     required this.viewStyle,
+    required this.observerLatitude,
+    required this.observerLongitude,
+    required this.observationTimeUtc,
     required this.viewport,
     required this.onViewportChanged,
     this.onStarTapped,
@@ -122,19 +259,24 @@ class _StarChartState extends State<StarChart> {
     final base = _viewportAtGestureStart!;
     final size = context.size ?? const Size(400, 800);
 
-    // Pan: translate focal-point delta to RA/Dec degrees
     final delta = d.localFocalPoint - _panStart!;
-    final degPerPxH = (120.0 / base.zoom) / size.width;
-    final degPerPxV = (60.0 / base.zoom) / size.height;
+    final degPerPxH = widget.viewStyle == ViewStyle.dome
+        ? _domeHorizontalFovForZoom(base.zoom) / size.width
+        : (120.0 / base.zoom) / size.width;
+    final degPerPxV = widget.viewStyle == ViewStyle.dome
+        ? _domeVerticalFovForSize(size, base.zoom) / size.height
+        : (60.0 / base.zoom) / size.height;
 
-    double newRa = (base.centerRa - delta.dx * degPerPxH) % 360.0;
-    if (newRa < 0) newRa += 360.0;
+    double newRa = _effectiveCenterRaForStyle(
+      widget.viewStyle,
+      base.centerRa,
+      -delta.dx * degPerPxH,
+    );
     double newDec = base.centerDec + delta.dy * degPerPxV;
     newDec = widget.viewStyle == ViewStyle.dome
-        ? _softClampDomeDec(newDec)
+        ? clampDomeAltitude(newDec)
         : newDec.clamp(-90.0, 90.0);
 
-    // Zoom
     final newZoom = (base.zoom * d.scale).clamp(0.3, 10.0);
 
     widget.onViewportChanged(
@@ -147,14 +289,21 @@ class _StarChartState extends State<StarChart> {
       // Two-finger trackpad scroll → pan
       final vp = widget.viewport;
       final size = context.size ?? const Size(400, 800);
-      final degPerPxH = (120.0 / vp.zoom) / size.width;
-      final degPerPxV = (60.0 / vp.zoom) / size.height;
+      final degPerPxH = widget.viewStyle == ViewStyle.dome
+          ? _domeHorizontalFovForZoom(vp.zoom) / size.width
+          : (120.0 / vp.zoom) / size.width;
+      final degPerPxV = widget.viewStyle == ViewStyle.dome
+          ? _domeVerticalFovForSize(size, vp.zoom) / size.height
+          : (60.0 / vp.zoom) / size.height;
 
-      double newRa = (vp.centerRa + event.scrollDelta.dx * degPerPxH) % 360.0;
-      if (newRa < 0) newRa += 360.0;
+      final newRa = _effectiveCenterRaForStyle(
+        widget.viewStyle,
+        vp.centerRa,
+        event.scrollDelta.dx * degPerPxH,
+      );
       final rawDec = vp.centerDec - event.scrollDelta.dy * degPerPxV;
       final newDec = widget.viewStyle == ViewStyle.dome
-          ? _softClampDomeDec(rawDec)
+          ? clampDomeAltitude(rawDec)
           : rawDec.clamp(-90.0, 90.0);
 
       widget.onViewportChanged(vp.copyWith(centerRa: newRa, centerDec: newDec));
@@ -186,42 +335,62 @@ class _StarChartState extends State<StarChart> {
   /// Project a star from equatorial coords to canvas pixels. Returns `null`
   /// if the star is outside the current viewport.
   Offset? _projectStar(Star star, Size size) {
-    final vp = widget.viewport;
-    final gyro = widget.gyroOffset;
+    if (widget.viewStyle == ViewStyle.dome) {
+      final projection = _DomeProjection(
+        size: size,
+        centerAzimuthDeg: _effectiveCenterRaForStyle(
+          widget.viewStyle,
+          widget.viewport.centerRa,
+          widget.gyroOffset?.dx ?? 0,
+        ),
+        centerAltitudeDeg: _effectiveCenterDecForStyle(
+          widget.viewStyle,
+          widget.viewport.centerDec,
+          widget.gyroOffset?.dy ?? 0,
+        ),
+        zoom: widget.viewport.zoom,
+      );
+      final horizontal = AstronomyUtils.equatorialToHorizontal(
+        raDeg: star.rightAscension,
+        decDeg: star.declination,
+        latDeg: widget.observerLatitude,
+        lonDeg: widget.observerLongitude,
+        utc: widget.observationTimeUtc,
+      );
+      return projection
+          .projectHorizontal(
+            horizontal.azimuth,
+            horizontal.altitude,
+          )
+          ?.screenOffset;
+    }
 
-    final effectiveRa = (vp.centerRa + (gyro?.dx ?? 0)) % 360.0;
+    final vp = widget.viewport;
+    final effectiveRa = _effectiveCenterRaForStyle(
+      widget.viewStyle,
+      vp.centerRa,
+      widget.gyroOffset?.dx ?? 0,
+    );
     final effectiveDec = _effectiveCenterDecForStyle(
       widget.viewStyle,
       vp.centerDec,
-      gyro?.dy ?? 0,
+      widget.gyroOffset?.dy ?? 0,
     );
 
-    final halfW = (60.0 / vp.zoom); // degrees
-    final halfH = (30.0 / vp.zoom);
+    final halfW = 60.0 / vp.zoom;
+    final halfH = 30.0 / vp.zoom;
 
     double dRa = star.rightAscension - effectiveRa;
-    // Wrap RA difference to [-180, 180]
     if (dRa > 180) dRa -= 360;
     if (dRa < -180) dRa += 360;
     final dDec = star.declination - effectiveDec;
 
     if (dRa.abs() > halfW || dDec.abs() > halfH) return null;
 
-    final px = (size.width / 2) + (dRa / halfW) * (size.width / 2);
-    final linearPy = (size.height / 2) - (dDec / halfH) * (size.height / 2);
-    final projected = widget.viewStyle == ViewStyle.dome
-        ? Offset(px, _mapDomeY(linearPy, size))
-        : Offset(px, linearPy);
-    return projected;
-  }
-
-  double _mapDomeY(double linearPy, Size size) {
-    final normalized = linearPy / size.height;
-    return ui.lerpDouble(
-      size.height * _domeTopSafeFraction,
-      size.height * _domeBottomSafeFraction,
-      normalized,
-    )!;
+    return Offset(
+      (size.width / 2) + (dRa / halfW) * (size.width / 2),
+      (size.height / 2) - (dDec / halfH) * (size.height / 2),
+    );
   }
 
   @override
@@ -242,6 +411,9 @@ class _StarChartState extends State<StarChart> {
                 chineseConstellations: widget.chineseConstellations,
                 showChineseName: widget.showChineseName,
                 viewStyle: widget.viewStyle,
+                observerLatitude: widget.observerLatitude,
+                observerLongitude: widget.observerLongitude,
+                observationTimeUtc: widget.observationTimeUtc,
                 viewport: widget.viewport,
                 gyroOffset: widget.gyroOffset,
                 size: size,
@@ -286,6 +458,9 @@ class _StarPainter extends CustomPainter {
   final List<Constellation> chineseConstellations;
   final bool showChineseName;
   final ViewStyle viewStyle;
+  final double observerLatitude;
+  final double observerLongitude;
+  final DateTime observationTimeUtc;
   final StarChartViewport viewport;
   final Offset? gyroOffset;
   final Size size;
@@ -322,6 +497,8 @@ class _StarPainter extends CustomPainter {
   // automatically fresh: it starts null, is filled on the first paint(),
   // and is discarded when the widget rebuilds with changed properties.
   List<_LabelSpec>? _cachedLabelSpecs;
+  final Map<String, Offset?> _projectedStarCache = {};
+  final Map<String, HorizontalCoords> _horizontalStarCache = {};
 
   // Star IDs that belong to the drawn constellation lines (always western).
   // Used by _drawStars() to exempt member stars from magnitude culling so
@@ -355,6 +532,9 @@ class _StarPainter extends CustomPainter {
     required this.chineseConstellations,
     required this.showChineseName,
     required this.viewStyle,
+    required this.observerLatitude,
+    required this.observerLongitude,
+    required this.observationTimeUtc,
     required this.viewport,
     required this.size,
     this.gyroOffset,
@@ -369,17 +549,39 @@ class _StarPainter extends CustomPainter {
       old.chineseConstellations != chineseConstellations ||
       old.showChineseName != showChineseName ||
       old.viewStyle != viewStyle ||
+      old.observerLatitude != observerLatitude ||
+      old.observerLongitude != observerLongitude ||
+      old.observationTimeUtc != observationTimeUtc ||
       old.size != size;
 
   Offset? _project(double raDeg, double decDeg) {
-    final vp = viewport;
-    final gyro = gyroOffset;
+    if (viewStyle == ViewStyle.dome) {
+      final projection = _domeProjection();
+      final horizontal = AstronomyUtils.equatorialToHorizontal(
+        raDeg: raDeg,
+        decDeg: decDeg,
+        latDeg: observerLatitude,
+        lonDeg: observerLongitude,
+        utc: observationTimeUtc,
+      );
+      return projection
+          .projectHorizontal(
+            horizontal.azimuth,
+            horizontal.altitude,
+          )
+          ?.screenOffset;
+    }
 
-    final effectiveRa = (vp.centerRa + (gyro?.dx ?? 0)) % 360.0;
+    final vp = viewport;
+    final effectiveRa = _effectiveCenterRaForStyle(
+      viewStyle,
+      vp.centerRa,
+      gyroOffset?.dx ?? 0,
+    );
     final effectiveDec = _effectiveCenterDecForStyle(
       viewStyle,
       vp.centerDec,
-      gyro?.dy ?? 0,
+      gyroOffset?.dy ?? 0,
     );
 
     final halfW = 60.0 / vp.zoom;
@@ -394,10 +596,52 @@ class _StarPainter extends CustomPainter {
 
     final px = (size.width / 2) + (dRa / halfW) * (size.width / 2);
     final linearPy = (size.height / 2) - (dDec / halfH) * (size.height / 2);
-    final projected = viewStyle == ViewStyle.dome
-        ? Offset(px, _mapDomeY(linearPy))
-        : Offset(px, linearPy);
-    return projected;
+    return Offset(px, linearPy);
+  }
+
+  _DomeProjection _domeProjection() {
+    return _DomeProjection(
+      size: size,
+      centerAzimuthDeg: _effectiveCenterRaForStyle(
+        viewStyle,
+        viewport.centerRa,
+        gyroOffset?.dx ?? 0,
+      ),
+      centerAltitudeDeg: _effectiveCenterDecForStyle(
+        viewStyle,
+        viewport.centerDec,
+        gyroOffset?.dy ?? 0,
+      ),
+      zoom: viewport.zoom,
+    );
+  }
+
+  HorizontalCoords _horizontalForStar(Star star) {
+    return _horizontalStarCache.putIfAbsent(
+      star.id,
+      () => AstronomyUtils.equatorialToHorizontal(
+        raDeg: star.rightAscension,
+        decDeg: star.declination,
+        latDeg: observerLatitude,
+        lonDeg: observerLongitude,
+        utc: observationTimeUtc,
+      ),
+    );
+  }
+
+  Offset? _projectStar(Star star) {
+    return _projectedStarCache.putIfAbsent(star.id, () {
+      if (viewStyle == ViewStyle.dome) {
+        final horizontal = _horizontalForStar(star);
+        return _domeProjection()
+            .projectHorizontal(
+              horizontal.azimuth,
+              horizontal.altitude,
+            )
+            ?.screenOffset;
+      }
+      return _project(star.rightAscension, star.declination);
+    });
   }
 
   @override
@@ -419,26 +663,6 @@ class _StarPainter extends CustomPainter {
     _drawLabels(canvas, size);
   }
 
-  double _mapDomeY(double linearPy) {
-    final normalized = linearPy / size.height;
-    return ui.lerpDouble(
-      size.height * _domeTopSafeFraction,
-      size.height * _domeBottomSafeFraction,
-      normalized,
-    )!;
-  }
-
-  double _guideLinearPy(double effectiveDec) {
-    final halfH = 30.0 / viewport.zoom;
-    const baseLinearFraction =
-        (_domeGuideBaseFraction - _domeTopSafeFraction) /
-        (_domeBottomSafeFraction - _domeTopSafeFraction);
-    final baseLinearPy = size.height * baseLinearFraction;
-    final linearShift =
-        ((effectiveDec - _domeDefaultCenterDec) / halfH) * (size.height / 2);
-    return baseLinearPy + linearShift;
-  }
-
   void _drawBackdrop(Canvas canvas, Size size) {
     if (viewStyle == ViewStyle.classic) {
       canvas.drawRect(
@@ -455,47 +679,53 @@ class _StarPainter extends CustomPainter {
         ..shader = ui.Gradient.linear(
           const Offset(0, 0),
           Offset(0, size.height),
-          const [Color(0xFF020611), Color(0xFF07152A), Color(0xFF0D1C31)],
-          const [0.0, 0.62, 1.0],
+          const [Color(0xFF020611), Color(0xFF07152A), Color(0xFF0A1830)],
+          const [0.0, 0.58, 1.0],
         ),
     );
   }
 
   void _drawDomeForeground(Canvas canvas, Size size) {
-    final effectiveDec = _effectiveCenterDecForStyle(
-      viewStyle,
-      viewport.centerDec,
-      gyroOffset?.dy ?? 0,
-    );
-    final horizonY = _mapDomeY(_guideLinearPy(effectiveDec));
-    final arcRect = Rect.fromCenter(
-      center: Offset(size.width / 2, horizonY + size.height * 0.14),
-      width: size.width * 1.9,
-      height: size.height * 0.16,
-    );
-    final horizonGlow = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..color = const Color(0x33F7C78C)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
-    final horizonPaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8
-      ..color = const Color(0x55FFDDB3);
-    canvas.drawArc(
-      arcRect,
-      pi,
-      pi,
-      false,
-      horizonGlow,
-    );
-    canvas.drawArc(
-      arcRect,
-      pi,
-      pi,
-      false,
-      horizonPaint,
-    );
+    final horizonPoints = _visibleHorizonPoints();
+    final belowHorizonPath = _belowHorizonPath(horizonPoints);
+
+    if (belowHorizonPath != null) {
+      canvas.drawPath(
+        belowHorizonPath,
+        Paint()
+          ..shader = ui.Gradient.linear(
+            const Offset(0, 0),
+            Offset(0, size.height),
+            const [Color(0x00010209), Color(0x6A030A17), Color(0xA0050C18)],
+            const [0.0, 0.55, 1.0],
+          ),
+      );
+    }
+
+    if (horizonPoints.length >= 2) {
+      final horizonPath = Path()
+        ..moveTo(horizonPoints.first.dx, horizonPoints.first.dy);
+      for (final point in horizonPoints.skip(1)) {
+        horizonPath.lineTo(point.dx, point.dy);
+      }
+      canvas.drawPath(
+        horizonPath,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2.0
+          ..color = const Color(0x22F7C78C)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10),
+      );
+      canvas.drawPath(
+        horizonPath,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 0.9
+          ..color = const Color(0x66FFD9A6),
+      );
+    }
+
+    _drawCardinalMarkers(canvas);
 
     final leftVignette = Rect.fromLTWH(0, 0, size.width * 0.18, size.height);
     canvas.drawRect(
@@ -524,6 +754,136 @@ class _StarPainter extends CustomPainter {
     );
   }
 
+  List<Offset> _visibleHorizonPoints() {
+    if (viewStyle != ViewStyle.dome) return const [];
+    final projection = _domeProjection();
+    final points = <Offset>[];
+    for (var azimuth = 0; azimuth <= 360; azimuth += 2) {
+      final point = projection.projectHorizontal(azimuth.toDouble(), 0.0);
+      if (point == null) continue;
+      final offset = point.screenOffset;
+      if (offset.dx < -size.width * 0.5 ||
+          offset.dx > size.width * 1.5 ||
+          offset.dy < -size.height * 0.5 ||
+          offset.dy > size.height * 1.5) {
+        continue;
+      }
+      points.add(offset);
+    }
+    points.sort((a, b) => a.dx.compareTo(b.dx));
+    return points;
+  }
+
+  Path? _belowHorizonPath(List<Offset> horizonPoints) {
+    if (viewStyle != ViewStyle.dome) return null;
+    final centerAltitude = _effectiveCenterDecForStyle(
+      viewStyle,
+      viewport.centerDec,
+      gyroOffset?.dy ?? 0,
+    );
+    if (horizonPoints.length < 2) {
+      if (centerAltitude < 0) {
+        return Path()..addRect(Offset.zero & size);
+      }
+      return null;
+    }
+
+    final sample = _domeProjection().projectHorizontal(
+      _effectiveCenterRaForStyle(
+          viewStyle, viewport.centerRa, gyroOffset?.dx ?? 0),
+      -45.0,
+    );
+    final samplePoint = sample?.screenOffset ??
+        Offset(size.width / 2,
+            centerAltitude < 0 ? size.height * 0.75 : size.height * 0.25);
+    final horizonY = _interpolatedHorizonY(horizonPoints, samplePoint.dx);
+    final fillBottom = samplePoint.dy >= horizonY;
+    final path = Path();
+
+    if (fillBottom) {
+      path.moveTo(0, size.height);
+      path.lineTo(horizonPoints.first.dx.clamp(0.0, size.width), size.height);
+      for (final point in horizonPoints) {
+        path.lineTo(
+          point.dx.clamp(0.0, size.width),
+          point.dy.clamp(0.0, size.height),
+        );
+      }
+      path.lineTo(horizonPoints.last.dx.clamp(0.0, size.width), size.height);
+      path.lineTo(size.width, size.height);
+    } else {
+      path.moveTo(0, 0);
+      path.lineTo(horizonPoints.first.dx.clamp(0.0, size.width), 0);
+      for (final point in horizonPoints) {
+        path.lineTo(
+          point.dx.clamp(0.0, size.width),
+          point.dy.clamp(0.0, size.height),
+        );
+      }
+      path.lineTo(horizonPoints.last.dx.clamp(0.0, size.width), 0);
+      path.lineTo(size.width, 0);
+    }
+    path.close();
+    return path;
+  }
+
+  double _interpolatedHorizonY(List<Offset> horizonPoints, double x) {
+    if (horizonPoints.isEmpty) return size.height / 2;
+    if (x <= horizonPoints.first.dx) return horizonPoints.first.dy;
+    if (x >= horizonPoints.last.dx) return horizonPoints.last.dy;
+    for (var index = 1; index < horizonPoints.length; index++) {
+      final previous = horizonPoints[index - 1];
+      final current = horizonPoints[index];
+      if (x >= previous.dx && x <= current.dx) {
+        final t = (x - previous.dx) / (current.dx - previous.dx);
+        return ui.lerpDouble(previous.dy, current.dy, t)!;
+      }
+    }
+    return horizonPoints.last.dy;
+  }
+
+  void _drawCardinalMarkers(Canvas canvas) {
+    final projection = _domeProjection();
+    const markers = <(String, double)>[
+      ('N', 0.0),
+      ('E', 90.0),
+      ('S', 180.0),
+      ('W', 270.0),
+    ];
+
+    for (final marker in markers) {
+      final label = marker.$1;
+      final azimuth = marker.$2;
+      final projected = projection.projectHorizontal(azimuth, 0.0);
+      final offset = projected?.screenOffset;
+      final markerOffset = offset != null &&
+              offset.dx >= 18 &&
+              offset.dx <= size.width - 18 &&
+              offset.dy >= 18 &&
+              offset.dy <= size.height - 18
+          ? offset
+          : projection.pinToEdgeForHorizontal(azimuth, 0.0);
+
+      final paragraph = (ui.ParagraphBuilder(
+        ui.ParagraphStyle(textAlign: TextAlign.center, maxLines: 1),
+      )
+            ..pushStyle(
+              ui.TextStyle(
+                color: const Color(0xCCEAD7B8),
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+              ),
+            )
+            ..addText(label))
+          .build()
+        ..layout(const ui.ParagraphConstraints(width: 24));
+      canvas.drawParagraph(
+        paragraph,
+        Offset(markerOffset.dx - 12, markerOffset.dy - 9),
+      );
+    }
+  }
+
   void _drawBackgroundStars(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = viewStyle == ViewStyle.dome
@@ -547,8 +907,8 @@ class _StarPainter extends CustomPainter {
         final s1 = starMap[line.starId1];
         final s2 = starMap[line.starId2];
         if (s1 == null || s2 == null) continue;
-        final p1 = _project(s1.rightAscension, s1.declination);
-        final p2 = _project(s2.rightAscension, s2.declination);
+        final p1 = _projectStar(s1);
+        final p2 = _projectStar(s2);
         if (p1 == null || p2 == null) continue;
         canvas.drawLine(p1, p2, linePaint);
       }
@@ -569,7 +929,7 @@ class _StarPainter extends CustomPainter {
         continue;
       }
 
-      final pos = _project(star.rightAscension, star.declination);
+      final pos = _projectStar(star);
       if (pos == null) continue;
 
       // Radius inversely proportional to magnitude (brighter = larger)
@@ -712,7 +1072,7 @@ class _StarPainter extends CustomPainter {
     for (final id in constellation.starIds) {
       final star = starMap[id];
       if (star == null) continue;
-      final pos = _project(star.rightAscension, star.declination);
+      final pos = _projectStar(star);
       if (pos == null) continue;
       sumX += pos.dx;
       sumY += pos.dy;
@@ -772,7 +1132,7 @@ class _StarPainter extends CustomPainter {
       final isImportant = _importantNames.contains(star.name) ||
           _importantNames.contains(star.chineseName);
       if (!isImportant) continue;
-      final pos = _project(star.rightAscension, star.declination);
+      final pos = _projectStar(star);
       if (pos == null) continue;
       final label =
           showChineseName ? (star.chineseName ?? star.name) : star.name;
@@ -810,7 +1170,7 @@ class _StarPainter extends CustomPainter {
         if (star.magnitude > magThreshold) continue;
         final label = _starLabel(star);
         if (label == null) continue;
-        final pos = _project(star.rightAscension, star.declination);
+        final pos = _projectStar(star);
         if (pos == null) continue;
         addForced(pos, label, 10.0, memberStarColor);
         labeledMemberIds.add(id);
@@ -830,7 +1190,7 @@ class _StarPainter extends CustomPainter {
       if (importantStarIds.contains(star.id)) continue;
       final label = _starLabel(star);
       if (label == null) continue;
-      final pos = _project(star.rightAscension, star.declination);
+      final pos = _projectStar(star);
       if (pos == null) continue;
 
       final w = _textWidth(label, 10.0);
