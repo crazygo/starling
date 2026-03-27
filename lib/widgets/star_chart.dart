@@ -10,7 +10,12 @@ const double _domeMinCenterDec = -35.0;
 const double _domeMaxCenterDec = 62.0;
 const double _domeCapStart = 54.0;
 const double _domeTopSafeFraction = 0.14;
-const double _domeHorizonFraction = 0.94;
+const double _domeDefaultCenterDec = 45.0;
+
+double _domeHorizonFractionForDec(double effectiveDec) {
+  final offset = ((effectiveDec - _domeDefaultCenterDec) / 50.0) * 0.08;
+  return (0.80 + offset).clamp(0.68, 0.84).toDouble();
+}
 
 double _softClampDomeDec(double dec) {
   if (dec > _domeCapStart) {
@@ -216,9 +221,14 @@ class _StarChartState extends State<StarChart> {
   double _mapDomeY(double linearPy, Size size) {
     final normalized = (linearPy / size.height).clamp(0.0, 1.0);
     final eased = Curves.easeInOutCubic.transform(normalized);
+    final effectiveDec = _effectiveCenterDecForStyle(
+      widget.viewStyle,
+      widget.viewport.centerDec,
+      widget.gyroOffset?.dy ?? 0,
+    );
     return ui.lerpDouble(
       size.height * _domeTopSafeFraction,
-      size.height * _domeHorizonFraction,
+      size.height * _domeHorizonFractionForDec(effectiveDec),
       eased,
     )!;
   }
@@ -421,9 +431,14 @@ class _StarPainter extends CustomPainter {
   double _mapDomeY(double linearPy) {
     final normalized = (linearPy / size.height).clamp(0.0, 1.0);
     final eased = Curves.easeInOutCubic.transform(normalized);
+    final effectiveDec = _effectiveCenterDecForStyle(
+      viewStyle,
+      viewport.centerDec,
+      gyroOffset?.dy ?? 0,
+    );
     return ui.lerpDouble(
       size.height * _domeTopSafeFraction,
-      size.height * _domeHorizonFraction,
+      size.height * _domeHorizonFractionForDec(effectiveDec),
       eased,
     )!;
   }
@@ -437,6 +452,12 @@ class _StarPainter extends CustomPainter {
       return;
     }
 
+    final effectiveDec = _effectiveCenterDecForStyle(
+      viewStyle,
+      viewport.centerDec,
+      gyroOffset?.dy ?? 0,
+    );
+    final horizonY = size.height * _domeHorizonFractionForDec(effectiveDec);
     final fullRect = Offset.zero & size;
     canvas.drawRect(
       fullRect,
@@ -451,9 +472,9 @@ class _StarPainter extends CustomPainter {
 
     final groundRect = Rect.fromLTWH(
       0,
-      size.height * 0.83,
+      horizonY,
       size.width,
-      size.height * 0.17,
+      size.height - horizonY,
     );
     canvas.drawRect(
       groundRect,
@@ -467,21 +488,26 @@ class _StarPainter extends CustomPainter {
   }
 
   void _drawDomeForeground(Canvas canvas, Size size) {
-    final horizonY = size.height * _domeHorizonFraction;
+    final effectiveDec = _effectiveCenterDecForStyle(
+      viewStyle,
+      viewport.centerDec,
+      gyroOffset?.dy ?? 0,
+    );
+    final horizonY = size.height * _domeHorizonFractionForDec(effectiveDec);
     final arcRect = Rect.fromCenter(
-      center: Offset(size.width / 2, horizonY + size.height * 0.12),
-      width: size.width * 1.45,
-      height: size.height * 0.62,
+      center: Offset(size.width / 2, horizonY + size.height * 0.14),
+      width: size.width * 1.9,
+      height: size.height * 0.16,
     );
     final horizonGlow = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5
-      ..color = const Color(0x55F7C78C)
-      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 10);
+      ..strokeWidth = 2.0
+      ..color = const Color(0x33F7C78C)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 12);
     final horizonPaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0
-      ..color = const Color(0x88FFDDB3);
+      ..strokeWidth = 0.8
+      ..color = const Color(0x55FFDDB3);
     canvas.drawArc(
       arcRect,
       pi,
@@ -550,9 +576,7 @@ class _StarPainter extends CustomPainter {
           ? Colors.white.withAlpha(56)
           : Colors.white.withAlpha(77);
     for (final pos in _bgStarPositions) {
-      final bgOffset = viewStyle == ViewStyle.dome
-          ? Offset(pos.dx * size.width, pos.dy * size.height)
-          : Offset(pos.dx * size.width, pos.dy * size.height);
+      final bgOffset = Offset(pos.dx * size.width, pos.dy * size.height);
       canvas.drawCircle(bgOffset, 0.5, paint);
     }
   }
