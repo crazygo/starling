@@ -33,11 +33,11 @@ class SettingsPage extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        children: [
-          const _LocationSettingsSection(),
-          const _CultureSettingsSection(),
-          const _LanguageSettingsSection(),
-          const _ViewStyleSettingsSection(),
+        children: const [
+          _LocationSettingsSection(),
+          _CultureSettingsSection(),
+          _LanguageSettingsSection(),
+          _ViewStyleSettingsSection(),
         ],
       ),
     );
@@ -77,17 +77,15 @@ class _LocationSettingsSectionState extends State<_LocationSettingsSection> {
       await _locationService.start();
       // Wait up to 10 s for the first fix.
       LocationData? fix = _locationService.lastKnown;
-      if (fix == null) {
-        fix = await _locationService.locationStream
-            .timeout(const Duration(seconds: 10))
-            .first;
-      }
+      fix ??= await _locationService.locationStream
+          .timeout(const Duration(seconds: 10))
+          .first;
       if (!mounted) return;
       final lat = fix.latitude?.toStringAsFixed(4) ?? '?';
       final lon = fix.longitude?.toStringAsFixed(4) ?? '?';
       setState(() {
         _fetchingGps = false;
-        _gpsLabel = '已定位  ${lat}°N, ${lon}°E';
+        _gpsLabel = '已定位  $lat°N, $lon°E';
       });
     } catch (_) {
       if (!mounted) return;
@@ -166,15 +164,19 @@ class _LocationSettingsSectionState extends State<_LocationSettingsSection> {
                       child: Text(
                         gpsSubtitle,
                         style: const TextStyle(
-                            color: Colors.white38, fontSize: 12),
+                          color: Colors.white38,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ],
                 ),
                 trailing: isGps
                     ? const Icon(Icons.check_circle, color: Colors.blueAccent)
-                    : const Icon(Icons.radio_button_unchecked,
-                        color: Colors.white30),
+                    : const Icon(
+                        Icons.radio_button_unchecked,
+                        color: Colors.white30,
+                      ),
               ),
             ],
           ),
@@ -390,8 +392,7 @@ class _CultureOptionTile extends StatelessWidget {
           ),
           trailing: selected
               ? const Icon(Icons.check_circle, color: Colors.blueAccent)
-              : const Icon(Icons.radio_button_unchecked,
-                  color: Colors.white30),
+              : const Icon(Icons.radio_button_unchecked, color: Colors.white30),
         ),
         if (showDivider)
           const Divider(

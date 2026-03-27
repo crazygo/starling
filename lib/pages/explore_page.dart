@@ -224,8 +224,9 @@ class _ExplorePageState extends State<ExplorePage> {
   @override
   Widget build(BuildContext context) {
     final isChinese = context.select<SettingsService, bool>((s) => s.isChinese);
-    final viewStyle =
-        context.select<SettingsService, ViewStyle>((s) => s.viewStyle);
+    final viewStyle = context.select<SettingsService, ViewStyle>(
+      (s) => s.viewStyle,
+    );
     return Scaffold(
       backgroundColor: const Color(0xFF05091A),
       body: _loading ? _buildLoading() : _buildChart(isChinese, viewStyle),
@@ -239,16 +240,16 @@ class _ExplorePageState extends State<ExplorePage> {
         children: [
           CircularProgressIndicator(color: Colors.blueAccent),
           SizedBox(height: 16),
-          Text('Loading star data…',
-              style: TextStyle(color: Colors.white54)),
+          Text('Loading star data…', style: TextStyle(color: Colors.white54)),
         ],
       ),
     );
   }
 
   Widget _buildChart(bool isChinese, ViewStyle viewStyle) {
-    final constellations =
-        isChinese ? _chineseConstellations : _westernConstellations;
+    final constellations = isChinese
+        ? _chineseConstellations
+        : _westernConstellations;
     return Stack(
       children: [
         // Star chart
@@ -295,10 +296,7 @@ class _ExplorePageState extends State<ExplorePage> {
                         }
                       }),
                     ),
-                    _GyroButton(
-                      active: _gyroEnabled,
-                      onTap: _toggleGyro,
-                    ),
+                    _GyroButton(active: _gyroEnabled, onTap: _toggleGyro),
                   ],
                 ),
                 if (_searchVisible)
@@ -310,8 +308,7 @@ class _ExplorePageState extends State<ExplorePage> {
                       style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(context)!.searchHint,
-                        hintStyle:
-                            const TextStyle(color: Colors.white38),
+                        hintStyle: const TextStyle(color: Colors.white38),
                         filled: true,
                         fillColor: Colors.black54,
                         border: OutlineInputBorder(
@@ -319,9 +316,13 @@ class _ExplorePageState extends State<ExplorePage> {
                           borderSide: BorderSide.none,
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                        prefixIcon: const Icon(Icons.search,
-                            color: Colors.white38),
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
+                        prefixIcon: const Icon(
+                          Icons.search,
+                          color: Colors.white38,
+                        ),
                       ),
                       onChanged: _onSearch,
                     ),
@@ -338,19 +339,26 @@ class _ExplorePageState extends State<ExplorePage> {
                       children: _searchResults
                           .map(
                             (star) => ListTile(
-                              leading: const Icon(Icons.star,
-                                  color: Colors.amber, size: 16),
+                              leading: const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 16,
+                              ),
                               title: Text(
                                 isChinese
                                     ? (star.chineseName ?? star.name)
                                     : star.name,
                                 style: const TextStyle(
-                                    color: Colors.white, fontSize: 14),
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
                               ),
                               subtitle: Text(
                                 'Mag ${star.magnitude.toStringAsFixed(1)}',
                                 style: const TextStyle(
-                                    color: Colors.white54, fontSize: 11),
+                                  color: Colors.white54,
+                                  fontSize: 11,
+                                ),
                               ),
                               dense: true,
                               onTap: () => _focusStar(star),
@@ -390,15 +398,20 @@ class _ExplorePageState extends State<ExplorePage> {
                   onTap: _pickDate,
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today,
-                          color: Colors.white54, size: 13),
+                      const Icon(
+                        Icons.calendar_today,
+                        color: Colors.white54,
+                        size: 13,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         '${_observeDate.year.toString().padLeft(4, '0')}-'
                         '${_observeDate.month.toString().padLeft(2, '0')}-'
                         '${_observeDate.day.toString().padLeft(2, '0')}',
                         style: const TextStyle(
-                            color: Colors.white70, fontSize: 13),
+                          color: Colors.white70,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -408,14 +421,19 @@ class _ExplorePageState extends State<ExplorePage> {
                   onTap: _pickTime,
                   child: Row(
                     children: [
-                      const Icon(Icons.access_time,
-                          color: Colors.white54, size: 13),
+                      const Icon(
+                        Icons.access_time,
+                        color: Colors.white54,
+                        size: 13,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         '${_observeTime.hour.toString().padLeft(2, '0')}:'
                         '${_observeTime.minute.toString().padLeft(2, '0')}',
                         style: const TextStyle(
-                            color: Colors.white70, fontSize: 13),
+                          color: Colors.white70,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -447,9 +465,7 @@ class _GyroButton extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: active
-              ? Colors.blueAccent.withAlpha(77)
-              : Colors.transparent,
+          color: active ? Colors.blueAccent.withAlpha(77) : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: active ? Colors.blueAccent : Colors.white30,

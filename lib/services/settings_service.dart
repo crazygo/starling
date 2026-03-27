@@ -2,10 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Available culture modes for star names and constellation data.
-enum CultureMode {
-  chinese,
-  western,
-}
+enum CultureMode { chinese, western }
 
 /// Available language modes for the app UI.
 enum LanguageMode {
