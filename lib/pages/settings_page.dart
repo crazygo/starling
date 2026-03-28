@@ -38,6 +38,7 @@ class SettingsPage extends StatelessWidget {
           _CultureSettingsSection(),
           _LanguageSettingsSection(),
           _ViewStyleSettingsSection(),
+          _VisualGroupingSettingsSection(),
         ],
       ),
     );
@@ -401,6 +402,125 @@ class _CultureOptionTile extends StatelessWidget {
             endIndent: 16,
             color: Color(0xFF1A2C3A),
           ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Visual Grouping section
+// ---------------------------------------------------------------------------
+class _VisualGroupingSettingsSection extends StatelessWidget {
+  const _VisualGroupingSettingsSection();
+
+  String _renderConditionLabel(StarRenderCondition condition) {
+    return switch (condition) {
+      StarRenderCondition.small => '星星可见度 小',
+      StarRenderCondition.medium => '星星可见度 中',
+      StarRenderCondition.large => '星星可见度 大',
+      StarRenderCondition.constellationOnly => '仅参与星座连线的星星',
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsService>();
+    final renderCondition = settings.starRenderCondition;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 12),
+          child: Text(
+            '视觉分组',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0D1B2A),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.blueAccent.withAlpha(51)),
+          ),
+          child: Column(
+            children: [
+              SwitchListTile(
+                value: settings.majorStarsOnlyLabels,
+                onChanged: settings.setMajorStarsOnlyLabels,
+                title: const Text(
+                  '仅对主要星星显示标签',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '默认开启',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                activeThumbColor: Colors.blueAccent,
+              ),
+              const Divider(
+                height: 1,
+                indent: 16,
+                endIndent: 16,
+                color: Color(0xFF1A2C3A),
+              ),
+              ListTile(
+                title: const Text(
+                  '星星渲染条件',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '控制背景星与星名密度',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                trailing: PopupMenuButton<StarRenderCondition>(
+                  initialValue: renderCondition,
+                  onSelected: settings.setStarRenderCondition,
+                  color: const Color(0xFF122538),
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: StarRenderCondition.small,
+                      child: Text('星星可见度 小'),
+                    ),
+                    PopupMenuItem(
+                      value: StarRenderCondition.medium,
+                      child: Text('星星可见度 中'),
+                    ),
+                    PopupMenuItem(
+                      value: StarRenderCondition.large,
+                      child: Text('星星可见度 大'),
+                    ),
+                    PopupMenuItem(
+                      value: StarRenderCondition.constellationOnly,
+                      child: Text('仅参与星座连线的星星'),
+                    ),
+                  ],
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _renderConditionLabel(renderCondition),
+                        style: const TextStyle(
+                          color: Colors.blueAccent,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.blueAccent,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

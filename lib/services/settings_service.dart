@@ -34,6 +34,9 @@ enum ViewStyle {
   classic,
 }
 
+/// Unified star rendering condition presets.
+enum StarRenderCondition { small, medium, large, constellationOnly }
+
 /// App-wide settings, backed by [SharedPreferences] for persistence.
 ///
 /// Expose via [ChangeNotifierProvider] so any widget can read or update
@@ -43,11 +46,16 @@ class SettingsService extends ChangeNotifier {
   static const _keyLocation = 'location_mode';
   static const _keyLanguage = 'language_mode';
   static const _keyViewStyle = 'view_style';
+  static const _keyMajorStarsOnlyLabels = 'major_stars_only_labels';
+  static const _keyStarRenderCondition = 'star_render_condition';
 
   CultureMode _cultureMode = CultureMode.chinese;
   LocationMode _locationMode = LocationMode.beijing;
   LanguageMode _languageMode = LanguageMode.auto;
   ViewStyle _viewStyle = ViewStyle.dome;
+  bool _majorStarsOnlyLabels = true;
+  StarRenderCondition _starRenderCondition =
+      StarRenderCondition.constellationOnly;
 
   /// The currently selected culture mode.
   CultureMode get cultureMode => _cultureMode;
@@ -63,6 +71,12 @@ class SettingsService extends ChangeNotifier {
 
   /// The currently selected sky view style.
   ViewStyle get viewStyle => _viewStyle;
+
+  /// Whether only major stars should receive labels.
+  bool get majorStarsOnlyLabels => _majorStarsOnlyLabels;
+
+  /// Unified star rendering condition.
+  StarRenderCondition get starRenderCondition => _starRenderCondition;
 
   /// Load persisted settings from [SharedPreferences].
   ///
@@ -99,7 +113,31 @@ class SettingsService extends ChangeNotifier {
     } else {
       _viewStyle = ViewStyle.dome;
     }
+    _majorStarsOnlyLabels = prefs.getBool(_keyMajorStarsOnlyLabels) ?? true;
+    final storedCondition = prefs.getString(_keyStarRenderCondition);
+    _starRenderCondition = switch (storedCondition) {
+      'small' => StarRenderCondition.small,
+      'large' => StarRenderCondition.large,
+      'medium' => StarRenderCondition.medium,
+      'constellationOnly' => StarRenderCondition.constellationOnly,
+      _ => _migrateLegacyRenderCondition(prefs),
+    };
     notifyListeners();
+  }
+
+  StarRenderCondition _migrateLegacyRenderCondition(SharedPreferences prefs) {
+    final legacyShowNonConstellation = prefs.getBool(
+      'show_non_constellation_stars',
+    );
+    if (legacyShowNonConstellation == false) {
+      return StarRenderCondition.constellationOnly;
+    }
+    final legacyThreshold = prefs.getString('background_star_threshold');
+    return switch (legacyThreshold) {
+      'small' => StarRenderCondition.small,
+      'large' => StarRenderCondition.large,
+      _ => StarRenderCondition.medium,
+    };
   }
 
   /// Update the culture mode and persist the change.
@@ -142,5 +180,25 @@ class SettingsService extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     if (_viewStyle != style) return;
     await prefs.setString(_keyViewStyle, style.name);
+  }
+
+  /// Update whether labels should only show for major stars and persist.
+  Future<void> setMajorStarsOnlyLabels(bool enabled) async {
+    if (_majorStarsOnlyLabels == enabled) return;
+    _majorStarsOnlyLabels = enabled;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_majorStarsOnlyLabels != enabled) return;
+    await prefs.setBool(_keyMajorStarsOnlyLabels, enabled);
+  }
+
+  /// Update unified star rendering condition and persist.
+  Future<void> setStarRenderCondition(StarRenderCondition condition) async {
+    if (_starRenderCondition == condition) return;
+    _starRenderCondition = condition;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_starRenderCondition != condition) return;
+    await prefs.setString(_keyStarRenderCondition, condition.name);
   }
 }

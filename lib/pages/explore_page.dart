@@ -302,9 +302,23 @@ class _ExplorePageState extends State<ExplorePage> {
     final viewStyle = context.select<SettingsService, ViewStyle>(
       (s) => s.viewStyle,
     );
+    final majorStarsOnlyLabels = context.select<SettingsService, bool>(
+      (s) => s.majorStarsOnlyLabels,
+    );
+    final starRenderCondition =
+        context.select<SettingsService, StarRenderCondition>(
+      (s) => s.starRenderCondition,
+    );
     return Scaffold(
       backgroundColor: const Color(0xFF05091A),
-      body: _loading ? _buildLoading() : _buildChart(isChinese, viewStyle),
+      body: _loading
+          ? _buildLoading()
+          : _buildChart(
+              isChinese,
+              viewStyle,
+              majorStarsOnlyLabels,
+              starRenderCondition,
+            ),
     );
   }
 
@@ -321,7 +335,12 @@ class _ExplorePageState extends State<ExplorePage> {
     );
   }
 
-  Widget _buildChart(bool isChinese, ViewStyle viewStyle) {
+  Widget _buildChart(
+    bool isChinese,
+    ViewStyle viewStyle,
+    bool majorStarsOnlyLabels,
+    StarRenderCondition starRenderCondition,
+  ) {
     final constellations =
         isChinese ? _chineseConstellations : _westernConstellations;
     return Stack(
@@ -337,6 +356,8 @@ class _ExplorePageState extends State<ExplorePage> {
           observerLatitude: _observerLatitude,
           observerLongitude: _observerLongitude,
           observationTimeUtc: _observeDateTime.toUtc(),
+          majorStarsOnlyLabels: majorStarsOnlyLabels,
+          starRenderCondition: starRenderCondition,
           onViewportChanged: (vp) => setState(() => _viewport = vp),
           onStarTapped: (star) => setState(() => _selectedStar = star),
           gyroOffset: _gyroEnabled ? _gyroOffset : null,
