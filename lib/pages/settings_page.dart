@@ -478,55 +478,49 @@ class _VisualGroupingSettingsSection extends StatelessWidget {
                 endIndent: 16,
                 color: Color(0xFF1A2C3A),
               ),
-              RadioListTile<BackgroundStarThreshold>(
-                value: BackgroundStarThreshold.small,
+              RadioGroup<BackgroundStarThreshold>(
                 groupValue: threshold,
                 onChanged: (value) {
                   if (value != null) {
                     settings.setBackgroundStarThreshold(value);
                   }
                 },
-                title: const Text(
-                  '背景星星阈值：小',
-                  style: TextStyle(color: Colors.white, fontSize: 15),
+                child: const Column(
+                  children: [
+                    RadioListTile<BackgroundStarThreshold>(
+                      value: BackgroundStarThreshold.small,
+                      title: Text(
+                        '背景星星阈值：小',
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                      subtitle: Text(
+                        '更容易显示星名',
+                        style: TextStyle(color: Colors.white38, fontSize: 12),
+                      ),
+                      activeColor: Colors.blueAccent,
+                    ),
+                    RadioListTile<BackgroundStarThreshold>(
+                      value: BackgroundStarThreshold.medium,
+                      title: Text(
+                        '背景星星阈值：中',
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                      activeColor: Colors.blueAccent,
+                    ),
+                    RadioListTile<BackgroundStarThreshold>(
+                      value: BackgroundStarThreshold.large,
+                      title: Text(
+                        '背景星星阈值：大',
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                      subtitle: Text(
+                        '只显示更亮星星的星名',
+                        style: TextStyle(color: Colors.white38, fontSize: 12),
+                      ),
+                      activeColor: Colors.blueAccent,
+                    ),
+                  ],
                 ),
-                subtitle: const Text(
-                  '更容易显示星名',
-                  style: TextStyle(color: Colors.white38, fontSize: 12),
-                ),
-                activeColor: Colors.blueAccent,
-              ),
-              RadioListTile<BackgroundStarThreshold>(
-                value: BackgroundStarThreshold.medium,
-                groupValue: threshold,
-                onChanged: (value) {
-                  if (value != null) {
-                    settings.setBackgroundStarThreshold(value);
-                  }
-                },
-                title: const Text(
-                  '背景星星阈值：中',
-                  style: TextStyle(color: Colors.white, fontSize: 15),
-                ),
-                activeColor: Colors.blueAccent,
-              ),
-              RadioListTile<BackgroundStarThreshold>(
-                value: BackgroundStarThreshold.large,
-                groupValue: threshold,
-                onChanged: (value) {
-                  if (value != null) {
-                    settings.setBackgroundStarThreshold(value);
-                  }
-                },
-                title: const Text(
-                  '背景星星阈值：大',
-                  style: TextStyle(color: Colors.white, fontSize: 15),
-                ),
-                subtitle: const Text(
-                  '只显示更亮星星的星名',
-                  style: TextStyle(color: Colors.white38, fontSize: 12),
-                ),
-                activeColor: Colors.blueAccent,
               ),
             ],
           ),
