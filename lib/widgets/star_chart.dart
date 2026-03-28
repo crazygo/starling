@@ -89,11 +89,7 @@ _Vec3 _horizontalVector(double azimuthDeg, double altitudeDeg) {
   final az = AstronomyUtils.toRad(azimuthDeg);
   final alt = AstronomyUtils.toRad(altitudeDeg);
   final cosAlt = cos(alt);
-  return _Vec3(
-    cosAlt * sin(az),
-    cosAlt * cos(az),
-    sin(alt),
-  );
+  return _Vec3(cosAlt * sin(az), cosAlt * cos(az), sin(alt));
 }
 
 class _ProjectedPoint {
@@ -248,9 +244,8 @@ class StarChart extends StatefulWidget {
   final double observerLatitude;
   final double observerLongitude;
   final DateTime observationTimeUtc;
-  final bool showNonConstellationStars;
   final bool majorStarsOnlyLabels;
-  final BackgroundStarThreshold backgroundStarThreshold;
+  final StarRenderCondition starRenderCondition;
 
   final StarChartViewport viewport;
   final ValueChanged<StarChartViewport> onViewportChanged;
@@ -270,9 +265,8 @@ class StarChart extends StatefulWidget {
     required this.observerLatitude,
     required this.observerLongitude,
     required this.observationTimeUtc,
-    required this.showNonConstellationStars,
     required this.majorStarsOnlyLabels,
-    required this.backgroundStarThreshold,
+    required this.starRenderCondition,
     required this.viewport,
     required this.onViewportChanged,
     this.onStarTapped,
@@ -393,10 +387,7 @@ class _StarChartState extends State<StarChart> {
         utc: widget.observationTimeUtc,
       );
       return projection
-          .projectHorizontal(
-            horizontal.azimuth,
-            horizontal.altitude,
-          )
+          .projectHorizontal(horizontal.azimuth, horizontal.altitude)
           ?.screenOffset;
     }
 
@@ -450,9 +441,8 @@ class _StarChartState extends State<StarChart> {
                 observerLatitude: widget.observerLatitude,
                 observerLongitude: widget.observerLongitude,
                 observationTimeUtc: widget.observationTimeUtc,
-                showNonConstellationStars: widget.showNonConstellationStars,
                 majorStarsOnlyLabels: widget.majorStarsOnlyLabels,
-                backgroundStarThreshold: widget.backgroundStarThreshold,
+                starRenderCondition: widget.starRenderCondition,
                 viewport: widget.viewport,
                 gyroOffset: widget.gyroOffset,
                 size: size,
@@ -500,9 +490,8 @@ class _StarPainter extends CustomPainter {
   final double observerLatitude;
   final double observerLongitude;
   final DateTime observationTimeUtc;
-  final bool showNonConstellationStars;
   final bool majorStarsOnlyLabels;
-  final BackgroundStarThreshold backgroundStarThreshold;
+  final StarRenderCondition starRenderCondition;
   final StarChartViewport viewport;
   final Offset? gyroOffset;
   final Size size;
@@ -578,9 +567,8 @@ class _StarPainter extends CustomPainter {
     required this.observerLatitude,
     required this.observerLongitude,
     required this.observationTimeUtc,
-    required this.showNonConstellationStars,
     required this.majorStarsOnlyLabels,
-    required this.backgroundStarThreshold,
+    required this.starRenderCondition,
     required this.viewport,
     required this.size,
     this.gyroOffset,
@@ -598,9 +586,8 @@ class _StarPainter extends CustomPainter {
       old.observerLatitude != observerLatitude ||
       old.observerLongitude != observerLongitude ||
       old.observationTimeUtc != observationTimeUtc ||
-      old.showNonConstellationStars != showNonConstellationStars ||
       old.majorStarsOnlyLabels != majorStarsOnlyLabels ||
-      old.backgroundStarThreshold != backgroundStarThreshold ||
+      old.starRenderCondition != starRenderCondition ||
       old.size != size;
 
   Offset? _project(double raDeg, double decDeg) {
@@ -614,10 +601,7 @@ class _StarPainter extends CustomPainter {
         utc: observationTimeUtc,
       );
       return projection
-          .projectHorizontal(
-            horizontal.azimuth,
-            horizontal.altitude,
-          )
+          .projectHorizontal(horizontal.azimuth, horizontal.altitude)
           ?.screenOffset;
     }
 
@@ -684,10 +668,7 @@ class _StarPainter extends CustomPainter {
       if (viewStyle == ViewStyle.dome) {
         final horizontal = _horizontalForStar(star);
         return _domeProjection()
-            .projectHorizontal(
-              horizontal.azimuth,
-              horizontal.altitude,
-            )
+            .projectHorizontal(horizontal.azimuth, horizontal.altitude)
             ?.screenOffset;
       }
       return _project(star.rightAscension, star.declination);
@@ -710,11 +691,16 @@ class _StarPainter extends CustomPainter {
   }
 
   double _labelRadiusThreshold() {
-    return switch (backgroundStarThreshold) {
-      BackgroundStarThreshold.small => 0.8,
-      BackgroundStarThreshold.medium => 1.4,
-      BackgroundStarThreshold.large => 2.0,
+    return switch (starRenderCondition) {
+      StarRenderCondition.small => 0.8,
+      StarRenderCondition.medium => 1.4,
+      StarRenderCondition.large => 2.0,
+      StarRenderCondition.constellationOnly => 1.4,
     };
+  }
+
+  bool _showNonMemberStars() {
+    return starRenderCondition != StarRenderCondition.constellationOnly;
   }
 
   @override
@@ -863,12 +849,17 @@ class _StarPainter extends CustomPainter {
 
     final sample = _domeProjection().projectHorizontal(
       _effectiveCenterRaForStyle(
-          viewStyle, viewport.centerRa, gyroOffset?.dx ?? 0),
+        viewStyle,
+        viewport.centerRa,
+        gyroOffset?.dx ?? 0,
+      ),
       -45.0,
     );
     final samplePoint = sample?.screenOffset ??
-        Offset(size.width / 2,
-            centerAltitude < 0 ? size.height * 0.75 : size.height * 0.25);
+        Offset(
+          size.width / 2,
+          centerAltitude < 0 ? size.height * 0.75 : size.height * 0.25,
+        );
     final horizonY = _interpolatedHorizonY(horizonPoints, samplePoint.dx);
     final fillBottom = samplePoint.dy >= horizonY;
     final path = Path();
@@ -997,13 +988,12 @@ class _StarPainter extends CustomPainter {
 
     for (final star in stars) {
       final isMember = activeMemberStarIds.contains(star.id);
-      if (!showNonConstellationStars && !isMember) {
+      if (!_showNonMemberStars() && !isMember) {
         continue;
       }
 
       // Cull faint non-member stars when zoomed out.
-      if (star.magnitude > magThreshold &&
-          !isMember) {
+      if (star.magnitude > magThreshold && !isMember) {
         continue;
       }
 
@@ -1277,7 +1267,7 @@ class _StarPainter extends CustomPainter {
       if (competitionCount >= _maxCompetitiveLabels) break;
       if (_labelMemberStarIds.contains(star.id)) continue;
       if (importantStarIds.contains(star.id)) continue;
-      if (!showNonConstellationStars) continue;
+      if (!_showNonMemberStars()) continue;
       if (_renderRadiusForStar(star) < minLabelRadius) continue;
       final label = _starLabel(star);
       if (label == null) continue;

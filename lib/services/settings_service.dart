@@ -34,12 +34,8 @@ enum ViewStyle {
   classic,
 }
 
-/// Label-threshold presets for non-constellation star labels.
-enum BackgroundStarThreshold {
-  small,
-  medium,
-  large,
-}
+/// Unified star rendering condition presets.
+enum StarRenderCondition { small, medium, large, constellationOnly }
 
 /// App-wide settings, backed by [SharedPreferences] for persistence.
 ///
@@ -50,18 +46,16 @@ class SettingsService extends ChangeNotifier {
   static const _keyLocation = 'location_mode';
   static const _keyLanguage = 'language_mode';
   static const _keyViewStyle = 'view_style';
-  static const _keyShowNonConstellationStars = 'show_non_constellation_stars';
   static const _keyMajorStarsOnlyLabels = 'major_stars_only_labels';
-  static const _keyBackgroundStarThreshold = 'background_star_threshold';
+  static const _keyStarRenderCondition = 'star_render_condition';
 
   CultureMode _cultureMode = CultureMode.chinese;
   LocationMode _locationMode = LocationMode.beijing;
   LanguageMode _languageMode = LanguageMode.auto;
   ViewStyle _viewStyle = ViewStyle.dome;
-  bool _showNonConstellationStars = false;
   bool _majorStarsOnlyLabels = true;
-  BackgroundStarThreshold _backgroundStarThreshold =
-      BackgroundStarThreshold.medium;
+  StarRenderCondition _starRenderCondition =
+      StarRenderCondition.constellationOnly;
 
   /// The currently selected culture mode.
   CultureMode get cultureMode => _cultureMode;
@@ -78,15 +72,11 @@ class SettingsService extends ChangeNotifier {
   /// The currently selected sky view style.
   ViewStyle get viewStyle => _viewStyle;
 
-  /// Whether to render stars that do not belong to constellation/asterism sets.
-  bool get showNonConstellationStars => _showNonConstellationStars;
-
   /// Whether only major stars should receive labels.
   bool get majorStarsOnlyLabels => _majorStarsOnlyLabels;
 
-  /// Minimum rendered-radius threshold preset for showing star-name labels.
-  BackgroundStarThreshold get backgroundStarThreshold =>
-      _backgroundStarThreshold;
+  /// Unified star rendering condition.
+  StarRenderCondition get starRenderCondition => _starRenderCondition;
 
   /// Load persisted settings from [SharedPreferences].
   ///
@@ -123,16 +113,31 @@ class SettingsService extends ChangeNotifier {
     } else {
       _viewStyle = ViewStyle.dome;
     }
-    _showNonConstellationStars =
-        prefs.getBool(_keyShowNonConstellationStars) ?? false;
     _majorStarsOnlyLabels = prefs.getBool(_keyMajorStarsOnlyLabels) ?? true;
-    final storedThreshold = prefs.getString(_keyBackgroundStarThreshold);
-    _backgroundStarThreshold = switch (storedThreshold) {
-      'small' => BackgroundStarThreshold.small,
-      'large' => BackgroundStarThreshold.large,
-      _ => BackgroundStarThreshold.medium,
+    final storedCondition = prefs.getString(_keyStarRenderCondition);
+    _starRenderCondition = switch (storedCondition) {
+      'small' => StarRenderCondition.small,
+      'large' => StarRenderCondition.large,
+      'medium' => StarRenderCondition.medium,
+      'constellationOnly' => StarRenderCondition.constellationOnly,
+      _ => _migrateLegacyRenderCondition(prefs),
     };
     notifyListeners();
+  }
+
+  StarRenderCondition _migrateLegacyRenderCondition(SharedPreferences prefs) {
+    final legacyShowNonConstellation = prefs.getBool(
+      'show_non_constellation_stars',
+    );
+    if (legacyShowNonConstellation == false) {
+      return StarRenderCondition.constellationOnly;
+    }
+    final legacyThreshold = prefs.getString('background_star_threshold');
+    return switch (legacyThreshold) {
+      'small' => StarRenderCondition.small,
+      'large' => StarRenderCondition.large,
+      _ => StarRenderCondition.medium,
+    };
   }
 
   /// Update the culture mode and persist the change.
@@ -177,16 +182,6 @@ class SettingsService extends ChangeNotifier {
     await prefs.setString(_keyViewStyle, style.name);
   }
 
-  /// Update whether non-constellation stars should render and persist.
-  Future<void> setShowNonConstellationStars(bool enabled) async {
-    if (_showNonConstellationStars == enabled) return;
-    _showNonConstellationStars = enabled;
-    notifyListeners();
-    final prefs = await SharedPreferences.getInstance();
-    if (_showNonConstellationStars != enabled) return;
-    await prefs.setBool(_keyShowNonConstellationStars, enabled);
-  }
-
   /// Update whether labels should only show for major stars and persist.
   Future<void> setMajorStarsOnlyLabels(bool enabled) async {
     if (_majorStarsOnlyLabels == enabled) return;
@@ -197,15 +192,13 @@ class SettingsService extends ChangeNotifier {
     await prefs.setBool(_keyMajorStarsOnlyLabels, enabled);
   }
 
-  /// Update background-star label threshold preset and persist.
-  Future<void> setBackgroundStarThreshold(
-    BackgroundStarThreshold threshold,
-  ) async {
-    if (_backgroundStarThreshold == threshold) return;
-    _backgroundStarThreshold = threshold;
+  /// Update unified star rendering condition and persist.
+  Future<void> setStarRenderCondition(StarRenderCondition condition) async {
+    if (_starRenderCondition == condition) return;
+    _starRenderCondition = condition;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
-    if (_backgroundStarThreshold != threshold) return;
-    await prefs.setString(_keyBackgroundStarThreshold, threshold.name);
+    if (_starRenderCondition != condition) return;
+    await prefs.setString(_keyStarRenderCondition, condition.name);
   }
 }

@@ -413,10 +413,19 @@ class _CultureOptionTile extends StatelessWidget {
 class _VisualGroupingSettingsSection extends StatelessWidget {
   const _VisualGroupingSettingsSection();
 
+  String _renderConditionLabel(StarRenderCondition condition) {
+    return switch (condition) {
+      StarRenderCondition.small => '星星可见度 小',
+      StarRenderCondition.medium => '星星可见度 中',
+      StarRenderCondition.large => '星星可见度 大',
+      StarRenderCondition.constellationOnly => '仅参与星座连线的星星',
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsService>();
-    final threshold = settings.backgroundStarThreshold;
+    final renderCondition = settings.starRenderCondition;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -441,25 +450,6 @@ class _VisualGroupingSettingsSection extends StatelessWidget {
           child: Column(
             children: [
               SwitchListTile(
-                value: settings.showNonConstellationStars,
-                onChanged: settings.setShowNonConstellationStars,
-                title: const Text(
-                  '显示非属于星座/星官的星星',
-                  style: TextStyle(color: Colors.white, fontSize: 15),
-                ),
-                subtitle: const Text(
-                  '默认关闭',
-                  style: TextStyle(color: Colors.white38, fontSize: 12),
-                ),
-                activeThumbColor: Colors.blueAccent,
-              ),
-              const Divider(
-                height: 1,
-                indent: 16,
-                endIndent: 16,
-                color: Color(0xFF1A2C3A),
-              ),
-              SwitchListTile(
                 value: settings.majorStarsOnlyLabels,
                 onChanged: settings.setMajorStarsOnlyLabels,
                 title: const Text(
@@ -478,48 +468,54 @@ class _VisualGroupingSettingsSection extends StatelessWidget {
                 endIndent: 16,
                 color: Color(0xFF1A2C3A),
               ),
-              RadioGroup<BackgroundStarThreshold>(
-                groupValue: threshold,
-                onChanged: (value) {
-                  if (value != null) {
-                    settings.setBackgroundStarThreshold(value);
-                  }
-                },
-                child: const Column(
-                  children: [
-                    RadioListTile<BackgroundStarThreshold>(
-                      value: BackgroundStarThreshold.small,
-                      title: Text(
-                        '背景星星阈值：小',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                      subtitle: Text(
-                        '更容易显示星名',
-                        style: TextStyle(color: Colors.white38, fontSize: 12),
-                      ),
-                      activeColor: Colors.blueAccent,
+              ListTile(
+                title: const Text(
+                  '星星渲染条件',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '控制背景星与星名密度',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                trailing: PopupMenuButton<StarRenderCondition>(
+                  initialValue: renderCondition,
+                  onSelected: settings.setStarRenderCondition,
+                  color: const Color(0xFF122538),
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(
+                      value: StarRenderCondition.small,
+                      child: Text('星星可见度 小'),
                     ),
-                    RadioListTile<BackgroundStarThreshold>(
-                      value: BackgroundStarThreshold.medium,
-                      title: Text(
-                        '背景星星阈值：中',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                      activeColor: Colors.blueAccent,
+                    PopupMenuItem(
+                      value: StarRenderCondition.medium,
+                      child: Text('星星可见度 中'),
                     ),
-                    RadioListTile<BackgroundStarThreshold>(
-                      value: BackgroundStarThreshold.large,
-                      title: Text(
-                        '背景星星阈值：大',
-                        style: TextStyle(color: Colors.white, fontSize: 15),
-                      ),
-                      subtitle: Text(
-                        '只显示更亮星星的星名',
-                        style: TextStyle(color: Colors.white38, fontSize: 12),
-                      ),
-                      activeColor: Colors.blueAccent,
+                    PopupMenuItem(
+                      value: StarRenderCondition.large,
+                      child: Text('星星可见度 大'),
+                    ),
+                    PopupMenuItem(
+                      value: StarRenderCondition.constellationOnly,
+                      child: Text('仅参与星座连线的星星'),
                     ),
                   ],
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        _renderConditionLabel(renderCondition),
+                        style: const TextStyle(
+                          color: Colors.blueAccent,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(
+                        Icons.arrow_drop_down,
+                        color: Colors.blueAccent,
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

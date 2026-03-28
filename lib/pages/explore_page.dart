@@ -302,15 +302,12 @@ class _ExplorePageState extends State<ExplorePage> {
     final viewStyle = context.select<SettingsService, ViewStyle>(
       (s) => s.viewStyle,
     );
-    final showNonConstellationStars = context.select<SettingsService, bool>(
-      (s) => s.showNonConstellationStars,
-    );
     final majorStarsOnlyLabels = context.select<SettingsService, bool>(
       (s) => s.majorStarsOnlyLabels,
     );
-    final backgroundStarThreshold =
-        context.select<SettingsService, BackgroundStarThreshold>(
-      (s) => s.backgroundStarThreshold,
+    final starRenderCondition =
+        context.select<SettingsService, StarRenderCondition>(
+      (s) => s.starRenderCondition,
     );
     return Scaffold(
       backgroundColor: const Color(0xFF05091A),
@@ -319,9 +316,8 @@ class _ExplorePageState extends State<ExplorePage> {
           : _buildChart(
               isChinese,
               viewStyle,
-              showNonConstellationStars,
               majorStarsOnlyLabels,
-              backgroundStarThreshold,
+              starRenderCondition,
             ),
     );
   }
@@ -342,9 +338,8 @@ class _ExplorePageState extends State<ExplorePage> {
   Widget _buildChart(
     bool isChinese,
     ViewStyle viewStyle,
-    bool showNonConstellationStars,
     bool majorStarsOnlyLabels,
-    BackgroundStarThreshold backgroundStarThreshold,
+    StarRenderCondition starRenderCondition,
   ) {
     final constellations =
         isChinese ? _chineseConstellations : _westernConstellations;
@@ -361,9 +356,8 @@ class _ExplorePageState extends State<ExplorePage> {
           observerLatitude: _observerLatitude,
           observerLongitude: _observerLongitude,
           observationTimeUtc: _observeDateTime.toUtc(),
-          showNonConstellationStars: showNonConstellationStars,
           majorStarsOnlyLabels: majorStarsOnlyLabels,
-          backgroundStarThreshold: backgroundStarThreshold,
+          starRenderCondition: starRenderCondition,
           onViewportChanged: (vp) => setState(() => _viewport = vp),
           onStarTapped: (star) => setState(() => _selectedStar = star),
           gyroOffset: _gyroEnabled ? _gyroOffset : null,
