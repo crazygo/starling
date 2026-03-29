@@ -309,6 +309,12 @@ class _ExplorePageState extends State<ExplorePage> {
         context.select<SettingsService, StarRenderCondition>(
       (s) => s.starRenderCondition,
     );
+    final showHorizonGrid = context.select<SettingsService, bool>(
+      (s) => s.showHorizonGrid,
+    );
+    final showCelestialGrid = context.select<SettingsService, bool>(
+      (s) => s.showCelestialGrid,
+    );
     return Scaffold(
       backgroundColor: const Color(0xFF05091A),
       body: _loading
@@ -318,6 +324,8 @@ class _ExplorePageState extends State<ExplorePage> {
               viewStyle,
               majorStarsOnlyLabels,
               starRenderCondition,
+              showHorizonGrid,
+              showCelestialGrid,
             ),
     );
   }
@@ -340,6 +348,8 @@ class _ExplorePageState extends State<ExplorePage> {
     ViewStyle viewStyle,
     bool majorStarsOnlyLabels,
     StarRenderCondition starRenderCondition,
+    bool showHorizonGrid,
+    bool showCelestialGrid,
   ) {
     final constellations =
         isChinese ? _chineseConstellations : _westernConstellations;
@@ -358,6 +368,8 @@ class _ExplorePageState extends State<ExplorePage> {
           observationTimeUtc: _observeDateTime.toUtc(),
           majorStarsOnlyLabels: majorStarsOnlyLabels,
           starRenderCondition: starRenderCondition,
+          showHorizonGrid: showHorizonGrid,
+          showCelestialGrid: showCelestialGrid,
           onViewportChanged: (vp) => setState(() => _viewport = vp),
           onStarTapped: (star) => setState(() => _selectedStar = star),
           gyroOffset: _gyroEnabled ? _gyroOffset : null,

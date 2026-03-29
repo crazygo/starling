@@ -48,6 +48,8 @@ class SettingsService extends ChangeNotifier {
   static const _keyViewStyle = 'view_style';
   static const _keyMajorStarsOnlyLabels = 'major_stars_only_labels';
   static const _keyStarRenderCondition = 'star_render_condition';
+  static const _keyShowHorizonGrid = 'show_horizon_grid';
+  static const _keyShowCelestialGrid = 'show_celestial_grid';
 
   CultureMode _cultureMode = CultureMode.chinese;
   LocationMode _locationMode = LocationMode.beijing;
@@ -56,6 +58,8 @@ class SettingsService extends ChangeNotifier {
   bool _majorStarsOnlyLabels = true;
   StarRenderCondition _starRenderCondition =
       StarRenderCondition.constellationOnly;
+  bool _showHorizonGrid = true;
+  bool _showCelestialGrid = false;
 
   /// The currently selected culture mode.
   CultureMode get cultureMode => _cultureMode;
@@ -77,6 +81,12 @@ class SettingsService extends ChangeNotifier {
 
   /// Unified star rendering condition.
   StarRenderCondition get starRenderCondition => _starRenderCondition;
+
+  /// Whether to render the local horizontal (alt-az) grid overlay.
+  bool get showHorizonGrid => _showHorizonGrid;
+
+  /// Whether to render the equatorial (RA/Dec) grid overlay.
+  bool get showCelestialGrid => _showCelestialGrid;
 
   /// Load persisted settings from [SharedPreferences].
   ///
@@ -122,6 +132,8 @@ class SettingsService extends ChangeNotifier {
       'constellationOnly' => StarRenderCondition.constellationOnly,
       _ => _migrateLegacyRenderCondition(prefs),
     };
+    _showHorizonGrid = prefs.getBool(_keyShowHorizonGrid) ?? true;
+    _showCelestialGrid = prefs.getBool(_keyShowCelestialGrid) ?? false;
     notifyListeners();
   }
 
@@ -193,6 +205,27 @@ class SettingsService extends ChangeNotifier {
   }
 
   /// Update unified star rendering condition and persist.
+
+  /// Update whether the horizontal (alt-az) grid should be rendered.
+  Future<void> setShowHorizonGrid(bool enabled) async {
+    if (_showHorizonGrid == enabled) return;
+    _showHorizonGrid = enabled;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_showHorizonGrid != enabled) return;
+    await prefs.setBool(_keyShowHorizonGrid, enabled);
+  }
+
+  /// Update whether the equatorial (RA/Dec) grid should be rendered.
+  Future<void> setShowCelestialGrid(bool enabled) async {
+    if (_showCelestialGrid == enabled) return;
+    _showCelestialGrid = enabled;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    if (_showCelestialGrid != enabled) return;
+    await prefs.setBool(_keyShowCelestialGrid, enabled);
+  }
+
   Future<void> setStarRenderCondition(StarRenderCondition condition) async {
     if (_starRenderCondition == condition) return;
     _starRenderCondition = condition;
