@@ -462,7 +462,6 @@ class _VisualGroupingSettingsSection extends StatelessWidget {
                 ),
                 activeThumbColor: Colors.blueAccent,
               ),
-
               const Divider(
                 height: 1,
                 indent: 16,

@@ -973,7 +973,6 @@ class _StarPainter extends CustomPainter {
     }
   }
 
-
   void _drawCoordinateGrids(Canvas canvas) {
     if (!showHorizonGrid && !showCelestialGrid) return;
     if (showHorizonGrid) {
@@ -991,19 +990,11 @@ class _StarPainter extends CustomPainter {
       ..color = const Color(0x8846E0C8);
 
     for (var altitude = -60; altitude <= 75; altitude += 15) {
-      _drawHorizontalCurve(
-        canvas,
-        linePaint,
-        altitudeDeg: altitude.toDouble(),
-      );
+      _drawHorizontalCurve(canvas, linePaint, altitudeDeg: altitude.toDouble());
     }
 
     for (var azimuth = 0; azimuth < 360; azimuth += 15) {
-      _drawAzimuthCurve(
-        canvas,
-        linePaint,
-        azimuthDeg: azimuth.toDouble(),
-      );
+      _drawAzimuthCurve(canvas, linePaint, azimuthDeg: azimuth.toDouble());
     }
   }
 
@@ -1014,11 +1005,7 @@ class _StarPainter extends CustomPainter {
       ..color = const Color(0x99FFAE5A);
 
     for (var dec = -75; dec <= 75; dec += 15) {
-      _drawDeclinationCurve(
-        canvas,
-        linePaint,
-        declinationDeg: dec.toDouble(),
-      );
+      _drawDeclinationCurve(canvas, linePaint, declinationDeg: dec.toDouble());
     }
 
     for (var ra = 0; ra < 360; ra += 15) {
@@ -1124,7 +1111,9 @@ class _StarPainter extends CustomPainter {
 
   Offset? _projectHorizontal(double azimuthDeg, double altitudeDeg) {
     if (viewStyle == ViewStyle.dome) {
-      return _domeProjection().projectHorizontal(azimuthDeg, altitudeDeg)?.screenOffset;
+      return _domeProjection()
+          .projectHorizontal(azimuthDeg, altitudeDeg)
+          ?.screenOffset;
     }
     final equatorial = AstronomyUtils.horizontalToEquatorial(
       azimuthDeg: azimuthDeg,

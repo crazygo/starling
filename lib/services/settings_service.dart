@@ -204,8 +204,6 @@ class SettingsService extends ChangeNotifier {
     await prefs.setBool(_keyMajorStarsOnlyLabels, enabled);
   }
 
-  /// Update unified star rendering condition and persist.
-
   /// Update whether the horizontal (alt-az) grid should be rendered.
   Future<void> setShowHorizonGrid(bool enabled) async {
     if (_showHorizonGrid == enabled) return;

@@ -20,8 +20,10 @@ class AstronomyUtils {
     final jd = _julianDay(utc);
     final t = (jd - 2451545.0) / 36525.0;
     // GMST in degrees at 0h UT
-    double theta =
-        280.46061837 + 360.98564736629 * (jd - 2451545.0) + 0.000387933 * t * t - (t * t * t) / 38710000.0;
+    double theta = 280.46061837 +
+        360.98564736629 * (jd - 2451545.0) +
+        0.000387933 * t * t -
+        (t * t * t) / 38710000.0;
     return (theta % 360.0 + 360.0) % 360.0; // degrees, normalised to [0, 360)
   }
 
@@ -62,8 +64,7 @@ class AstronomyUtils {
     final altitude = toDeg(asin(sinAlt.clamp(-1.0, 1.0)));
 
     // Azimuth (measured from North through East)
-    final cosA =
-        (sin(decRad) - sin(toRad(altitude)) * sin(latRad)) /
+    final cosA = (sin(decRad) - sin(toRad(altitude)) * sin(latRad)) /
         (cos(toRad(altitude)) * cos(latRad));
     double azimuth = toDeg(acos(cosA.clamp(-1.0, 1.0)));
     if (sin(hRad) > 0) {
@@ -72,7 +73,6 @@ class AstronomyUtils {
 
     return HorizontalCoords(azimuth: azimuth, altitude: altitude);
   }
-
 
   /// Convert horizontal coordinates (Az/Alt) to equatorial (RA/Dec).
   ///
@@ -96,8 +96,8 @@ class AstronomyUtils {
     final altRad = toRad(altitudeDeg);
     final latRad = toRad(latDeg);
 
-    final sinDec = sin(altRad) * sin(latRad) +
-        cos(altRad) * cos(latRad) * cos(azRad);
+    final sinDec =
+        sin(altRad) * sin(latRad) + cos(altRad) * cos(latRad) * cos(azRad);
     final decRad = asin(sinDec.clamp(-1.0, 1.0));
 
     final sinH = -sin(azRad) * cos(altRad) / cos(decRad);
@@ -120,10 +120,8 @@ class AstronomyUtils {
   static double _julianDay(DateTime utc) {
     final y = utc.year;
     final m = utc.month;
-    final d = utc.day +
-        utc.hour / 24.0 +
-        utc.minute / 1440.0 +
-        utc.second / 86400.0;
+    final d =
+        utc.day + utc.hour / 24.0 + utc.minute / 1440.0 + utc.second / 86400.0;
 
     int a = (14 - m) ~/ 12;
     int y1 = y + 4800 - a;
@@ -139,7 +137,6 @@ class AstronomyUtils {
     return jdn - 0.5; // Julian Day (noon = integer)
   }
 }
-
 
 /// A pair of equatorial coordinates.
 class EquatorialCoords {

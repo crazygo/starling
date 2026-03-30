@@ -95,6 +95,44 @@ void main() {
       });
     });
 
+    group('horizontalToEquatorial', () {
+      test('round-trips RA/Dec via horizontal conversion', () {
+        final dt = DateTime.utc(2026, 3, 29, 12, 0, 0);
+        const ra = 83.822;
+        const dec = -5.391;
+        const lat = 39.9042;
+        const lon = 116.4074;
+
+        final horizontal = AstronomyUtils.equatorialToHorizontal(
+          raDeg: ra,
+          decDeg: dec,
+          latDeg: lat,
+          lonDeg: lon,
+          utc: dt,
+        );
+
+        final equatorial = AstronomyUtils.horizontalToEquatorial(
+          azimuthDeg: horizontal.azimuth,
+          altitudeDeg: horizontal.altitude,
+          latDeg: lat,
+          lonDeg: lon,
+          utc: dt,
+        );
+
+        // Allow small numerical error from trig inverse operations.
+        expect(equatorial.rightAscension, closeTo(ra, 1e-6));
+        expect(equatorial.declination, closeTo(dec, 1e-6));
+      });
+    });
+
+    group('EquatorialCoords', () {
+      test('toString includes ra and dec', () {
+        const c = EquatorialCoords(rightAscension: 12.34, declination: -56.78);
+        expect(c.toString(), contains('ra:'));
+        expect(c.toString(), contains('dec:'));
+      });
+    });
+
     group('HorizontalCoords', () {
       test('toString includes az and alt', () {
         const c = HorizontalCoords(azimuth: 123.456, altitude: 45.678);
