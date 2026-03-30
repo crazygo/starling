@@ -760,20 +760,6 @@ class _StarPainter extends CustomPainter {
 
   void _drawDomeForeground(Canvas canvas, Size size) {
     final horizonPoints = _visibleHorizonPoints();
-    final belowHorizonPath = _belowHorizonPath(horizonPoints);
-
-    if (belowHorizonPath != null) {
-      canvas.drawPath(
-        belowHorizonPath,
-        Paint()
-          ..shader = ui.Gradient.linear(
-            const Offset(0, 0),
-            Offset(0, size.height),
-            const [Color(0x00010209), Color(0x6A030A17), Color(0xA0050C18)],
-            const [0.0, 0.55, 1.0],
-          ),
-      );
-    }
 
     if (horizonPoints.length >= 2) {
       final horizonPath = Path()
@@ -845,79 +831,6 @@ class _StarPainter extends CustomPainter {
     }
     points.sort((a, b) => a.dx.compareTo(b.dx));
     return points;
-  }
-
-  Path? _belowHorizonPath(List<Offset> horizonPoints) {
-    if (viewStyle != ViewStyle.dome) return null;
-    final centerAltitude = _effectiveCenterDecForStyle(
-      viewStyle,
-      viewport.centerDec,
-      gyroOffset?.dy ?? 0,
-    );
-    if (horizonPoints.length < 2) {
-      if (centerAltitude < 0) {
-        return Path()..addRect(Offset.zero & size);
-      }
-      return null;
-    }
-
-    final sample = _domeProjection().projectHorizontal(
-      _effectiveCenterRaForStyle(
-        viewStyle,
-        viewport.centerRa,
-        gyroOffset?.dx ?? 0,
-      ),
-      -45.0,
-    );
-    final samplePoint = sample?.screenOffset ??
-        Offset(
-          size.width / 2,
-          centerAltitude < 0 ? size.height * 0.75 : size.height * 0.25,
-        );
-    final horizonY = _interpolatedHorizonY(horizonPoints, samplePoint.dx);
-    final fillBottom = samplePoint.dy >= horizonY;
-    final path = Path();
-
-    if (fillBottom) {
-      path.moveTo(0, size.height);
-      path.lineTo(horizonPoints.first.dx.clamp(0.0, size.width), size.height);
-      for (final point in horizonPoints) {
-        path.lineTo(
-          point.dx.clamp(0.0, size.width),
-          point.dy.clamp(0.0, size.height),
-        );
-      }
-      path.lineTo(horizonPoints.last.dx.clamp(0.0, size.width), size.height);
-      path.lineTo(size.width, size.height);
-    } else {
-      path.moveTo(0, 0);
-      path.lineTo(horizonPoints.first.dx.clamp(0.0, size.width), 0);
-      for (final point in horizonPoints) {
-        path.lineTo(
-          point.dx.clamp(0.0, size.width),
-          point.dy.clamp(0.0, size.height),
-        );
-      }
-      path.lineTo(horizonPoints.last.dx.clamp(0.0, size.width), 0);
-      path.lineTo(size.width, 0);
-    }
-    path.close();
-    return path;
-  }
-
-  double _interpolatedHorizonY(List<Offset> horizonPoints, double x) {
-    if (horizonPoints.isEmpty) return size.height / 2;
-    if (x <= horizonPoints.first.dx) return horizonPoints.first.dy;
-    if (x >= horizonPoints.last.dx) return horizonPoints.last.dy;
-    for (var index = 1; index < horizonPoints.length; index++) {
-      final previous = horizonPoints[index - 1];
-      final current = horizonPoints[index];
-      if (x >= previous.dx && x <= current.dx) {
-        final t = (x - previous.dx) / (current.dx - previous.dx);
-        return ui.lerpDouble(previous.dy, current.dy, t)!;
-      }
-    }
-    return horizonPoints.last.dy;
   }
 
   void _drawCardinalMarkers(Canvas canvas) {
