@@ -49,6 +49,32 @@ double domeVerticalFovForSize(Size size, double zoom) {
   );
 }
 
+/// Returns declination arcs near the celestial pole visible from [latitude].
+///
+/// Each entry is a `(declinationDeg, opacity)` pair.  Arcs start at
+/// [minPoleDistanceDeg] from the pole and continue outward in [stepDeg]
+/// increments up to [maxPoleDistanceDeg].  Opacity follows a quadratic
+/// falloff; arcs whose opacity falls below [minOpacity] are omitted.
+@visibleForTesting
+List<(double, double)> poleDeclinationArcs(
+  double latitude, {
+  double maxPoleDistanceDeg = 35.0,
+  double stepDeg = 5.0,
+  double minPoleDistanceDeg = 5.0,
+  double minOpacity = 0.08,
+}) {
+  final poleDeclination = latitude >= 0 ? 90.0 : -90.0;
+  final result = <(double, double)>[];
+  for (var d = minPoleDistanceDeg; d <= maxPoleDistanceDeg; d += stepDeg) {
+    final dec = poleDeclination >= 0 ? poleDeclination - d : poleDeclination + d;
+    final normalized = 1.0 - d / maxPoleDistanceDeg;
+    final opacity = normalized * normalized;
+    if (opacity < minOpacity) continue;
+    result.add((dec, opacity));
+  }
+  return result;
+}
+
 double _effectiveCenterDecForStyle(
   ViewStyle viewStyle,
   double baseCenterDec,
@@ -912,20 +938,17 @@ class _StarPainter extends CustomPainter {
   }
 
   void _drawEquatorialGrid(Canvas canvas) {
+    final arcs = poleDeclinationArcs(observerLatitude);
     final linePaint = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8
-      ..color = const Color(0x99FFAE5A);
+      ..strokeWidth = 0.8;
 
-    for (var dec = -75; dec <= 75; dec += 15) {
-      _drawDeclinationCurve(canvas, linePaint, declinationDeg: dec.toDouble());
-    }
-
-    for (var ra = 0; ra < 360; ra += 15) {
-      _drawRightAscensionCurve(
+    for (final (declinationDeg, opacity) in arcs) {
+      linePaint.color = const Color(0xFFFFAE5A).withValues(alpha: opacity);
+      _drawDeclinationCurve(
         canvas,
         linePaint,
-        rightAscensionDeg: ra.toDouble(),
+        declinationDeg: declinationDeg,
       );
     }
   }
@@ -985,29 +1008,6 @@ class _StarPainter extends CustomPainter {
     var hasPoint = false;
     for (var ra = 0; ra <= 360; ra += 2) {
       final point = _project(ra.toDouble(), declinationDeg);
-      if (point == null || !_isNearVisibleBounds(point)) {
-        hasPoint = false;
-        continue;
-      }
-      if (!hasPoint) {
-        path.moveTo(point.dx, point.dy);
-        hasPoint = true;
-      } else {
-        path.lineTo(point.dx, point.dy);
-      }
-    }
-    canvas.drawPath(path, paint);
-  }
-
-  void _drawRightAscensionCurve(
-    Canvas canvas,
-    Paint paint, {
-    required double rightAscensionDeg,
-  }) {
-    final path = Path();
-    var hasPoint = false;
-    for (var dec = -90; dec <= 90; dec += 2) {
-      final point = _project(rightAscensionDeg, dec.toDouble());
       if (point == null || !_isNearVisibleBounds(point)) {
         hasPoint = false;
         continue;
