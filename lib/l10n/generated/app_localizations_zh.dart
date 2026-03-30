@@ -30,10 +30,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cultureSettings => '文化设置';
 
   @override
-  String get chineseCulture => '中国文化';
+  String get chineseAncientCulture => '中国古代（步天歌）';
 
   @override
-  String get chineseCultureSubtitle => '中国星名与星官';
+  String get chineseAncientCultureSubtitle => '步天歌星官体系与中文星名';
+
+  @override
+  String get chineseModernCulture => '中国现代';
+
+  @override
+  String get chineseModernCultureSubtitle => '现代88星座连线与中文命名';
 
   @override
   String get westernCulture => '西方文化';

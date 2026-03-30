@@ -30,6 +30,7 @@ class _ExplorePageState extends State<ExplorePage> {
   List<Star> _stars = [];
   List<Constellation> _westernConstellations = [];
   List<Constellation> _chineseConstellations = [];
+  List<Constellation> _chineseModernConstellations = [];
   StarDataService? _dataService;
   bool _loading = true;
 
@@ -115,6 +116,7 @@ class _ExplorePageState extends State<ExplorePage> {
         _stars = service.stars;
         _westernConstellations = service.constellations;
         _chineseConstellations = service.chineseConstellations;
+        _chineseModernConstellations = service.chineseModernConstellations;
         _loading = false;
         _viewport = context.read<SettingsService>().viewStyle == ViewStyle.dome
             ? _defaultDomeViewport
@@ -298,7 +300,9 @@ class _ExplorePageState extends State<ExplorePage> {
 
   @override
   Widget build(BuildContext context) {
-    final isChinese = context.select<SettingsService, bool>((s) => s.isChinese);
+    final cultureMode = context.select<SettingsService, CultureMode>(
+      (s) => s.cultureMode,
+    );
     final viewStyle = context.select<SettingsService, ViewStyle>(
       (s) => s.viewStyle,
     );
@@ -314,7 +318,7 @@ class _ExplorePageState extends State<ExplorePage> {
       body: _loading
           ? _buildLoading()
           : _buildChart(
-              isChinese,
+              cultureMode,
               viewStyle,
               majorStarsOnlyLabels,
               starRenderCondition,
@@ -336,13 +340,17 @@ class _ExplorePageState extends State<ExplorePage> {
   }
 
   Widget _buildChart(
-    bool isChinese,
+    CultureMode cultureMode,
     ViewStyle viewStyle,
     bool majorStarsOnlyLabels,
     StarRenderCondition starRenderCondition,
   ) {
-    final constellations =
-        isChinese ? _chineseConstellations : _westernConstellations;
+    final showChineseName = cultureMode != CultureMode.western;
+    final constellations = switch (cultureMode) {
+      CultureMode.chineseAncient => _chineseConstellations,
+      CultureMode.chineseModern => _chineseModernConstellations,
+      CultureMode.western => _westernConstellations,
+    };
     return Stack(
       children: [
         // Star chart
@@ -350,7 +358,7 @@ class _ExplorePageState extends State<ExplorePage> {
           stars: _stars,
           constellations: constellations,
           chineseConstellations: _chineseConstellations,
-          showChineseName: isChinese,
+          showChineseName: showChineseName,
           viewport: _viewport,
           viewStyle: viewStyle,
           observerLatitude: _observerLatitude,
@@ -443,7 +451,7 @@ class _ExplorePageState extends State<ExplorePage> {
                                 size: 16,
                               ),
                               title: Text(
-                                isChinese
+                                showChineseName
                                     ? (star.chineseName ?? star.name)
                                     : star.name,
                                 style: const TextStyle(
@@ -474,7 +482,7 @@ class _ExplorePageState extends State<ExplorePage> {
         if (_selectedStar != null)
           StarInfoPopup(
             star: _selectedStar!,
-            showChineseName: isChinese,
+            showChineseName: showChineseName,
             onClose: () => setState(() => _selectedStar = null),
           ),
 

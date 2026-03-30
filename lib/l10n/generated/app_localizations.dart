@@ -140,17 +140,29 @@ abstract class AppLocalizations {
   /// **'文化设置'**
   String get cultureSettings;
 
-  /// No description provided for @chineseCulture.
+  /// No description provided for @chineseAncientCulture.
   ///
   /// In zh, this message translates to:
-  /// **'中国文化'**
-  String get chineseCulture;
+  /// **'中国古代（步天歌）'**
+  String get chineseAncientCulture;
 
-  /// No description provided for @chineseCultureSubtitle.
+  /// No description provided for @chineseAncientCultureSubtitle.
   ///
   /// In zh, this message translates to:
-  /// **'中国星名与星官'**
-  String get chineseCultureSubtitle;
+  /// **'步天歌星官体系与中文星名'**
+  String get chineseAncientCultureSubtitle;
+
+  /// No description provided for @chineseModernCulture.
+  ///
+  /// In zh, this message translates to:
+  /// **'中国现代'**
+  String get chineseModernCulture;
+
+  /// No description provided for @chineseModernCultureSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'现代88星座连线与中文命名'**
+  String get chineseModernCultureSubtitle;
 
   /// No description provided for @westernCulture.
   ///

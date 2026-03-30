@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Available culture modes for star names and constellation data.
-enum CultureMode { chinese, western }
+enum CultureMode { chineseAncient, chineseModern, western }
 
 /// Available language modes for the app UI.
 enum LanguageMode {
@@ -49,7 +49,7 @@ class SettingsService extends ChangeNotifier {
   static const _keyMajorStarsOnlyLabels = 'major_stars_only_labels';
   static const _keyStarRenderCondition = 'star_render_condition';
 
-  CultureMode _cultureMode = CultureMode.chinese;
+  CultureMode _cultureMode = CultureMode.chineseAncient;
   LocationMode _locationMode = LocationMode.beijing;
   LanguageMode _languageMode = LanguageMode.auto;
   ViewStyle _viewStyle = ViewStyle.dome;
@@ -60,8 +60,14 @@ class SettingsService extends ChangeNotifier {
   /// The currently selected culture mode.
   CultureMode get cultureMode => _cultureMode;
 
-  /// Whether Chinese cultural names and constellation data should be shown.
-  bool get isChinese => _cultureMode == CultureMode.chinese;
+  /// Whether the current culture should display Chinese labels.
+  bool get isChinese => _cultureMode != CultureMode.western;
+
+  /// Whether the current culture is the ancient Chinese (步天歌) mode.
+  bool get isChineseAncient => _cultureMode == CultureMode.chineseAncient;
+
+  /// Whether the current culture is the modern Chinese mode.
+  bool get isChineseModern => _cultureMode == CultureMode.chineseModern;
 
   /// The currently selected location mode.
   LocationMode get locationMode => _locationMode;
@@ -90,8 +96,12 @@ class SettingsService extends ChangeNotifier {
     final storedCulture = prefs.getString(_keyCulture);
     if (storedCulture == CultureMode.western.name) {
       _cultureMode = CultureMode.western;
+    } else if (storedCulture == CultureMode.chineseModern.name) {
+      _cultureMode = CultureMode.chineseModern;
     } else {
-      _cultureMode = CultureMode.chinese;
+      // Backward compatibility: legacy `chinese` value maps to
+      // chineseAncient (步天歌) mode.
+      _cultureMode = CultureMode.chineseAncient;
     }
     final storedLocation = prefs.getString(_keyLocation);
     if (storedLocation == LocationMode.gps.name) {

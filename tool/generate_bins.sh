@@ -59,7 +59,7 @@ echo " Step 4: Verifying output files…"
 echo "═══════════════════════════════════════"
 
 OK=true
-for f in catalog_base.bin culture_western.bin culture_chinese.bin; do
+for f in catalog_base.bin culture_western.bin culture_chinese_modern.bin culture_chinese.bin; do
   path="${OUTPUT}/${f}"
   if [[ -f "$path" ]]; then
     size=$(wc -c < "$path")
