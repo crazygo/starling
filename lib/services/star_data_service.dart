@@ -83,32 +83,21 @@ class StarDataService {
   // Private
   // ---------------------------------------------------------------------------
 
-  Future<ByteData> _loadChineseModernCulture() async {
-    try {
-      return await rootBundle.load('assets/bin/culture_chinese_modern.bin');
-    } on FlutterError {
-      // Development/PR fallback: modern culture uses the same schema as
-      // western culture, so we can fall back to culture_western.bin when the
-      // dedicated modern binary is intentionally not committed.
-      return rootBundle.load('assets/bin/culture_western.bin');
-    }
-  }
-
   Future<void> _load() async {
-    final chineseModernBuf = await _loadChineseModernCulture();
-
     // Load all binary catalogs in parallel.
     final results = await Future.wait([
       rootBundle.load('assets/bin/catalog_base.bin'),
       rootBundle.load('assets/bin/culture_western.bin'),
+      rootBundle.load('assets/bin/culture_chinese_modern.bin'),
       rootBundle.load('assets/bin/culture_chinese.bin'),
       rootBundle.loadString('assets/data/daily_cards.json'),
     ]);
 
     final catalogBuf = results[0] as ByteData;
     final westernBuf = results[1] as ByteData;
-    final chineseBuf = results[2] as ByteData;
-    final cardsJson = results[3] as String;
+    final chineseModernBuf = results[2] as ByteData;
+    final chineseBuf = results[3] as ByteData;
+    final cardsJson = results[4] as String;
 
     // Parse star catalog.
     final catalogReader = StarCatalogReader(catalogBuf);

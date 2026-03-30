@@ -3,7 +3,8 @@
 // Compile to Dart with:
 //   flatc --dart -o generated/ schema/stargazer.fbs
 //
-// Three root types produce three separate .bin files:
+// Three root types produce four separate .bin files (WesternCulture is reused
+// for both the IAU western lines and the modern Chinese naming variant):
 //   catalog_base.bin    – physical star catalog (StarCatalog)
 //   culture_western.bin – IAU 88-constellation dataset (WesternCulture)
 //   culture_chinese_modern.bin – Modern 88 constellations with Chinese names (WesternCulture)

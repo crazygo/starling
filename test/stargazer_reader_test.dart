@@ -148,11 +148,7 @@ void main() {
     late WesternCultureReader reader;
 
     setUpAll(() {
-      final modern = File('assets/bin/culture_chinese_modern.bin');
-      final path = modern.existsSync()
-          ? 'assets/bin/culture_chinese_modern.bin'
-          : 'assets/bin/culture_western.bin';
-      final buf = _loadBin(path);
+      final buf = _loadBin('assets/bin/culture_chinese_modern.bin');
       reader = WesternCultureReader(buf);
     });
 
