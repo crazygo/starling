@@ -246,6 +246,8 @@ class StarChart extends StatefulWidget {
   final DateTime observationTimeUtc;
   final bool majorStarsOnlyLabels;
   final StarRenderCondition starRenderCondition;
+  final bool showHorizonGrid;
+  final bool showCelestialGrid;
 
   final StarChartViewport viewport;
   final ValueChanged<StarChartViewport> onViewportChanged;
@@ -267,6 +269,8 @@ class StarChart extends StatefulWidget {
     required this.observationTimeUtc,
     required this.majorStarsOnlyLabels,
     required this.starRenderCondition,
+    required this.showHorizonGrid,
+    required this.showCelestialGrid,
     required this.viewport,
     required this.onViewportChanged,
     this.onStarTapped,
@@ -443,6 +447,8 @@ class _StarChartState extends State<StarChart> {
                 observationTimeUtc: widget.observationTimeUtc,
                 majorStarsOnlyLabels: widget.majorStarsOnlyLabels,
                 starRenderCondition: widget.starRenderCondition,
+                showHorizonGrid: widget.showHorizonGrid,
+                showCelestialGrid: widget.showCelestialGrid,
                 viewport: widget.viewport,
                 gyroOffset: widget.gyroOffset,
                 size: size,
@@ -492,6 +498,8 @@ class _StarPainter extends CustomPainter {
   final DateTime observationTimeUtc;
   final bool majorStarsOnlyLabels;
   final StarRenderCondition starRenderCondition;
+  final bool showHorizonGrid;
+  final bool showCelestialGrid;
   final StarChartViewport viewport;
   final Offset? gyroOffset;
   final Size size;
@@ -569,6 +577,8 @@ class _StarPainter extends CustomPainter {
     required this.observationTimeUtc,
     required this.majorStarsOnlyLabels,
     required this.starRenderCondition,
+    required this.showHorizonGrid,
+    required this.showCelestialGrid,
     required this.viewport,
     required this.size,
     this.gyroOffset,
@@ -588,6 +598,8 @@ class _StarPainter extends CustomPainter {
       old.observationTimeUtc != observationTimeUtc ||
       old.majorStarsOnlyLabels != majorStarsOnlyLabels ||
       old.starRenderCondition != starRenderCondition ||
+      old.showHorizonGrid != showHorizonGrid ||
+      old.showCelestialGrid != showCelestialGrid ||
       old.size != size;
 
   Offset? _project(double raDeg, double decDeg) {
@@ -709,6 +721,7 @@ class _StarPainter extends CustomPainter {
 
     if (viewStyle == ViewStyle.dome) {
       _drawBackgroundStars(canvas, size);
+      _drawCoordinateGrids(canvas);
       _drawConstellationLines(canvas);
       _drawStars(canvas, _constellationMemberStarIds);
       _drawLabels(canvas, size);
@@ -717,6 +730,7 @@ class _StarPainter extends CustomPainter {
     }
 
     _drawBackgroundStars(canvas, size);
+    _drawCoordinateGrids(canvas);
     _drawConstellationLines(canvas);
     _drawStars(canvas, _constellationMemberStarIds);
     _drawLabels(canvas, size);
@@ -957,6 +971,158 @@ class _StarPainter extends CustomPainter {
       final bgOffset = Offset(pos.dx * size.width, pos.dy * size.height);
       canvas.drawCircle(bgOffset, 0.5, paint);
     }
+  }
+
+  void _drawCoordinateGrids(Canvas canvas) {
+    if (!showHorizonGrid && !showCelestialGrid) return;
+    if (showHorizonGrid) {
+      _drawHorizontalGrid(canvas);
+    }
+    if (showCelestialGrid) {
+      _drawEquatorialGrid(canvas);
+    }
+  }
+
+  void _drawHorizontalGrid(Canvas canvas) {
+    final linePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.7
+      ..color = const Color(0x8846E0C8);
+
+    for (var altitude = -60; altitude <= 75; altitude += 15) {
+      _drawHorizontalCurve(canvas, linePaint, altitudeDeg: altitude.toDouble());
+    }
+
+    for (var azimuth = 0; azimuth < 360; azimuth += 15) {
+      _drawAzimuthCurve(canvas, linePaint, azimuthDeg: azimuth.toDouble());
+    }
+  }
+
+  void _drawEquatorialGrid(Canvas canvas) {
+    final linePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8
+      ..color = const Color(0x99FFAE5A);
+
+    for (var dec = -75; dec <= 75; dec += 15) {
+      _drawDeclinationCurve(canvas, linePaint, declinationDeg: dec.toDouble());
+    }
+
+    for (var ra = 0; ra < 360; ra += 15) {
+      _drawRightAscensionCurve(
+        canvas,
+        linePaint,
+        rightAscensionDeg: ra.toDouble(),
+      );
+    }
+  }
+
+  void _drawHorizontalCurve(
+    Canvas canvas,
+    Paint paint, {
+    required double altitudeDeg,
+  }) {
+    final path = Path();
+    var hasPoint = false;
+    for (var az = 0; az <= 360; az += 2) {
+      final point = _projectHorizontal(az.toDouble(), altitudeDeg);
+      if (point == null || !_isNearVisibleBounds(point)) {
+        hasPoint = false;
+        continue;
+      }
+      if (!hasPoint) {
+        path.moveTo(point.dx, point.dy);
+        hasPoint = true;
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  void _drawAzimuthCurve(
+    Canvas canvas,
+    Paint paint, {
+    required double azimuthDeg,
+  }) {
+    final path = Path();
+    var hasPoint = false;
+    for (var alt = -90; alt <= 90; alt += 2) {
+      final point = _projectHorizontal(azimuthDeg, alt.toDouble());
+      if (point == null || !_isNearVisibleBounds(point)) {
+        hasPoint = false;
+        continue;
+      }
+      if (!hasPoint) {
+        path.moveTo(point.dx, point.dy);
+        hasPoint = true;
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  void _drawDeclinationCurve(
+    Canvas canvas,
+    Paint paint, {
+    required double declinationDeg,
+  }) {
+    final path = Path();
+    var hasPoint = false;
+    for (var ra = 0; ra <= 360; ra += 2) {
+      final point = _project(ra.toDouble(), declinationDeg);
+      if (point == null || !_isNearVisibleBounds(point)) {
+        hasPoint = false;
+        continue;
+      }
+      if (!hasPoint) {
+        path.moveTo(point.dx, point.dy);
+        hasPoint = true;
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  void _drawRightAscensionCurve(
+    Canvas canvas,
+    Paint paint, {
+    required double rightAscensionDeg,
+  }) {
+    final path = Path();
+    var hasPoint = false;
+    for (var dec = -90; dec <= 90; dec += 2) {
+      final point = _project(rightAscensionDeg, dec.toDouble());
+      if (point == null || !_isNearVisibleBounds(point)) {
+        hasPoint = false;
+        continue;
+      }
+      if (!hasPoint) {
+        path.moveTo(point.dx, point.dy);
+        hasPoint = true;
+      } else {
+        path.lineTo(point.dx, point.dy);
+      }
+    }
+    canvas.drawPath(path, paint);
+  }
+
+  Offset? _projectHorizontal(double azimuthDeg, double altitudeDeg) {
+    if (viewStyle == ViewStyle.dome) {
+      return _domeProjection()
+          .projectHorizontal(azimuthDeg, altitudeDeg)
+          ?.screenOffset;
+    }
+    final equatorial = AstronomyUtils.horizontalToEquatorial(
+      azimuthDeg: azimuthDeg,
+      altitudeDeg: altitudeDeg,
+      latDeg: observerLatitude,
+      lonDeg: observerLongitude,
+      utc: observationTimeUtc,
+    );
+    return _project(equatorial.rightAscension, equatorial.declination);
   }
 
   void _drawConstellationLines(Canvas canvas) {

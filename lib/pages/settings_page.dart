@@ -468,6 +468,44 @@ class _VisualGroupingSettingsSection extends StatelessWidget {
                 endIndent: 16,
                 color: Color(0xFF1A2C3A),
               ),
+              SwitchListTile(
+                value: settings.showHorizonGrid,
+                onChanged: settings.setShowHorizonGrid,
+                title: const Text(
+                  '显示地平网格（方位/高度）',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '默认开启，随定位与时间变化',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                activeThumbColor: Colors.tealAccent,
+              ),
+              const Divider(
+                height: 1,
+                indent: 16,
+                endIndent: 16,
+                color: Color(0xFF1A2C3A),
+              ),
+              SwitchListTile(
+                value: settings.showCelestialGrid,
+                onChanged: settings.setShowCelestialGrid,
+                title: const Text(
+                  '显示天球网格（赤经/赤纬）',
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                ),
+                subtitle: const Text(
+                  '默认关闭，定义与观察者位置无关',
+                  style: TextStyle(color: Colors.white38, fontSize: 12),
+                ),
+                activeThumbColor: Colors.orangeAccent,
+              ),
+              const Divider(
+                height: 1,
+                indent: 16,
+                endIndent: 16,
+                color: Color(0xFF1A2C3A),
+              ),
               ListTile(
                 title: const Text(
                   '星星渲染条件',
