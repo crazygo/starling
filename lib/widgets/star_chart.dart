@@ -912,20 +912,31 @@ class _StarPainter extends CustomPainter {
   }
 
   void _drawEquatorialGrid(Canvas canvas) {
-    final linePaint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8
-      ..color = const Color(0x99FFAE5A);
+    final poleDeclination = observerLatitude >= 0 ? 90.0 : -90.0;
+    const maxPoleDistanceDeg = 35.0;
+    const stepDeg = 5.0;
 
-    for (var dec = -75; dec <= 75; dec += 15) {
-      _drawDeclinationCurve(canvas, linePaint, declinationDeg: dec.toDouble());
-    }
+    for (
+      var poleDistance = 5.0;
+      poleDistance <= maxPoleDistanceDeg;
+      poleDistance += stepDeg
+    ) {
+      final declinationDeg = poleDeclination >= 0
+          ? poleDeclination - poleDistance
+          : poleDeclination + poleDistance;
+      final normalized = 1.0 - poleDistance / maxPoleDistanceDeg;
+      final opacity = normalized * normalized;
+      if (opacity < 0.08) continue;
 
-    for (var ra = 0; ra < 360; ra += 15) {
-      _drawRightAscensionCurve(
+      final linePaint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.8
+        ..color = const Color(0xFFFFAE5A).withValues(alpha: opacity);
+
+      _drawDeclinationCurve(
         canvas,
         linePaint,
-        rightAscensionDeg: ra.toDouble(),
+        declinationDeg: declinationDeg,
       );
     }
   }
@@ -985,29 +996,6 @@ class _StarPainter extends CustomPainter {
     var hasPoint = false;
     for (var ra = 0; ra <= 360; ra += 2) {
       final point = _project(ra.toDouble(), declinationDeg);
-      if (point == null || !_isNearVisibleBounds(point)) {
-        hasPoint = false;
-        continue;
-      }
-      if (!hasPoint) {
-        path.moveTo(point.dx, point.dy);
-        hasPoint = true;
-      } else {
-        path.lineTo(point.dx, point.dy);
-      }
-    }
-    canvas.drawPath(path, paint);
-  }
-
-  void _drawRightAscensionCurve(
-    Canvas canvas,
-    Paint paint, {
-    required double rightAscensionDeg,
-  }) {
-    final path = Path();
-    var hasPoint = false;
-    for (var dec = -90; dec <= 90; dec += 2) {
-      final point = _project(rightAscensionDeg, dec.toDouble());
       if (point == null || !_isNearVisibleBounds(point)) {
         hasPoint = false;
         continue;
