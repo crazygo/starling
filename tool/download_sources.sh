@@ -15,6 +15,7 @@
 #                          https://github.com/astronexus/HYG-Database
 #   Constellation lines  : Stellarium modern skyculture (GPL-2.0+)
 #   Constellation bounds : Davenhall & Leggett VI/49 (CDS, optional)
+#   Chinese modern mode : reuses Stellarium modern skyculture lines + zh names
 #   Chinese skyculture   : Stellarium Chinese skyculture (GPL-2.0+)
 
 set -euo pipefail

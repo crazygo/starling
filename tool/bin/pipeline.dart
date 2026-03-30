@@ -23,17 +23,23 @@ import '../lib/validators/integrity_checker.dart';
 
 void main(List<String> args) {
   final parser = ArgParser()
-    ..addOption('output',
-        abbr: 'o',
-        defaultsTo: '../assets/bin',
-        help: 'Output directory for .bin files')
-    ..addOption('mag',
-        defaultsTo: '6.5',
-        help: 'Maximum visual magnitude (brightest = lowest value)')
-    ..addFlag('skip-validate',
-        defaultsTo: false,
-        negatable: false,
-        help: 'Skip integrity validation checks')
+    ..addOption(
+      'output',
+      abbr: 'o',
+      defaultsTo: '../assets/bin',
+      help: 'Output directory for .bin files',
+    )
+    ..addOption(
+      'mag',
+      defaultsTo: '6.5',
+      help: 'Maximum visual magnitude (brightest = lowest value)',
+    )
+    ..addFlag(
+      'skip-validate',
+      defaultsTo: false,
+      negatable: false,
+      help: 'Skip integrity validation checks',
+    )
     ..addFlag('help', abbr: 'h', negatable: false, help: 'Show this help');
 
   late ArgResults results;
@@ -49,9 +55,9 @@ void main(List<String> args) {
     exit(0);
   }
 
-  final outputPath    = results['output'] as String;
-  final maxMagnitude  = double.tryParse(results['mag'] as String) ?? 6.5;
-  final skipValidate  = results['skip-validate'] as bool;
+  final outputPath = results['output'] as String;
+  final maxMagnitude = double.tryParse(results['mag'] as String) ?? 6.5;
+  final skipValidate = results['skip-validate'] as bool;
 
   final outputDir = Directory(outputPath);
   if (!outputDir.existsSync()) outputDir.createSync(recursive: true);
@@ -59,11 +65,11 @@ void main(List<String> args) {
   // ── Phase 1: Parse raw data sources ────────────────────────────────────
   print('📥 Phase 1: Parsing sources…');
 
-  final hipparcosFile  = File('sources/hipparcos/hip_main.csv');
-  final linesFile      = File('sources/iau/constellation_lines.csv');
-  final boundaryFile   = File('sources/iau/constellation_boundaries.csv');
-  final starNamesFile  = File('sources/iau/star_names.fab');
-  final chineseDir     = Directory('sources/stellarium/chinese');
+  final hipparcosFile = File('sources/hipparcos/hip_main.csv');
+  final linesFile = File('sources/iau/constellation_lines.csv');
+  final boundaryFile = File('sources/iau/constellation_boundaries.csv');
+  final starNamesFile = File('sources/iau/star_names.fab');
+  final chineseDir = Directory('sources/stellarium/chinese');
 
   _requireFile(hipparcosFile);
   _requireFile(linesFile);
@@ -84,14 +90,16 @@ void main(List<String> args) {
     if (named > 0) {
       print('   ✅ Star proper names: $named named out of ${stars.length}');
     } else {
-      print('   ⚠️  Star proper names: none loaded'
-            ' (star_names.fab was empty or unparseable)'
-            ' — stars will use HIP-number identifiers');
+      print(
+        '   ⚠️  Star proper names: none loaded'
+        ' (star_names.fab was empty or unparseable)'
+        ' — stars will use HIP-number identifiers',
+      );
     }
   }
 
-  final westernLines    = IauLinesParser.parse(linesFile);
-  final westernBounds   = IauBoundaryParser.parse(boundaryFile);
+  final westernLines = IauLinesParser.parse(linesFile);
+  final westernBounds = IauBoundaryParser.parse(boundaryFile);
   print('   ✅ Western constellations: ${westernLines.length}');
 
   final chineseAsterisms = StellariumChineseParser.parse(chineseDir);
@@ -99,8 +107,9 @@ void main(List<String> args) {
 
   // Merge Chinese proper star names from index.json (optional).
   final chineseIndexFile = File('${chineseDir.path}/index.json');
-  final chineseNameMap =
-      StellariumChineseParser.parseStarNames(chineseIndexFile);
+  final chineseNameMap = StellariumChineseParser.parseStarNames(
+    chineseIndexFile,
+  );
   if (chineseNameMap.isNotEmpty) {
     stars = stars.map((s) {
       final names = chineseNameMap[s.hip];
@@ -109,9 +118,11 @@ void main(List<String> args) {
     final namedZh = stars.where((s) => s.nameZh != null).length;
     print('   ✅ Chinese star names: $namedZh named out of ${stars.length}');
   } else {
-    print('   ⚠️  Chinese star names: none loaded'
-          ' (index.json was empty or absent)'
-          ' — Chinese mode will fall back to English names');
+    print(
+      '   ⚠️  Chinese star names: none loaded'
+      ' (index.json was empty or absent)'
+      ' — Chinese mode will fall back to English names',
+    );
   }
 
   // ── Phase 2: Validate integrity ─────────────────────────────────────────
@@ -125,13 +136,13 @@ void main(List<String> args) {
     IntegrityChecker.checkMagnitudeRange(stars);
 
     IntegrityChecker.checkEdges(
-      label:     'Western',
-      edges:     westernLines.values.expand((c) => c.edges),
+      label: 'Western',
+      edges: westernLines.values.expand((c) => c.edges),
       validHips: hipSet,
     );
     IntegrityChecker.checkEdges(
-      label:     'Chinese',
-      edges:     chineseAsterisms.expand((a) => a.edges),
+      label: 'Chinese',
+      edges: chineseAsterisms.expand((a) => a.edges),
       validHips: hipSet,
     );
 
@@ -144,36 +155,52 @@ void main(List<String> args) {
   // Filter out constellation edges that reference HIPs absent from the
   // catalog (e.g. dim stars just above the magnitude cutoff) so that the
   // binary only contains resolvable references.
-  final filteredLines = Map.fromEntries(westernLines.entries.map((entry) {
-    final filtered = entry.value.copyWith(
-      edges: entry.value.edges
-          .where((e) => hipSet.contains(e.fromHip) && hipSet.contains(e.toHip))
-          .toList(growable: false),
-    );
-    return MapEntry(entry.key, filtered);
-  }));
+  final filteredLines = Map.fromEntries(
+    westernLines.entries.map((entry) {
+      final filtered = entry.value.copyWith(
+        edges: entry.value.edges
+            .where(
+              (e) => hipSet.contains(e.fromHip) && hipSet.contains(e.toHip),
+            )
+            .toList(growable: false),
+      );
+      return MapEntry(entry.key, filtered);
+    }),
+  );
 
   // ── Phase 3: Build .bin files ────────────────────────────────────────────
   print('📦 Phase 3: Building .bin files…');
 
   final catalogBytes = CatalogBuilder.build(stars);
-  final catalogFile  = File('${outputDir.path}/catalog_base.bin');
+  final catalogFile = File('${outputDir.path}/catalog_base.bin');
   catalogFile.writeAsBytesSync(catalogBytes);
   print('   ✅ catalog_base.bin     (${_kb(catalogBytes)} KB)');
 
   final westernBytes = WesternBuilder.build(filteredLines, westernBounds);
-  final westernFile  = File('${outputDir.path}/culture_western.bin');
+  final westernFile = File('${outputDir.path}/culture_western.bin');
   westernFile.writeAsBytesSync(westernBytes);
   print('   ✅ culture_western.bin  (${_kb(westernBytes)} KB)');
 
+  final chineseModernBytes = WesternBuilder.build(filteredLines, westernBounds);
+  final chineseModernFile = File(
+    '${outputDir.path}/culture_chinese_modern.bin',
+  );
+  chineseModernFile.writeAsBytesSync(chineseModernBytes);
+  print('   ✅ culture_chinese_modern.bin  (${_kb(chineseModernBytes)} KB)');
+
   final chineseBytes = ChineseBuilder.build(chineseAsterisms);
-  final chineseFile  = File('${outputDir.path}/culture_chinese.bin');
+  final chineseFile = File('${outputDir.path}/culture_chinese.bin');
   chineseFile.writeAsBytesSync(chineseBytes);
   print('   ✅ culture_chinese.bin  (${_kb(chineseBytes)} KB)');
 
-  final totalBytes = catalogBytes.length + westernBytes.length + chineseBytes.length;
-  print('\n🎉 Done!  Total: ${_kb(List.filled(totalBytes, 0))} KB'
-      ' → ${outputDir.path}/');
+  final totalBytes = catalogBytes.length +
+      westernBytes.length +
+      chineseModernBytes.length +
+      chineseBytes.length;
+  print(
+    '\n🎉 Done!  Total: ${_kb(List.filled(totalBytes, 0))} KB'
+    ' → ${outputDir.path}/',
+  );
 }
 
 // ── Helpers ─────────────────────────────────────────────────────────────────

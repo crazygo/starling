@@ -30,10 +30,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cultureSettings => 'Culture Settings';
 
   @override
-  String get chineseCulture => 'Chinese Culture';
+  String get chineseAncientCulture => 'Chinese Ancient (Bu Tian Ge)';
 
   @override
-  String get chineseCultureSubtitle => 'Chinese star names and asterisms';
+  String get chineseAncientCultureSubtitle =>
+      'Traditional Chinese asterisms and Chinese star names';
+
+  @override
+  String get chineseModernCulture => 'Chinese Modern';
+
+  @override
+  String get chineseModernCultureSubtitle =>
+      'Modern 88-constellation lines with Chinese naming';
 
   @override
   String get westernCulture => 'Western Culture';

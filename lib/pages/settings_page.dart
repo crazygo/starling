@@ -8,8 +8,8 @@ import '../services/settings_service.dart';
 /// The Settings page — allows users to configure app-wide preferences.
 ///
 /// Currently contains:
-/// * **Culture Settings** (文化设置) — choose between Chinese and Western
-///   star names / constellation data.
+/// * **Culture Settings** (文化设置) — choose between Chinese Ancient
+///   (步天歌), Chinese Modern, and Western star-culture rendering.
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -222,10 +222,18 @@ class _CultureSettingsSection extends StatelessWidget {
           child: Column(
             children: [
               _CultureOptionTile(
-                title: l10n.chineseCulture,
-                subtitle: l10n.chineseCultureSubtitle,
-                selected: settings.cultureMode == CultureMode.chinese,
-                onTap: () => settings.setCultureMode(CultureMode.chinese),
+                title: l10n.chineseAncientCulture,
+                subtitle: l10n.chineseAncientCultureSubtitle,
+                selected: settings.cultureMode == CultureMode.chineseAncient,
+                onTap: () =>
+                    settings.setCultureMode(CultureMode.chineseAncient),
+                showDivider: true,
+              ),
+              _CultureOptionTile(
+                title: l10n.chineseModernCulture,
+                subtitle: l10n.chineseModernCultureSubtitle,
+                selected: settings.cultureMode == CultureMode.chineseModern,
+                onTap: () => settings.setCultureMode(CultureMode.chineseModern),
                 showDivider: true,
               ),
               _CultureOptionTile(

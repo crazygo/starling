@@ -29,16 +29,22 @@ void main() {
     test('all stars have RA in [0, 360)', () {
       for (int i = 0; i < reader.starCount; i++) {
         final s = reader.starAt(i);
-        expect(s.ra, inExclusiveRange(-0.001, 360.0),
-            reason: 'star $i RA=${s.ra}');
+        expect(
+          s.ra,
+          inExclusiveRange(-0.001, 360.0),
+          reason: 'star $i RA=${s.ra}',
+        );
       }
     });
 
     test('all stars have Dec in [-90, 90]', () {
       for (int i = 0; i < reader.starCount; i++) {
         final s = reader.starAt(i);
-        expect(s.dec, inInclusiveRange(-90.0, 90.0),
-            reason: 'star $i Dec=${s.dec}');
+        expect(
+          s.dec,
+          inInclusiveRange(-90.0, 90.0),
+          reason: 'star $i Dec=${s.dec}',
+        );
       }
     });
 
@@ -58,8 +64,11 @@ void main() {
       // HIP 1 (faint star, well below mag 4.0) should have no proper name.
       final all = reader.readAll();
       final unnamed = all.where((s) => s.nameEn == null);
-      expect(unnamed.length, greaterThan(8000),
-          reason: 'Most stars should have no proper name');
+      expect(
+        unnamed.length,
+        greaterThan(8000),
+        reason: 'Most stars should have no proper name',
+      );
     });
 
     test('Vega (HIP 91262) has correct approximate RA', () {
@@ -95,16 +104,22 @@ void main() {
       // All 88 IAU constellations have Chinese names ending in 座
       final all = reader.readAll();
       for (final c in all) {
-        expect(c.nameZh.codeUnits.any((u) => u > 127), isTrue,
-            reason: '${c.abbr} nameZh "${c.nameZh}" has no multibyte chars');
+        expect(
+          c.nameZh.codeUnits.any((u) => u > 127),
+          isTrue,
+          reason: '${c.abbr} nameZh "${c.nameZh}" has no multibyte chars',
+        );
       }
     });
 
     test('edges come in pairs (even count)', () {
       for (int i = 0; i < reader.constellationCount; i++) {
         final c = reader.constellationAt(i);
-        expect(c.edges.length % 2, 0,
-            reason: '${c.abbr} has odd edge count ${c.edges.length}');
+        expect(
+          c.edges.length % 2,
+          0,
+          reason: '${c.abbr} has odd edge count ${c.edges.length}',
+        );
       }
     });
 
@@ -119,10 +134,33 @@ void main() {
       for (int i = 0; i < reader.constellationCount; i++) {
         final c = reader.constellationAt(i);
         for (final hip in c.edges) {
-          expect(hip, greaterThan(0),
-              reason: '${c.abbr} has zero HIP in edges');
+          expect(
+            hip,
+            greaterThan(0),
+            reason: '${c.abbr} has zero HIP in edges',
+          );
         }
       }
+    });
+  });
+
+  group('WesternCultureReader (culture_chinese_modern.bin)', () {
+    late WesternCultureReader reader;
+
+    setUpAll(() {
+      final buf = _loadBin('assets/bin/culture_chinese_modern.bin');
+      reader = WesternCultureReader(buf);
+    });
+
+    test('parses 88 modern constellations', () {
+      expect(reader.constellationCount, 88);
+    });
+
+    test('modern Chinese mode constellations expose Chinese names', () {
+      final all = reader.readAll();
+      final ori = all.firstWhere((c) => c.abbr == 'ORI');
+      expect(ori.nameZh, isNotEmpty);
+      expect(ori.nameZh.codeUnits.any((u) => u > 127), isTrue);
     });
   });
 
@@ -149,16 +187,22 @@ void main() {
     test('Chinese names are valid UTF-8 (contain CJK characters)', () {
       final all = reader.readAll();
       for (final a in all) {
-        expect(a.name.codeUnits.any((u) => u > 127), isTrue,
-            reason: 'asterism "${a.name}" has no multibyte chars');
+        expect(
+          a.name.codeUnits.any((u) => u > 127),
+          isTrue,
+          reason: 'asterism "${a.name}" has no multibyte chars',
+        );
       }
     });
 
     test('edges come in pairs (even count)', () {
       for (int i = 0; i < reader.asterismCount; i++) {
         final a = reader.asterismAt(i);
-        expect(a.edges.length % 2, 0,
-            reason: '${a.name} has odd edge count ${a.edges.length}');
+        expect(
+          a.edges.length % 2,
+          0,
+          reason: '${a.name} has odd edge count ${a.edges.length}',
+        );
       }
     });
 
@@ -181,31 +225,47 @@ void main() {
       );
     });
 
-    test('Four Advisors (四辅) asterism has correct Chinese and English names', () {
-      expect(sifu.name,   '四辅',          reason: 'Chinese name should be 四辅');
-      expect(sifu.nameEn, 'Four Advisors', reason: 'English name should be Four Advisors');
-    });
+    test(
+      'Four Advisors (四辅) asterism has correct Chinese and English names',
+      () {
+        expect(sifu.name, '四辅', reason: 'Chinese name should be 四辅');
+        expect(
+          sifu.nameEn,
+          'Four Advisors',
+          reason: 'English name should be Four Advisors',
+        );
+      },
+    );
 
     test('Four Advisors (四辅) asterism contains exactly 2 edge pairs', () {
       // 2 pairs = 4 interleaved uint16 values
-      expect(sifu.edges.length, 4,
-          reason: 'Expected 2 pairs (4 values) in Four Advisors edges');
+      expect(
+        sifu.edges.length,
+        4,
+        reason: 'Expected 2 pairs (4 values) in Four Advisors edges',
+      );
     });
 
-    test('Four Advisors (四辅) edge pairs are HIP 58874↔51502 and HIP 51502↔51384', () {
-      final edges = sifu.edges;
-      // Raw source line: 200 2 58874 51502 51502 51384
-      // Expected interleaved pairs: [58874, 51502, 51502, 51384]
-      expect(edges[0], 58874, reason: 'edge[0] should be HIP 58874 (from)');
-      expect(edges[1], 51502, reason: 'edge[1] should be HIP 51502 (to)');
-      expect(edges[2], 51502, reason: 'edge[2] should be HIP 51502 (from)');
-      expect(edges[3], 51384, reason: 'edge[3] should be HIP 51384 (to)');
-    });
+    test(
+      'Four Advisors (四辅) edge pairs are HIP 58874↔51502 and HIP 51502↔51384',
+      () {
+        final edges = sifu.edges;
+        // Raw source line: 200 2 58874 51502 51502 51384
+        // Expected interleaved pairs: [58874, 51502, 51502, 51384]
+        expect(edges[0], 58874, reason: 'edge[0] should be HIP 58874 (from)');
+        expect(edges[1], 51502, reason: 'edge[1] should be HIP 51502 (to)');
+        expect(edges[2], 51502, reason: 'edge[2] should be HIP 51502 (from)');
+        expect(edges[3], 51384, reason: 'edge[3] should be HIP 51384 (to)');
+      },
+    );
 
     test('Four Advisors (四辅) edges contain all three expected HIPs', () {
       final hipSet = sifu.edges.toSet();
-      expect(hipSet, containsAll([51384, 51502, 58874]),
-          reason: 'Four Advisors edges must include HIP 51384, 51502, and 58874');
+      expect(
+        hipSet,
+        containsAll([51384, 51502, 58874]),
+        reason: 'Four Advisors edges must include HIP 51384, 51502, and 58874',
+      );
     });
   });
 }

@@ -40,6 +40,7 @@ class StarDataService {
   List<Star> _stars = [];
   List<Constellation> _westernConstellations = [];
   List<Constellation> _chineseConstellations = [];
+  List<Constellation> _chineseModernConstellations = [];
   List<DailyCard> _dailyCards = [];
 
   /// All stars, sorted by ascending magnitude (brightest first).
@@ -50,6 +51,10 @@ class StarDataService {
 
   /// Chinese asterisms (星官).
   List<Constellation> get chineseConstellations => _chineseConstellations;
+
+  /// Modern 88-constellation lines with Chinese naming.
+  List<Constellation> get chineseModernConstellations =>
+      _chineseModernConstellations;
 
   /// All daily cards, sorted by descending date (newest first).
   List<DailyCard> get dailyCards => _dailyCards;
@@ -79,18 +84,20 @@ class StarDataService {
   // ---------------------------------------------------------------------------
 
   Future<void> _load() async {
-    // Load all three binary catalogs in parallel.
+    // Load all binary catalogs in parallel.
     final results = await Future.wait([
       rootBundle.load('assets/bin/catalog_base.bin'),
       rootBundle.load('assets/bin/culture_western.bin'),
+      rootBundle.load('assets/bin/culture_chinese_modern.bin'),
       rootBundle.load('assets/bin/culture_chinese.bin'),
       rootBundle.loadString('assets/data/daily_cards.json'),
     ]);
 
     final catalogBuf = results[0] as ByteData;
     final westernBuf = results[1] as ByteData;
-    final chineseBuf = results[2] as ByteData;
-    final cardsJson = results[3] as String;
+    final chineseModernBuf = results[2] as ByteData;
+    final chineseBuf = results[3] as ByteData;
+    final cardsJson = results[4] as String;
 
     // Parse star catalog.
     final catalogReader = StarCatalogReader(catalogBuf);
@@ -104,12 +111,22 @@ class StarDataService {
         nameEn: b.nameEn,
         nameZh: b.nameZh,
       );
-    }).toList()
-      ..sort((a, b) => a.magnitude.compareTo(b.magnitude));
+    }).toList()..sort((a, b) => a.magnitude.compareTo(b.magnitude));
 
     // Parse western constellations.
     final westernReader = WesternCultureReader(westernBuf);
     _westernConstellations = westernReader.readAll().map((c) {
+      return Constellation.fromWesternBin(
+        abbr: c.abbr,
+        nameEn: c.nameEn,
+        nameZh: c.nameZh,
+        edgePairs: c.edges,
+      );
+    }).toList();
+
+    // Parse modern Chinese 88-constellation set.
+    final chineseModernReader = WesternCultureReader(chineseModernBuf);
+    _chineseModernConstellations = chineseModernReader.readAll().map((c) {
       return Constellation.fromWesternBin(
         abbr: c.abbr,
         nameEn: c.nameEn,
@@ -129,9 +146,10 @@ class StarDataService {
     }).toList();
 
     // Parse daily cards (still JSON).
-    _dailyCards = (jsonDecode(cardsJson) as List)
-        .map((j) => DailyCard.fromJson(j as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    _dailyCards =
+        (jsonDecode(cardsJson) as List)
+            .map((j) => DailyCard.fromJson(j as Map<String, dynamic>))
+            .toList()
+          ..sort((a, b) => b.date.compareTo(a.date));
   }
 }

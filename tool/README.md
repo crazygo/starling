@@ -25,9 +25,9 @@ Raw sources (CSV / FAB / JSON)
            │
      ┌─────┼──────────┐
      ▼     ▼          ▼
-catalog  culture   culture
-_base    _western  _chinese
- .bin     .bin      .bin
+catalog  culture   culture           culture
+_base    _western  _chinese_modern   _chinese
+ .bin     .bin      .bin             .bin
            │
            ▼
      ../assets/bin/    ← Flutter asset bundle
@@ -131,8 +131,9 @@ cd tool/
 
 # Output lands in ../assets/bin/
 #   catalog_base.bin    ~178 KB  (~9,096 stars)
-#   culture_western.bin  ~80 KB  (88 IAU constellations)
-#   culture_chinese.bin  ~15 KB  (~283 asterisms)
+#   culture_western.bin         ~80 KB  (88 IAU constellations)
+#   culture_chinese_modern.bin  ~80 KB  (88 modern lines + Chinese naming)
+#   culture_chinese.bin         ~15 KB  (~283 asterisms)
 ```
 
 ### Manual steps
@@ -172,8 +173,9 @@ dart run bin/pipeline.dart --mag 6.5 --output ../assets/bin
    ✅ Integrity checks passed
 📦 Phase 3: Building .bin files…
    ✅ catalog_base.bin     (178.3 KB)
-   ✅ culture_western.bin  ( 79.8 KB)
-   ✅ culture_chinese.bin  ( 14.9 KB)
+   ✅ culture_western.bin         ( 79.8 KB)
+   ✅ culture_chinese_modern.bin  ( 79.8 KB)
+   ✅ culture_chinese.bin         ( 14.9 KB)
 
 🎉 Done!  Total: 273.0 KB → ../assets/bin/
 ```
