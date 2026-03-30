@@ -49,6 +49,32 @@ double domeVerticalFovForSize(Size size, double zoom) {
   );
 }
 
+/// Returns declination arcs near the celestial pole visible from [latitude].
+///
+/// Each entry is a `(declinationDeg, opacity)` pair.  Arcs start at
+/// [minPoleDistanceDeg] from the pole and continue outward in [stepDeg]
+/// increments up to [maxPoleDistanceDeg].  Opacity follows a quadratic
+/// falloff; arcs whose opacity falls below [minOpacity] are omitted.
+@visibleForTesting
+List<(double, double)> poleDeclinationArcs(
+  double latitude, {
+  double maxPoleDistanceDeg = 35.0,
+  double stepDeg = 5.0,
+  double minPoleDistanceDeg = 5.0,
+  double minOpacity = 0.08,
+}) {
+  final poleDeclination = latitude >= 0 ? 90.0 : -90.0;
+  final result = <(double, double)>[];
+  for (var d = minPoleDistanceDeg; d <= maxPoleDistanceDeg; d += stepDeg) {
+    final dec = poleDeclination >= 0 ? poleDeclination - d : poleDeclination + d;
+    final normalized = 1.0 - d / maxPoleDistanceDeg;
+    final opacity = normalized * normalized;
+    if (opacity < minOpacity) continue;
+    result.add((dec, opacity));
+  }
+  return result;
+}
+
 double _effectiveCenterDecForStyle(
   ViewStyle viewStyle,
   double baseCenterDec,
@@ -912,27 +938,13 @@ class _StarPainter extends CustomPainter {
   }
 
   void _drawEquatorialGrid(Canvas canvas) {
-    final poleDeclination = observerLatitude >= 0 ? 90.0 : -90.0;
-    const maxPoleDistanceDeg = 35.0;
-    const stepDeg = 5.0;
+    final arcs = poleDeclinationArcs(observerLatitude);
+    final linePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
 
-    for (
-      var poleDistance = 5.0;
-      poleDistance <= maxPoleDistanceDeg;
-      poleDistance += stepDeg
-    ) {
-      final declinationDeg = poleDeclination >= 0
-          ? poleDeclination - poleDistance
-          : poleDeclination + poleDistance;
-      final normalized = 1.0 - poleDistance / maxPoleDistanceDeg;
-      final opacity = normalized * normalized;
-      if (opacity < 0.08) continue;
-
-      final linePaint = Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 0.8
-        ..color = const Color(0xFFFFAE5A).withValues(alpha: opacity);
-
+    for (final (declinationDeg, opacity) in arcs) {
+      linePaint.color = const Color(0xFFFFAE5A).withValues(alpha: opacity);
       _drawDeclinationCurve(
         canvas,
         linePaint,
