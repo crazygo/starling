@@ -28,9 +28,7 @@ jobs:
         with:
           github-token: ${{ secrets.STARLING_COPILOT_TRIGGER || secrets.GITHUB_TOKEN }}
           script: |
-            const pullNumber = context.payload.review
-              ? context.payload.review.pull_request_url.split('/').pop()
-              : null;
+            const pullNumber = context.payload.pull_request?.number;
 
             if (!pullNumber) {
               console.log('Could not determine pull request number, skipping');
@@ -44,7 +42,7 @@ jobs:
             const { data: reviewComments } = await github.rest.pulls.listReviewComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: Number(pullNumber)
+              pull_number: pullNumber
             });
 
             if (reviewComments.length === 0) {
@@ -52,14 +50,18 @@ jobs:
               return;
             }
 
-            // 去重：检查是否已存在相同的评论，避免重复发送
-            const { data: existingComments } = await github.rest.issues.listComments({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number(pullNumber)
-            });
+            // 去重：检查是否已存在相同的评论，避免重复发送（使用 paginate 避免分页遗漏）
+            const existingComments = await github.paginate(
+              github.rest.issues.listComments,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pullNumber,
+                per_page: 100
+              }
+            );
 
-            const alreadyCommented = existingComments.some(c => c.body.includes(COPILOT_REVIEW_MARKER));
+            const alreadyCommented = existingComments.some(c => c.body && c.body.includes(COPILOT_REVIEW_MARKER));
             if (alreadyCommented) {
               console.log('Copilot review request already posted, skipping duplicate');
               return;
@@ -68,7 +70,7 @@ jobs:
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: Number(pullNumber),
+              issue_number: pullNumber,
               body: commentBody
             });
             console.log(`Copilot review comment posted (${reviewComments.length} review comments found)`);
