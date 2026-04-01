@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:starling/services/settings_service.dart';
 import 'package:starling/widgets/star_chart.dart';
 
 void main() {
@@ -49,6 +50,30 @@ void main() {
       final tallFov = domeVerticalFovForSize(const Size(800, 800), 1.0);
 
       expect(tallFov, greaterThan(shortFov));
+    });
+
+    test('vertical pan stays locked in dome mode', () {
+      final nextDec = panCenterDecForStyle(
+        ViewStyle.dome,
+        baseCenterDec: 18.0,
+        deltaDy: 120.0,
+        degPerPxV: 0.15,
+      );
+
+      expect(nextDec, closeTo(18.0, epsilon));
+    });
+  });
+
+  group('pan center dec behavior', () {
+    test('classic mode still supports vertical pan with clamping', () {
+      final nextDec = panCenterDecForStyle(
+        ViewStyle.classic,
+        baseCenterDec: 80.0,
+        deltaDy: 100.0,
+        degPerPxV: 0.2,
+      );
+
+      expect(nextDec, closeTo(90.0, epsilon));
     });
   });
 }
