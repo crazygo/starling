@@ -49,6 +49,22 @@ double domeVerticalFovForSize(Size size, double zoom) {
   );
 }
 
+@visibleForTesting
+double panCenterDecForStyle(
+  ViewStyle viewStyle, {
+  required double baseCenterDec,
+  required double deltaDy,
+  required double degPerPxV,
+}) {
+  if (viewStyle == ViewStyle.dome) {
+    // Dome mode intentionally locks gesture-based vertical panning so users
+    // only rotate horizontally around the vertical axis.
+    return clampDomeAltitude(baseCenterDec);
+  }
+  final next = baseCenterDec + deltaDy * degPerPxV;
+  return next.clamp(-90.0, 90.0).toDouble();
+}
+
 double _effectiveCenterDecForStyle(
   ViewStyle viewStyle,
   double baseCenterDec,
@@ -306,10 +322,12 @@ class _StarChartState extends State<StarChart> {
       base.centerRa,
       -delta.dx * degPerPxH,
     );
-    double newDec = base.centerDec + delta.dy * degPerPxV;
-    newDec = widget.viewStyle == ViewStyle.dome
-        ? clampDomeAltitude(newDec)
-        : newDec.clamp(-90.0, 90.0);
+    final newDec = panCenterDecForStyle(
+      widget.viewStyle,
+      baseCenterDec: base.centerDec,
+      deltaDy: delta.dy,
+      degPerPxV: degPerPxV,
+    );
 
     final newZoom = (base.zoom * d.scale).clamp(0.3, 10.0);
 
@@ -334,10 +352,12 @@ class _StarChartState extends State<StarChart> {
         vp.centerRa,
         event.scrollDelta.dx * degPerPxH,
       );
-      final rawDec = vp.centerDec - event.scrollDelta.dy * degPerPxV;
-      final newDec = widget.viewStyle == ViewStyle.dome
-          ? clampDomeAltitude(rawDec)
-          : rawDec.clamp(-90.0, 90.0);
+      final newDec = panCenterDecForStyle(
+        widget.viewStyle,
+        baseCenterDec: vp.centerDec,
+        deltaDy: -event.scrollDelta.dy,
+        degPerPxV: degPerPxV,
+      );
 
       widget.onViewportChanged(vp.copyWith(centerRa: newRa, centerDec: newDec));
     } else if (event is PointerScaleEvent) {
