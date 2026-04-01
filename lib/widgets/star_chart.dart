@@ -906,7 +906,7 @@ class _StarPainter extends CustomPainter {
       _drawHorizontalCurve(canvas, linePaint, altitudeDeg: altitude.toDouble());
     }
 
-    for (var azimuth = 0; azimuth < 360; azimuth += 60) {
+    for (var azimuth = 0; azimuth < 360; azimuth += 90) {
       _drawAzimuthCurve(canvas, linePaint, azimuthDeg: azimuth.toDouble());
     }
   }
