@@ -59,7 +59,7 @@ double panCenterDecForStyle(
   if (viewStyle == ViewStyle.dome) {
     // Dome mode intentionally locks gesture-based vertical panning so users
     // only rotate horizontally around the vertical axis.
-    return clampDomeAltitude(baseCenterDec);
+    return baseCenterDec;
   }
   final next = baseCenterDec + deltaDy * degPerPxV;
   return next.clamp(-90.0, 90.0).toDouble();
