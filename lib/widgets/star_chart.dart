@@ -902,11 +902,11 @@ class _StarPainter extends CustomPainter {
       ..strokeWidth = 0.7
       ..color = const Color(0x8846E0C8);
 
-    for (var altitude = -60; altitude <= 60; altitude += 30) {
+    for (var altitude = -60; altitude <= 60; altitude += 60) {
       _drawHorizontalCurve(canvas, linePaint, altitudeDeg: altitude.toDouble());
     }
 
-    for (var azimuth = 0; azimuth < 360; azimuth += 30) {
+    for (var azimuth = 0; azimuth < 360; azimuth += 60) {
       _drawAzimuthCurve(canvas, linePaint, azimuthDeg: azimuth.toDouble());
     }
   }
@@ -917,11 +917,11 @@ class _StarPainter extends CustomPainter {
       ..strokeWidth = 0.8
       ..color = const Color(0x99FFAE5A);
 
-    for (var dec = -60; dec <= 60; dec += 30) {
+    for (var dec = -60; dec <= 60; dec += 60) {
       _drawDeclinationCurve(canvas, linePaint, declinationDeg: dec.toDouble());
     }
 
-    for (var ra = 0; ra < 360; ra += 30) {
+    for (var ra = 0; ra < 360; ra += 60) {
       _drawRightAscensionCurve(
         canvas,
         linePaint,
