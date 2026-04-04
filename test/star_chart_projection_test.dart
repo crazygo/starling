@@ -52,7 +52,7 @@ void main() {
       expect(tallFov, greaterThan(shortFov));
     });
 
-    test('vertical pan stays locked in dome mode', () {
+    test('vertical pan is supported in dome mode', () {
       final nextDec = panCenterDecForStyle(
         ViewStyle.dome,
         baseCenterDec: 18.0,
@@ -60,7 +60,33 @@ void main() {
         degPerPxV: 0.15,
       );
 
-      expect(nextDec, closeTo(18.0, epsilon));
+      expect(nextDec, closeTo(36.0, epsilon));
+    });
+
+    test('vertical pan clamps in dome mode', () {
+      final nextDec = panCenterDecForStyle(
+        ViewStyle.dome,
+        baseCenterDec: 85.0,
+        deltaDy: 100.0,
+        degPerPxV: 0.2,
+      );
+
+      expect(nextDec, closeTo(90.0, epsilon));
+    });
+
+    test('dome pan axis uses dominant direction', () {
+      expect(
+        domePanAxisFromDelta(const Offset(12, 3)),
+        equals(Axis.horizontal),
+      );
+      expect(
+        domePanAxisFromDelta(const Offset(2, -10)),
+        equals(Axis.vertical),
+      );
+      expect(
+        domePanAxisFromDelta(const Offset(1, 1)),
+        isNull,
+      );
     });
   });
 

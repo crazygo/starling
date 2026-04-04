@@ -57,12 +57,19 @@ double panCenterDecForStyle(
   required double degPerPxV,
 }) {
   if (viewStyle == ViewStyle.dome) {
-    // Dome mode intentionally locks gesture-based vertical panning so users
-    // only rotate horizontally around the vertical axis.
-    return baseCenterDec;
+    final next = baseCenterDec + deltaDy * degPerPxV;
+    return clampDomeAltitude(next);
   }
   final next = baseCenterDec + deltaDy * degPerPxV;
   return next.clamp(-90.0, 90.0).toDouble();
+}
+
+@visibleForTesting
+Axis? domePanAxisFromDelta(Offset delta, {double deadZonePx = 4.0}) {
+  if (delta.dx.abs() < deadZonePx && delta.dy.abs() < deadZonePx) {
+    return null;
+  }
+  return delta.dx.abs() >= delta.dy.abs() ? Axis.horizontal : Axis.vertical;
 }
 
 double _effectiveCenterDecForStyle(
@@ -300,16 +307,28 @@ class StarChart extends StatefulWidget {
 class _StarChartState extends State<StarChart> {
   Offset? _panStart;
   StarChartViewport? _viewportAtGestureStart;
+  Axis? _domePanAxis;
 
   void _onScaleStart(ScaleStartDetails d) {
     _panStart = d.localFocalPoint;
     _viewportAtGestureStart = widget.viewport;
+    _domePanAxis = null;
   }
 
   void _onScaleUpdate(ScaleUpdateDetails d) {
     final base = _viewportAtGestureStart!;
 
-    final delta = d.localFocalPoint - _panStart!;
+    var delta = d.localFocalPoint - _panStart!;
+    if (widget.viewStyle == ViewStyle.dome) {
+      _domePanAxis ??= domePanAxisFromDelta(delta);
+      if (_domePanAxis == Axis.horizontal) {
+        delta = Offset(delta.dx, 0);
+      } else if (_domePanAxis == Axis.vertical) {
+        delta = Offset(0, delta.dy);
+      } else {
+        delta = Offset.zero;
+      }
+    }
     final degPerPxH = widget.viewStyle == ViewStyle.dome
         ? domeDegreesPerPixelForZoom(base.zoom)
         : classicDegreesPerPixelForZoom(base.zoom);
@@ -340,6 +359,17 @@ class _StarChartState extends State<StarChart> {
     if (event is PointerScrollEvent) {
       // Two-finger trackpad scroll → pan
       final vp = widget.viewport;
+      var scrollDelta = event.scrollDelta;
+      if (widget.viewStyle == ViewStyle.dome) {
+        final axis = domePanAxisFromDelta(scrollDelta);
+        if (axis == Axis.horizontal) {
+          scrollDelta = Offset(scrollDelta.dx, 0);
+        } else if (axis == Axis.vertical) {
+          scrollDelta = Offset(0, scrollDelta.dy);
+        } else {
+          scrollDelta = Offset.zero;
+        }
+      }
       final degPerPxH = widget.viewStyle == ViewStyle.dome
           ? domeDegreesPerPixelForZoom(vp.zoom)
           : classicDegreesPerPixelForZoom(vp.zoom);
@@ -350,12 +380,12 @@ class _StarChartState extends State<StarChart> {
       final newRa = _effectiveCenterRaForStyle(
         widget.viewStyle,
         vp.centerRa,
-        event.scrollDelta.dx * degPerPxH,
+        scrollDelta.dx * degPerPxH,
       );
       final newDec = panCenterDecForStyle(
         widget.viewStyle,
         baseCenterDec: vp.centerDec,
-        deltaDy: -event.scrollDelta.dy,
+        deltaDy: -scrollDelta.dy,
         degPerPxV: degPerPxV,
       );
 
